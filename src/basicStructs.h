@@ -23,22 +23,25 @@ typedef struct ReorderedR {
         relation rel;
 } reorderedR;
 
-typedef struct Index {
+typedef struct RelationIndex {
        uint32_t * chain;
        uint32_t * buckets;
        relation * rel;
        int32_t key;
-} index;
+} relationIndex;
 
 typedef struct IndexArray {
-       index * indexes;
+       relationIndex * indexes;
        uint32_t size;
 } indexArray;
 
-typedef struct ResultNode {
+typedef struct ResultNode resultNode;
+
+struct ResultNode {
         tuple * tuples;
         uint32_t size;
-} resultNode;
+        resultNode * nextNode;
+};
 
 typedef struct HeadResult {
         resultNode * firstNode;
@@ -53,7 +56,7 @@ reorderedR * reordereRelation(relation * r, int hash1);
 indexArray * indexing(reorderedR * ror, int hash2);
 
 //Kalyteros
-headResult * search(indexArray indexes, reorderedR * s);
+headResult * search(indexArray indexes, reorderedR * s, int hash2);
 
 
 
