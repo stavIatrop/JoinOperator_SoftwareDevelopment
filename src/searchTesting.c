@@ -30,6 +30,7 @@ int freeList(void) {
         return 0;
 }
 
+//int initialiseList()
 void testNumbOfNodes(void) {
         
         unsigned long int targetNodes = (TUPLE_NUMB * sizeof(tuple)) / MB + 1;

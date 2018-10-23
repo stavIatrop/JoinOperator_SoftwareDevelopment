@@ -1,5 +1,5 @@
 CC = gcc
-SOURCE = src/searchTesting.c src/resultListManip.c src/hashing.c
+SOURCE = src/searchTesting.c src/resultListManip.c src/hashing.c src/chainFollower.c
 
 NAME_OF_EXECUTABLE = searchTest
 
