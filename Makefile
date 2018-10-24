@@ -1,5 +1,5 @@
 CC = gcc
-SOURCE = src/hello.c
+SOURCE = src/hello.c src/indexManip.c src/indexing.c src/sideFunctions.c src/hashing.c
 
 NAME_OF_EXECUTABLE = main
 
