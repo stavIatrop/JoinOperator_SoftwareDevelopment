@@ -15,7 +15,7 @@ indexArray * indexing(reorderedR * ror, int hash1, int hash2) {
 			int bucketArrSize = hash2Range(hash2);
 			(mainIndexArray->indexes)[i] = initializeIndex(bucketArrSize, rel, i);
 
-			buildIndex(mainIndexArray, ror, i, whichPsum, hash2);
+			buildIndex(mainIndexArray->indexes + i, ror, i, whichPsum, hash2);
 			whichPsum++;
 			
 		}else { 										//otherwise no index is created for bucket of i's 

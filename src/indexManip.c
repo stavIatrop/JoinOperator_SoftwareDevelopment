@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "basicStructs.h"
 
 
@@ -9,11 +10,11 @@ index initializeIndex(int bucketSize, relation * rel, int key) {
 	newIndex.rel = rel; 
 	if (rel == NULL) {
 		newIndex.chain = NULL;
-		newIndex.bucket = NULL;
+		newIndex.buckets = NULL;
 		return newIndex;
 	}
 	newIndex->chain = (uint32_t *) malloc(rel->size * sizeof(uint32_t));
-	newIndex->bucket = (uint32_t *) malloc(bucketSize * sizeof(uint32_t));
+	newIndex->buckets = (uint32_t *) malloc(bucketSize * sizeof(uint32_t));
 	return newIndex;
 
 }
@@ -33,7 +34,7 @@ void freeIndexArray(indexArray * idxArray) {
 	for (i = 0; i < idxArray->size; i++){
 
 		free((idxArray->indexes)[i].chain);
-		free((idxArray->indexes)[i].bucket);
+		free((idxArray->indexes)[i].buckets);
 	}
 	
 	free(idxArray->indexes);
