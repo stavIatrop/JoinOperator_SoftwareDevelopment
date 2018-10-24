@@ -20,6 +20,7 @@ typedef struct PSumTuple {
 
 typedef struct ReorderedR {
         pSumTuple * psum;
+        int psumSize;
         relation rel;
 } reorderedR;
 
@@ -56,7 +57,7 @@ reorderedR * reordereRelation(relation * r, int hash1);
 indexArray * indexing(reorderedR * ror, int hash2);
 
 //Kalyteros
-headResult * search(indexArray indexes, reorderedR * s, int hash2);
+headResult * search(indexArray indArr, reorderedR * s, int hash2);
 
 
 
