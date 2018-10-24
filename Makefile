@@ -24,6 +24,12 @@ $(NAME_OF_EXECUTABLE): $(OBJECT)
 runSearchTest: executable
 	./$(NAME_OF_EXECUTABLE)
 
+runValgrind: executable
+	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_EXECUTABLE)
+
+cacheMisses: executable
+	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_EXECUTABLE)
+
 clean:
 	rm -f $(NAME_OF_EXECUTABLE)
 	rm -f src/*.o

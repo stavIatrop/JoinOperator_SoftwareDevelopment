@@ -1,3 +1,4 @@
 src/*.o
 *.o
 searchTest
+.vscode
