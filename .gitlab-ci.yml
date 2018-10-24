@@ -11,10 +11,6 @@ before_script:
   - cd ..
   - make
 
-test1:
+TestSearch:
   script:
     - make runSearchTest
-
-test2:
-  script:
-    - make runValgrind
