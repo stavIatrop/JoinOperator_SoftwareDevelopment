@@ -115,7 +115,7 @@ void testChainFollowNonExistent(void) {
         t.key = 5;
         t.payload = 13;
 
-        followChain(list, rIndex, &t, 10);
+        followChain(list, *rIndex, t, 10);
 
         CU_ASSERT(list->numbOfNodes == 0);
 }
@@ -125,7 +125,7 @@ void testChainFollowExists(void) {
         t.key = 5;
         t.payload = 12;
 
-        followChain(list, rIndex, &t, 10);
+        followChain(list, *rIndex, t, 10);
 
         CU_ASSERT(list->numbOfNodes == 1);
         CU_ASSERT(list->firstNode->size == 3);

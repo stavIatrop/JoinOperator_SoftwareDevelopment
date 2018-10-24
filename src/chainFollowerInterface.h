@@ -3,6 +3,6 @@
 
 #include "basicStructs.h"
 
-void followChain(headResult * resultList, relationIndex * rIndex, tuple * t, int h2);
+void followChain(headResult * resultList, relationIndex rIndex, tuple t, int h2);
 
 #endif
