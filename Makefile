@@ -5,7 +5,7 @@ NAME_OF_EXECUTABLE = searchTest
 
 OBJECT = $(SOURCE:.c=.o)
 
-VALGRIND_FLAGS = --leak-check=yes --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes -v
+VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes -v
 
 all: executable
 	@echo Compile finished

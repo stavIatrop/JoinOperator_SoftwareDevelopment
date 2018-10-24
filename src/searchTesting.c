@@ -107,7 +107,7 @@ int freeIndex(void) {
         free(rIndex->buckets);
         free(rIndex);
 
-        freeResultList(list);
+        //freeResultList(list);
 
         return 0;
 }
