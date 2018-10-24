@@ -1,7 +1,7 @@
 CC = gcc
-SOURCE = src/searchTesting.c src/resultListManip.c src/hashing.c
+SOURCE = src/hello.c
 
-NAME_OF_EXECUTABLE = searchTest
+NAME_OF_EXECUTABLE = exec
 
 OBJECT = $(SOURCE:.c=.o)
 
