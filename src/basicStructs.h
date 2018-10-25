@@ -5,7 +5,7 @@
 
 typedef struct Tuple {
         int32_t key;
-        int32_t payload;
+        uint32_t payload;
 } tuple;
 
 typedef struct Relation {
@@ -13,14 +13,20 @@ typedef struct Relation {
         uint32_t size;
 } relation;
 
+typedef struct HistTuple {
+        uint32_t h1Res;
+        uint32_t offset;
+} histTuple;
+
+
 typedef struct PSumTuple {
-        int32_t h1Res;
-        int32_t offset;
+        uint32_t h1Res;
+        uint32_t offset;
 } pSumTuple;
 
 typedef struct ReorderedR {
         pSumTuple * psum;
-        int psumSize;
+        uint32_t psumSize;
         relation rel;
 } reorderedR;
 
