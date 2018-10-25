@@ -54,7 +54,7 @@ typedef struct HeadResult {
 reorderedR * reordereRelation(relation * r, int hash1);
 
 //Stavroula
-indexArray * indexing(reorderedR * ror, int hash2);
+indexArray * indexing(reorderedR * ror, int hash1, int hash2);
 
 //Kalyteros
 headResult * search(indexArray indArr, reorderedR * s, int hash2);

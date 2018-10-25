@@ -92,10 +92,10 @@ int initialiseChainFollower() {
 
         //CARE: The above and below structs do not follow the rules
         rIndex->buckets[2] = 8;
-        rIndex->chain[8] = 5;
-        rIndex->chain[5] = 4;
-        rIndex->chain[4] = 3;
-        rIndex->chain[3] = 0;
+        rIndex->chain[7] = 5;
+        rIndex->chain[4] = 4;
+        rIndex->chain[3] = 3;
+        rIndex->chain[2] = 0;
 
         return 0;
 }
@@ -116,9 +116,9 @@ void testChainFollowNonExistent(void) {
         tuple t;
         t.key = 5;
         t.payload = 13;
-
+        
         followChain(list, *rIndex, t, 10);
-
+        fflush(stdout);
         CU_ASSERT(list->numbOfNodes == 0);
 }
 
