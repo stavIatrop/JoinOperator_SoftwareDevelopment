@@ -9,7 +9,7 @@ indexArray * indexing(reorderedR * ror, int hash1, int hash2) {
 	int i, whichPsum = 0;
 	for( i = 0; i < sizeOfIndex; i++) {
 
-		if(i == (ror->psum)[whichPsum].h1Res){ 			//index is created when there is a bucket of i's
+		if(i == (ror->pSumArr).psum[whichPsum].h1Res){ 			//index is created when there is a bucket of i's
 
 			relation * rel = getStartOfBucket(ror, whichPsum);
 			int bucketArrSize = hash2Range(hash2);
@@ -18,7 +18,7 @@ indexArray * indexing(reorderedR * ror, int hash1, int hash2) {
 			buildIndex(mainIndexArray->indexes + i, ror, i, whichPsum, hash2);
 			whichPsum++;
 			
-		}else { 										//otherwise no index is created for bucket of i's 
+		}else { 												//otherwise no index is created for bucket of i's 
 
 			(mainIndexArray->indexes)[i] = initializeIndex(0, NULL, i);
 		}

@@ -3,9 +3,9 @@
 #include "basicStructs.h"
 
 
-index initializeIndex(int bucketSize, relation * rel, int key) {
+relationIndex initializeIndex(int bucketSize, relation * rel, int key) {
 
-	index newIndex;
+	relationIndex newIndex;
 	newIndex.key = key;
 	newIndex.rel = rel; 
 	if (rel == NULL) {
@@ -23,7 +23,7 @@ indexArray * initializeIndexArray(int size){
 
 	indexArray * newIndexArray = (indexArray *) malloc(sizeof(indexArray));
 	newIndexArray->size = size;
-	newIndexArray->indexes = (index *) malloc(size * sizeof(index));
+	newIndexArray->indexes = (relationIndex *) malloc(size * sizeof(relationIndex));
 	return indexArray;
 
 }

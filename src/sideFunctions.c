@@ -12,13 +12,13 @@ relation * getStartOfBucket(reorderedR * ror, int whichPsum) {  		//computes and
 	tuple * tempTuple;
 	tempTuple =	(ror->rel).tuples + index; 
 	newRelation->tuples = tempTuple;
-	if(whichPsum + 1 == ror->psumSize) { 								//compute size of bucket if it is the last psum value
+	if(whichPsum + 1 == (ror->pSumArr).psumSize ) { 					//compute size of bucket if it is the last psum value
 
-		newRelation->size = (ror->rel).size - (ror->psum)[whichPsum].offset; 
+		newRelation->size = (ror->rel).size - (ror->pSumArr).psum[whichPsum].offset; 
 
 	} else {
 
-		newRelation->size = (ror->psum)[whichPsum + 1].offset - (ror->psum)[whichPsum].offset;
+		newRelation->size = (ror->pSumArr).psum[whichPsum + 1].offset - (ror->pSumArr).psum[whichPsum].offset;
 	}
 
 	return newRelation;
@@ -31,21 +31,21 @@ void updateChain(uint32_t * chain, uint32_t * buckets, int hash2Index, int i) {
 
 		buckets[hash2Index] = i + 1;
 		chain[i] = 0;
-		//chain[i + 1] = 0;
+		
 	}else {									//reconstruct chain
 
 		int temp;
 		temp = buckets[hash2Index];
 		buckets[hash2Index] = i + 1;
 		chain[i] = temp;
-		//chain[i + 1] = temp;
+		
 	}
 	return;
 }
 
 
 
-void buildIndex(index * oneIndex, reorderedR *ror, int whichPsum, int hash2) {
+void buildIndex(relationIndex * oneIndex, reorderedR *ror, int whichPsum, int hash2) {
 
 	int chainSize = oneIndex->rel->size;								//chainSize is the same with the size of bucket
 
