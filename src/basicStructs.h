@@ -13,24 +13,29 @@ typedef struct Relation {
         uint32_t size;
 } relation;
 
+//<-- ReorderedR structs
 typedef struct HistTuple {
         uint32_t h1Res;
         uint32_t offset;
 } histTuple;
-
 
 typedef struct PSumTuple {
         uint32_t h1Res;
         uint32_t offset;
 } pSumTuple;
 
-typedef struct ReorderedR {
+typedef struct PSumArray {
         pSumTuple * psum;
         uint32_t psumSize;
+}pSumArray;
+
+typedef struct ReorderedR {
+        pSumArray pSumArr;
         relation rel;
 } reorderedR;
+// -->
 
-
+//<-- Index structs
 typedef struct RelationIndex {
        uint32_t * chain;
        uint32_t * buckets;
@@ -42,7 +47,9 @@ typedef struct IndexArray {
        relationIndex * indexes;
        uint32_t size;
 } indexArray;
+//-->
 
+//<-- Result list structs
 typedef struct ResultNode resultNode;
 
 struct ResultNode {
@@ -55,7 +62,7 @@ typedef struct HeadResult {
         resultNode * firstNode;
         uint32_t numbOfNodes;
 } headResult;
-
+//-->
 
 //Valerios
 reorderedR * reordereRelation(relation * r, int hash1);
