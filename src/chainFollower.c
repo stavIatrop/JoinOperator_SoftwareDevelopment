@@ -47,15 +47,15 @@ headResult * search(indexArray indArr, reorderedR * s, int hash2) {
         tuple * startTup = NULL;
         int key1 = -1;
         headResult * resultList = initialiseResultHead();
-        for(int whichKey = 0; whichKey < s->psumSize; whichKey++) {
-                if(whichKey < s->psumSize - 1) {
-                        size = s->psum[whichKey + 1].offset -  s->psum[whichKey].offset;
+        for(int whichKey = 0; whichKey < s->pSumArr.psumSize; whichKey++) {
+                if(whichKey < s->pSumArr.psumSize - 1) {
+                        size = s->pSumArr.psum[whichKey + 1].offset -  s->pSumArr.psum[whichKey].offset;
                 }
                 else {
                         size = s->rel.size;
                 }
-                key1 = s->psum[whichKey].h1Res;
-                startTup = &(s->rel.tuples[s->psum[whichKey].offset]);
+                key1 = s->pSumArr.psum[whichKey].h1Res;
+                startTup = &(s->rel.tuples[s->pSumArr.psum[whichKey].offset]);
 
                 searchKey(indArr, resultList, startTup, size, key1, hash2);
         }

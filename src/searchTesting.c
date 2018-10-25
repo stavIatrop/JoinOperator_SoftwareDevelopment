@@ -22,7 +22,7 @@ int createList(void) {
         for(int i = 0; i < TUPLE_NUMB; i++) {
                 tuple temp;
                 temp.key = (int32_t) i;
-                temp.payload = (int32_t) i;
+                temp.payload = (uint32_t) i;
 
                 pushResult(list, &temp);
         }
