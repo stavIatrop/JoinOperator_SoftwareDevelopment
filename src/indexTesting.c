@@ -72,12 +72,12 @@ int main(void) {
       return CU_get_error();
    }
 
-   CU_set_output_filename("Chain_Test");
-   CU_automated_run_tests();
-   CU_list_tests_to_file();
+   // CU_set_output_filename("Chain_Test");
+   // CU_automated_run_tests();
+   // CU_list_tests_to_file();
 
-   // CU_basic_set_mode(CU_BRM_VERBOSE);
-   // CU_basic_run_tests();
+   CU_basic_set_mode(CU_BRM_VERBOSE);
+   CU_basic_run_tests();
 
    CU_cleanup_registry();
    return CU_get_error();

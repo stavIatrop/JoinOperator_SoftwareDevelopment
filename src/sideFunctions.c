@@ -27,25 +27,10 @@ relation * getStartOfBucket(reorderedR * ror, int whichPsum) {  		//computes and
 
 void updateChain(uint32_t * chain, uint32_t * buckets, int hash2Index, int i) {
 
-	if( buckets[hash2Index] == 0 ) {		//no previous entry 		
-		
-		buckets[hash2Index] = i + 1;
-		chain[i] = 0;
-		
-		
-	}else {									//reconstruct chain
-
-		int temp;
-		temp = buckets[hash2Index];
-		buckets[hash2Index] = i + 1;
-		chain[i] = temp;
-		
-	}
-
-	// int temp;
-	// temp = buckets[hash2Index];
-	// buckets[hash2Index] = i + 1;
-	// chain[i] = temp;
+	int temp;
+	temp = buckets[hash2Index];
+	buckets[hash2Index] = i + 1;
+	chain[i] = temp;
 
 	return;
 }
