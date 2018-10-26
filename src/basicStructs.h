@@ -31,7 +31,7 @@ typedef struct PSumArray {
 
 typedef struct ReorderedR {
         pSumArray pSumArr;
-        relation rel;
+        relation * rel;
 } reorderedR;
 // -->
 
