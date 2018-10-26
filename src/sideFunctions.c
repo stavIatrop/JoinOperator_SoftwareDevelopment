@@ -8,17 +8,17 @@ relation * getStartOfBucket(reorderedR * ror, int whichPsum) {  		//computes and
 
 	relation * newRelation = (relation *) malloc(sizeof(relation));
 	int index;
-	index = (ror->psum)[whichPsum].offset; 								//startIndex of specific bucket
+	index = ror->pSumArr.psum[whichPsum].offset; 								//startIndex of specific bucket
 	tuple * tempTuple;
-	tempTuple =	(ror->rel).tuples + index; 
+	tempTuple =	ror->rel->tuples + index; //Mporei na allaxei epeidh den einai synexomena(?)
 	newRelation->tuples = tempTuple;
-	if(whichPsum + 1 == (ror->pSumArr).psumSize ) { 					//compute size of bucket if it is the last psum value
+	if(whichPsum + 1 == ror->pSumArr.psumSize ) { 					//compute size of bucket if it is the last psum value
 
-		newRelation->size = (ror->rel).size - (ror->pSumArr).psum[whichPsum].offset; 
+		newRelation->size = ror->rel->size - ror->pSumArr.psum[whichPsum].offset; 
 
 	} else {
 
-		newRelation->size = (ror->pSumArr).psum[whichPsum + 1].offset - (ror->pSumArr).psum[whichPsum].offset;
+		newRelation->size = ror->pSumArr.psum[whichPsum + 1].offset - ror->pSumArr.psum[whichPsum].offset;
 	}
 
 	return newRelation;
@@ -28,9 +28,10 @@ relation * getStartOfBucket(reorderedR * ror, int whichPsum) {  		//computes and
 void updateChain(uint32_t * chain, uint32_t * buckets, int hash2Index, int i) {
 
 	if( buckets[hash2Index] == 0 ) {		//no previous entry 		
-
+		
 		buckets[hash2Index] = i + 1;
 		chain[i] = 0;
+		
 		
 	}else {									//reconstruct chain
 
@@ -40,6 +41,12 @@ void updateChain(uint32_t * chain, uint32_t * buckets, int hash2Index, int i) {
 		chain[i] = temp;
 		
 	}
+
+	// int temp;
+	// temp = buckets[hash2Index];
+	// buckets[hash2Index] = i + 1;
+	// chain[i] = temp;
+
 	return;
 }
 
