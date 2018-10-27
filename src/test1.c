@@ -5,7 +5,7 @@
 
 int main(int argc, char const *argv[])
 {
-	uint32_t hash1 = 101, size = 10000;
+	uint32_t hash1, size = 100000000;
 	relation r;
 	r.tuples = malloc(size * sizeof(tuple));
 	r.size=size;

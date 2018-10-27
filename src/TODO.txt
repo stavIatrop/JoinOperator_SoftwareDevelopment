@@ -1,13 +1,11 @@
 To do:
 
-1. Find out how to know the cache size.
+1. Research and experiment on best hash size and functions.
 
-2. Research and experiment on best hash size and functions.
+2. Spend an hour daily thinking about giraffe quotes.
 
-3. Spend an hour daily thinking about giraffe quotes.
+3. Find a way to make it work for extreme cases. Currently, all keys being identical breaks the next malloc (don't ask me).
 
-4. Find a way to make it work for extreme cases (e.g. all keys are identical).
+4. Write the unittest thingy.
 
-5. Write the unittest thingy.
-
-6. Finally, make sure everything works perfectly for all cases.
+5. Finally, make sure everything works perfectly for all cases.
