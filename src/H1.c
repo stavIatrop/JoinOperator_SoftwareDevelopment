@@ -3,31 +3,7 @@
 #include <math.h>
 #include "basicStructs.h"
 
-#define FNV_PRIME_32 16777619
-#define FNV_OFFSET_32 2166136261U
 #define CACHE_SIZE 256000
-
-uint32_t Hash1_1(void *key, uint32_t len) {			//FNV Hash, but it's not made to be used this way so it may suck.
-    unsigned char *p = key;
-    unsigned h = 0x811c9dc5;
-    int i;
-
-    for ( i = 0; i < 4; i++ )
-      h = ( h ^ p[i] ) * 0x01000193;
-
-   return h % len;
-}
-
-uint32_t Fnv32(const char *s, uint32_t len)	//found in http://ctips.pbworks.com/w/page/7277591/FNV%20Hash, slightly altered
-{
-    uint32_t hash = FNV_OFFSET_32, i;
-    for(i = 0; i < 4; i++)
-    {
-        hash = hash ^ (s[i]); // xor next byte into the bottom of the hash
-        hash = hash * FNV_PRIME_32; // Multiply by prime number found to work well
-    }
-    return hash % len;
-}
 
 uint32_t Hash1_2(int32_t key, uint32_t len) {                    //Pure genius.
    return key % len;
@@ -58,7 +34,7 @@ uint32_t FindNextPrime(uint32_t candidate)
 }
 
 
-char IdenticalityTest(relation *r)
+char IdenticalityTest(relation *r)		//not used, but cool
 {
 	uint32_t size = r->size, searchSize = size/10, limit = (CACHE_SIZE / sizeof(tuple))/10 , sames=0;
 	int32_t value = r->tuples[0].key, newValue;
@@ -88,15 +64,17 @@ void rSwap(tuple * t,uint32_t *hash_values, uint32_t i, uint32_t j)
         t[i].payload = t[j].payload;
         t[j].payload = temp;
 
-
 	temp = hash_values[i];
         hash_values[i] = hash_values[j];
         hash_values[j] = temp;
 }
 
-uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_values)
+uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_values, uint32_t *groups)
 {
-	uint32_t i, size = r->size, value, max=0;
+	*groups = 0;
+	uint32_t maxBucketSize = floor(CACHE_SIZE / sizeof(tuple));
+	printf("maxBucketSize is %d\n", maxBucketSize);
+	uint32_t i, size = r->size, value, reduction=0;
 	for (i = 0; i < hash1; i++) hist[i] = 0;
 
         for (i = 0; i < size; i++)
@@ -108,38 +86,41 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 
         for (i=0; i<hash1; i++)
         {
-                if (hist[i]>max) max = hist[i];
+		value = hist[i];
+		if (hist[i] > 2*maxBucketSize)
+		{
+			reduction += hist[i];
+			(*groups)++;
+		}
         }
-	return max;
+	printf("Reduction is %d and the groups are %d\n",reduction, *groups);
+	return reduction;
 }
+
 
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
-	uint32_t maxBucketSize = CACHE_SIZE / sizeof(tuple);
-	printf("maxBucketSize is %d\n", maxBucketSize);
-	uint32_t size = r->size, *hist,i,j,value, initial = *hash1;
+	uint32_t size = r->size, *hist,i,value, groups;
 	hist = malloc(*hash1 * sizeof(uint32_t));
 
-	char flag;
+	uint32_t reduction = DoTheHash(r,*hash1,hist,hash_values,&groups);
 
-	uint32_t max = DoTheHash(r,*hash1,hist,hash_values);/*, cursize = size;
-
-	maxList list;
-	list.size = 1;
-	list.start = malloc(sizeof(maxNode));
-	list.start->next = NULL;
-	list.start->max = max;*/
-
-	if (max > 2*maxBucketSize)
+	if (reduction > 0)
 	{
-		*hash1 = FindNextPrime(floor(1.05 * ((size-max) * sizeof(tuple) / CACHE_SIZE)) + 1);
+		*hash1 = FindNextPrime(floor(1.05 * ((size-reduction) * sizeof(tuple) / CACHE_SIZE) + groups));
 		hist = realloc(hist,*hash1 * sizeof(uint32_t));
-		max = DoTheHash(r,*hash1,hist,hash_values);
+
+		for (i = 0; i < *hash1; i++) hist[i] = 0;
+
+        	for (i = 0; i < size; i++)
+        	{
+                	value = Hash1_2(r->tuples[i].key,*hash1);
+                	hash_values[i] = value;
+                	hist[value] = hist[value] + 1;
+        	}
 	}
 
-        printf("The max amount of entries in a bucket is %d\n",max);
         return hist;
-
 }
 
 reorderedR * reordereRelation(relation * r, uint32_t *hash1)
