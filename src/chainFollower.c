@@ -7,7 +7,7 @@
 #include "hashing.h"
 #include "chainFollowerInterface.h"
 
-//DO NOT KNOW IF CACHE LOCALLITY IS ACHIEVED DUE TO POINTERS
+//DO NOT KNOW IF CACHE LOCALITY IS ACHIEVED DUE TO POINTERS
 void followChain(headResult * resultList, relationIndex rIndex, tuple t, int h2) {
         uint32_t hashRes = performHash(t.payload, h2);
         uint32_t chainPointer = rIndex.buckets[hashRes] - 1;
@@ -36,6 +36,10 @@ void followChain(headResult * resultList, relationIndex rIndex, tuple t, int h2)
 
 void searchKey(indexArray indArr, headResult * resultList, tuple * checkedTuples, int tuplesNumb, int key, int h2) {
         relationIndex keyIndex = indArr.indexes[key];
+
+        if(keyIndex.buckets == NULL) {
+                return;
+        }
 
         for(int whichTup = 0; whichTup < tuplesNumb; whichTup++) {
                 followChain(resultList, keyIndex, checkedTuples[whichTup], h2);
