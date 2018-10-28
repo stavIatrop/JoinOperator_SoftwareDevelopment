@@ -13,6 +13,21 @@ typedef struct Relation {
         uint32_t size;
 } relation;
 
+
+//<-- Help structs
+typedef struct MaxNode {
+        struct MaxNode *next;
+        uint32_t max;
+} maxNode;
+
+typedef struct MaxList {
+	struct MaxNode *start;
+	uint32_t size;
+} maxList;
+
+//-->
+
+
 //<-- ReorderedR structs
 typedef struct HistTuple {
         uint32_t h1Res;

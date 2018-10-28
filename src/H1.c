@@ -94,6 +94,25 @@ void rSwap(tuple * t,uint32_t *hash_values, uint32_t i, uint32_t j)
         hash_values[j] = temp;
 }
 
+uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_values)
+{
+	uint32_t i, size = r->size, value, max=0;
+	for (i = 0; i < hash1; i++) hist[i] = 0;
+
+        for (i = 0; i < size; i++)
+        {
+                value = Hash1_2(r->tuples[i].key,hash1);
+                hash_values[i] = value;
+                hist[value] = hist[value] + 1;
+        }
+
+        for (i=0; i<hash1; i++)
+        {
+                if (hist[i]>max) max = hist[i];
+        }
+	return max;
+}
+
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
 	uint32_t maxBucketSize = CACHE_SIZE / sizeof(tuple);
@@ -101,99 +120,41 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 	uint32_t size = r->size, *hist,i,j,value, initial = *hash1;
 	hist = malloc(*hash1 * sizeof(uint32_t));
 
-	uint32_t max1 = 0, max2=0, min1 = size, min2 = size, repeats=0;
 	char flag;
 
-	if (IdenticalityTest(r))
+	uint32_t max = DoTheHash(r,*hash1,hist,hash_values);/*, cursize = size;
+
+	maxList list;
+	list.size = 1;
+	list.start = malloc(sizeof(maxNode));
+	list.start->next = NULL;
+	list.start->max = max;*/
+
+	if (max > 2*maxBucketSize)
 	{
-		printf("Considered repetitive\n");
-		*hash1 = 1.1*initial + 1; //skips the while loop
+		*hash1 = FindNextPrime(floor(1.05 * ((size-max) * sizeof(tuple) / CACHE_SIZE)) + 1);
+		hist = realloc(hist,*hash1 * sizeof(uint32_t));
+		max = DoTheHash(r,*hash1,hist,hash_values);
 	}
 
-	if (initial > (uint32_t) (0xFFFFFFFF * 0.9))
-        {
-                printf("Considered too big\n");
-                *hash1 = 1.1*initial + 1; //skips the while loop
-        }
-
-	/*while (*hash1 <= (uint32_t)(1.1*initial))
-	{
-		repeats++;
-		if (repeats%10==0) if (IdenticalityTest(r))
-        	{
-        	        printf("Considered repetitive\n");
-        	        break; //skips the while loop
-        	}
-
-		flag = 1;
-		for (i = 0; i < *hash1; i++) hist[i] = 0;
-
-	        for (i = 0; i < size; i++)
-	        {
-			value = Hash1_2(r->tuples[i].key,*hash1);
-			//value = Hash1_1((void *) &(r->tuples[i].key),*hash1);
-			//value = Fnv32((const char *) &(r->tuples[i].key),*hash1);
-        	        printf("value is %d, i is %d\n", value, i);
-			hash_values[i] = value;
-			printf("Got you\n");
-			fflush(stdout);
-	                hist[value] = hist[value] + 1;
-			printf("Got you\n");
-			if (hist[value] > maxBucketSize)
-			{
-				flag = 0;
-				break;
-			}
-        	}
-		printf("AA, %d\n", flag);
-		if (flag==0)
-		{
-			for (j=0;j<10;j++) *hash1 = FindNextPrime(*hash1);
-			hist = realloc(hist,*hash1 * sizeof(uint32_t));
-			continue;
-		}
-
-		for (i=0; i<*hash1; i++)
-		{
-			if (hist[i]>max1) max1 = hist[i];
-	                if (hist[i]<min1) min1 = hist[i];
-		}
-
-		printf("The min amount of entries in a bucket is %d\n",min1);
-		printf("The max amount of entries in a bucket is %d\n",max1);
-		return hash_values;
-	}*/
-
-	*hash1 = initial;
-	//hist = realloc(hist,initial * sizeof(uint32_t));
-
-	for (i = 0; i < *hash1; i++) hist[i] = 0;
-
-        for (i = 0; i < size; i++)
-        {
-                value = Hash1_2(r->tuples[i].key,*hash1);
-                //value = Hash1_1((void *) &(r->tuples[i].key),*hash1);
-                //value = Fnv32((const char *) &(r->tuples[i].key),*hash1);
-	//	printf("is is %d, value is %d\n",i,value);
-                hash_values[i] = value;
-	//	printf("Got you\n");
-                hist[value] = hist[value] + 1;
-        }
-
-	for (i=0; i<*hash1; i++)
-        {
-                if (hist[i]>max1) max1 = hist[i];
-                if (hist[i]<min1) min1 = hist[i];
-        }
-
-        printf("The min amount of entries in a bucket is %d\n",min1);
-        printf("The max amount of entries in a bucket is %d\n",max1);
+        printf("The max amount of entries in a bucket is %d\n",max);
         return hist;
 
 }
 
 reorderedR * reordereRelation(relation * r, uint32_t *hash1)
 {
+
+	if (r==NULL) return NULL;
+
+	if (r->size==0)
+	{
+		reorderedR *R = malloc(sizeof(reorderedR));
+		R->rel = r;
+		R->pSumArr.psumSize = 0;
+		R->pSumArr.psum = NULL;
+		return R;
+	}
 	uint32_t size = r->size, value, i, *hash_values, candidate, *hist;
 
 	candidate = floor(1.05 * (size * sizeof(tuple) / CACHE_SIZE)) + 1;
