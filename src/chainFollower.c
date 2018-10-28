@@ -46,7 +46,7 @@ void searchKey(indexArray indArr, headResult * resultList, tuple * checkedTuples
         }
 }
 
-headResult * search(indexArray indArr, reorderedR * s, int hash2) {
+headResult * search(indexArray indArr, reorderedR * s, uint32_t hash2) {
         int size = -1;
         tuple * startTup = NULL;
         int key1 = -1;

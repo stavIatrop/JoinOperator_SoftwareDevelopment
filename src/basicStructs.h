@@ -65,15 +65,12 @@ typedef struct HeadResult {
 //-->
 
 //Valerios
-reorderedR * reordereRelation(relation * r, int hash1);
+reorderedR * reordereRelation(relation * r, uint32_t *hash1);
 
 //Stavroula
-indexArray * indexing(reorderedR * ror, int hash1, int hash2);
+indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2);
 
 //Kalyteros
-headResult * search(indexArray indArr, reorderedR * s, int hash2);
-
-
-
+headResult * search(indexArray indArr, reorderedR * s, uint32_t hash2);
 
 #endif
