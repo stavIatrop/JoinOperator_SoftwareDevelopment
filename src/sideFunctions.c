@@ -10,7 +10,7 @@ relation * getStartOfBucket(reorderedR * ror, int whichPsum) {  		//computes and
 	int index;
 	index = ror->pSumArr.psum[whichPsum].offset; 								//startIndex of specific bucket
 	tuple * tempTuple;
-	tempTuple =	ror->rel->tuples + index; //Mporei na allaxei epeidh den einai synexomena(?)
+	tempTuple =	ror->rel->tuples + index * sizeof(tuple); //Mporei na allaxei epeidh den einai synexomena(?)
 	newRelation->tuples = tempTuple;
 	if(whichPsum + 1 == ror->pSumArr.psumSize ) { 					//compute size of bucket if it is the last psum value
 
@@ -37,7 +37,7 @@ void updateChain(uint32_t * chain, uint32_t * buckets, int hash2Index, int i) {
 
 
 
-void buildIndex(relationIndex * oneIndex, reorderedR *ror, int whichPsum, int hash2) {
+void buildIndex(relationIndex * oneIndex, int hash2) {
 
 	int chainSize = oneIndex->rel->size;								//chainSize is the same with the size of bucket
 

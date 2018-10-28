@@ -1,16 +1,16 @@
 #include <stdint.h>
 
-int hash1Range(int hash1) {
+int hash1Range(uint32_t hash1) {
 
 	return hash1;
 }
 
-int hash2Range(int hash2) {
+int hash2Range(uint32_t hash2) {
 
 	return hash2;
 }
 
-uint32_t hashing(int value, int hash) {
+uint32_t hashing(uint32_t value, uint32_t hash) {
 
 	return value % hash;
 }

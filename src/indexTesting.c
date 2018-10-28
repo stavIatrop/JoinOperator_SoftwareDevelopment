@@ -6,11 +6,62 @@
 
 
 #include "sideFunctions.h"
+#include "hashing.h"
+#include "indexManip.h"
 #include "CUnit/Basic.h"
-
+#define NUM_OF_TUPLES 15
+#define HASH2 5
 
 uint32_t * chain = NULL;
 uint32_t * buckets = NULL;
+relationIndex oneIndex;
+
+int InitializeIndexTest() {
+
+	relation * rel = (relation *) malloc(sizeof(relation));
+	rel->size = NUM_OF_TUPLES;
+	rel->tuples = (tuple *) malloc(NUM_OF_TUPLES * sizeof(tuple));
+	int i;
+	for( i = 0; i < NUM_OF_TUPLES; i++){
+		rel->tuples[i].key = i;
+		rel->tuples[i].payload = i + 1;
+	}
+
+	int bucketSize = hash2Range(HASH2);
+	oneIndex = initializeIndex(bucketSize, rel, 6);
+	return 0;
+
+}
+
+int freeIndexTest() {
+
+	free(oneIndex.chain);
+	free(oneIndex.buckets);
+	free(oneIndex.rel);
+	return 0;
+}
+
+void testBuildIndex(){
+
+
+	buildIndex(&oneIndex, HASH2);
+
+	int i;
+
+	for(i = 0; i < 5; i++)
+		CU_ASSERT(oneIndex.chain[i] == 0);
+
+	for(i = 1; i <= 10; i++)
+		CU_ASSERT(oneIndex.chain[i + 4] == i);	
+	
+	CU_ASSERT(oneIndex.buckets[0] == 15);
+	CU_ASSERT(oneIndex.buckets[1] == 11);
+	CU_ASSERT(oneIndex.buckets[2] == 12);
+	CU_ASSERT(oneIndex.buckets[3] == 13);
+	CU_ASSERT(oneIndex.buckets[4] == 14);
+
+	return;
+}
 
 int InitializeStructs() {
 
@@ -53,6 +104,7 @@ void testUpdateChain() {
 int main(void) {
 
 	CU_pSuite pSuite = NULL;
+	CU_pSuite pSuite2 = NULL;
 
 	//Initialize the CUnit test registry
    if (CUE_SUCCESS != CU_initialize_registry())
@@ -67,6 +119,20 @@ int main(void) {
 
    /* add the tests to the suite */
    if ((NULL == CU_add_test(pSuite, "Test updateChain", testUpdateChain)))
+   {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   /* add a 2nd suite to the registry */
+   pSuite2 = CU_add_suite("BuildIndex Suite", InitializeIndexTest, freeIndexTest);
+   if (NULL == pSuite2) {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   /* add the tests to the 2nd suite */
+   if ((NULL == CU_add_test(pSuite2, "Test buildIndex", testBuildIndex)))
    {
       CU_cleanup_registry();
       return CU_get_error();

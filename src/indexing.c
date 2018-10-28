@@ -3,7 +3,7 @@
 #include "hashing.h"
 #include "indexManip.h"
 
-indexArray * indexing(reorderedR * ror, int hash1, int hash2) {
+indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2) {
 
 	int sizeOfIndex = hash1Range(hash1);
 	indexArray * mainIndexArray = initializeIndexArray(sizeOfIndex);
@@ -17,7 +17,7 @@ indexArray * indexing(reorderedR * ror, int hash1, int hash2) {
 			int bucketArrSize = hash2Range(hash2);
 			mainIndexArray->indexes[i] = initializeIndex(bucketArrSize, rel, i);
 
-			buildIndex(mainIndexArray->indexes + i, ror, i, whichPsum, hash2);  //Mporei na allaxei epeidh den einai synexomena(?)
+			buildIndex( &(mainIndexArray->indexes[i]), hash2);  
 			whichPsum++;
 			
 		}else { 												//otherwise no index is created for bucket of i's 
