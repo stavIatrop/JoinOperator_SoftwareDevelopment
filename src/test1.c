@@ -14,6 +14,7 @@ int main(int argc, char const *argv[])
 	for (uint32_t i=0; i<size; i++)
 	{
 		random = rand();
+		//if (i%100 == 0) r.tuples[i].key = 526;
 		r.tuples[i].key = random;
 		r.tuples[i].payload = 837376;
 	}
