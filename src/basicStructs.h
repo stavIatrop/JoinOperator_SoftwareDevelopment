@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define CACHE_SIZE 256000
+
 typedef struct Tuple {
         int32_t key;
         uint32_t payload;
@@ -52,8 +54,13 @@ typedef struct IndexArray {
 //<-- Result list structs
 typedef struct ResultNode resultNode;
 
+typedef struct RowTuple {
+        uint32_t rowR;
+        uint32_t rowS;
+} rowTuple;
+
 struct ResultNode {
-        tuple * tuples;
+        rowTuple * tuples;
         uint32_t size;
         resultNode * nextNode;
 };
@@ -65,7 +72,7 @@ typedef struct HeadResult {
 //-->
 
 //Valerios
-reorderedR * reordereRelation(relation * r, uint32_t *hash1);
+reorderedR * reorderRelation(relation * r, uint32_t *hash1);
 
 //Stavroula
 indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2);
