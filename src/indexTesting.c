@@ -10,11 +10,99 @@
 #include "indexManip.h"
 #include "CUnit/Basic.h"
 #define NUM_OF_TUPLES 15
+#define HASH1 3
 #define HASH2 5
+#define PSUMSIZE 3
 
 uint32_t * chain = NULL;
 uint32_t * buckets = NULL;
+
 relationIndex oneIndex;
+
+reorderedR * ror = NULL;
+indexArray * indexA = NULL;
+
+int InitializeRor() {
+
+	ror = (reorderedR *) malloc(sizeof(reorderedR));
+	
+	ror->pSumArr.psumSize = PSUMSIZE;
+	ror->pSumArr.psum = (pSumTuple *) malloc(PSUMSIZE * sizeof(pSumTuple));
+	int i;
+	for(i = 0; i < PSUMSIZE; i++) {
+		ror->pSumArr.psum[i].h1Res = i;
+		ror->pSumArr.psum[i].offset = i * 5;
+	}
+
+	ror->rel = (relation *) malloc(sizeof(relation));
+	ror->rel->size = NUM_OF_TUPLES;
+	ror->rel->tuples = (tuple *) malloc(NUM_OF_TUPLES * sizeof(tuple));
+
+	int j = 3;
+	for( i = 0; i < 5; i++) {
+		ror->rel->tuples[i].key = j;
+		ror->rel->tuples[i].payload = j;
+		j += 3; 
+	}
+
+	j = 1;
+	for( i = 5; i < 10; i++) {
+		ror->rel->tuples[i].key = j;
+		ror->rel->tuples[i].payload = j;
+		j += 3; 
+	}	
+
+	j = 2;
+	for( i = 10; i < 15; i++) {
+		ror->rel->tuples[i].key = j;
+		ror->rel->tuples[i].payload = j;
+		j += 3; 
+	}	
+
+
+	return 0;
+
+}
+
+int freeRor() {
+
+	free(ror->rel->tuples);
+	free(ror->rel);
+	free(ror->pSumArr.psum);
+	free(ror);
+	free(indexA);
+	return 0;
+}
+
+void testStartOfBucket() {
+
+	relation *rel = getStartOfBucket(ror, 1);
+
+	CU_ASSERT(rel->tuples[0].payload == 1);
+	free(rel);
+	rel = getStartOfBucket(ror, 2);
+	CU_ASSERT(rel->tuples[3].payload == 11);
+	free(rel);
+
+	rel = getStartOfBucket(ror, 0);
+	CU_ASSERT(rel->tuples[1].payload == 6);
+	free(rel);
+
+	return;
+}
+
+void testIndexing() {
+
+
+	indexA = indexing(ror, HASH1, HASH2);
+
+	CU_ASSERT(indexA->indexes[1].buckets[0] == 4);
+	CU_ASSERT(indexA->indexes[1].buckets[1] == 1);
+	CU_ASSERT(indexA->indexes[1].buckets[2] == 3);
+	CU_ASSERT(indexA->indexes[1].buckets[3] == 5);
+	CU_ASSERT(indexA->indexes[1].buckets[4] == 2);
+	return;
+}
 
 int InitializeIndexTest() {
 
@@ -105,6 +193,8 @@ int main(void) {
 
 	CU_pSuite pSuite = NULL;
 	CU_pSuite pSuite2 = NULL;
+	CU_pSuite pSuite3 = NULL;
+
 
 	//Initialize the CUnit test registry
    if (CUE_SUCCESS != CU_initialize_registry())
@@ -133,6 +223,21 @@ int main(void) {
 
    /* add the tests to the 2nd suite */
    if ((NULL == CU_add_test(pSuite2, "Test buildIndex", testBuildIndex)))
+   {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   /* add a 3rd suite to the registry */
+   pSuite3 = CU_add_suite("Indexing Suite", InitializeRor, freeRor);
+   if (NULL == pSuite3) {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   /* add the tests to the 3rd suite */
+   if ((NULL == CU_add_test(pSuite3, "Test getStartOfBucket", testStartOfBucket )) ||
+   		(NULL == CU_add_test(pSuite3, "Test indexing", testIndexing )))
    {
       CU_cleanup_registry();
       return CU_get_error();

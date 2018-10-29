@@ -10,7 +10,7 @@ relation * getStartOfBucket(reorderedR * ror, int whichPsum) {  		//computes and
 	int index;
 	index = ror->pSumArr.psum[whichPsum].offset; 								//startIndex of specific bucket
 	tuple * tempTuple;
-	tempTuple =	ror->rel->tuples + index * sizeof(tuple); //Mporei na allaxei epeidh den einai synexomena(?)
+	tempTuple =	&(ror->rel->tuples[index]); 
 	newRelation->tuples = tempTuple;
 	if(whichPsum + 1 == ror->pSumArr.psumSize ) { 					//compute size of bucket if it is the last psum value
 
