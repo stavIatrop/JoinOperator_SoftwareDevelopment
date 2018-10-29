@@ -10,5 +10,6 @@ resultNode * initialiseResultNode();
 void pushResult(headResult * head, rowTuple * t);
 void freeResultList(headResult * head);
 void freeResultNode(resultNode * node);
+int checkResults(headResult * head);
 
 #endif

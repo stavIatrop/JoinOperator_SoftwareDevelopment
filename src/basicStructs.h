@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define CACHE_SIZE 256000
+#define CACHE_SIZE (128000)
 
 typedef struct Tuple {
         int32_t key;

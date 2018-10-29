@@ -11,6 +11,7 @@
 #include "hashing.h"
 #include "indexManip.h"
 #include "CUnit/Basic.h"
+
 #define NUM_OF_TUPLES 15
 #define HASH1 3
 #define HASH2 5
@@ -27,7 +28,7 @@ indexArray * indexA = NULL;
 
 headResult * list = NULL;
 relationIndex * rIndex = NULL;
-int tuplesPerNode = MB / sizeof(tuple);
+int tuplesPerNode = MB / sizeof(tuple) + 1;
 
 int InitializeRor() {
 

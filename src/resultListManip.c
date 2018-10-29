@@ -38,7 +38,7 @@ void pushResult(headResult * head, rowTuple * t) {
                 }
 
                 //CASE: Node is full
-                if(finalNode->size >= maxTuples) {
+                if(finalNode->size > maxTuples) {
                         finalNode->nextNode = initialiseResultNode();
                         head->numbOfNodes += 1;
                         finalNode = finalNode->nextNode;
@@ -64,4 +64,22 @@ void freeResultNode(resultNode * node) {
         }
         free(node->tuples);
         free(node);
+}
+
+//It expects that rowIdS matches rowIdR
+int checkResults(headResult * head) {
+        resultNode * currNode;
+        if(head->firstNode == NULL) {
+                return 0;
+        }
+        currNode = head->firstNode;
+        for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+                for(int whichTup = 0; whichTup < currNode->size; whichTup++) {
+                        if(currNode->tuples[whichTup].rowR != currNode->tuples[whichTup].rowS) {
+                                return -1;
+                        }
+                }
+                currNode = currNode->nextNode;
+        }
+        return 0;
 }

@@ -111,7 +111,7 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
-	uint32_t size = r->size, *hist,i,value, groups, fix, prevFix=0, repeats=0, initial = *hash1;
+	uint32_t size = r->size, *hist, groups, fix, prevFix=0;
 	hist = malloc(*hash1 * sizeof(uint32_t));
 
 	uint32_t reduction = DoTheHash(r,*hash1,hist,hash_values,&groups,&fix);

@@ -56,7 +56,7 @@ headResult * search(indexArray indArr, reorderedR * s, uint32_t hash2) {
                         size = s->pSumArr.psum[whichKey + 1].offset -  s->pSumArr.psum[whichKey].offset;
                 }
                 else {
-                        size = s->rel->size;
+                        size = s->rel->size - s->pSumArr.psum[whichKey].offset;
                 }
                 key1 = s->pSumArr.psum[whichKey].h1Res;
                 startTup = &(s->rel->tuples[s->pSumArr.psum[whichKey].offset]);

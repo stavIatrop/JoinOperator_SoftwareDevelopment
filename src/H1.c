@@ -16,7 +16,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 		R->pSumArr.psum = NULL;
 		return R;
 	}
-	uint32_t size = r->size, value, i, *hash_values, *hist;
+	uint32_t size = r->size, i, *hash_values, *hist;
 
 	hash_values = malloc(size * sizeof(uint32_t));
 

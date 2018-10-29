@@ -11,6 +11,10 @@ before_script:
   - cd ..
   - make
 
-TestSearch:
+UnitTest:
+  script:
+    - make runUt
+
+MainTest:
   script:
     - make runTest

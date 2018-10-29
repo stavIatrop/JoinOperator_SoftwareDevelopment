@@ -5,5 +5,6 @@
 
 relationIndex initializeIndex(int , relation * , int );
 indexArray * initializeIndexArray(int );
+void freeIndexArray(indexArray * idxArray);
 
 #endif
