@@ -7,6 +7,11 @@
 
 void CheckR(relation r, uint32_t hash1)
 {
+	if (r.size==0)
+	{
+		printf("relation is empty\n");
+		return;
+	}
 	printf("Checking R, assuming the hash function is key %% length.\n");
 	uint32_t size = r.size, current=0, value;
 	for (uint32_t i=0; i<size; i++)
@@ -24,7 +29,7 @@ void CheckR(relation r, uint32_t hash1)
 
 int main(int argc, char const *argv[])
 {
-	uint32_t hash1, size = 10000000;
+	uint32_t hash1=0, size = 10000000;
 	relation r;
 	r.tuples = malloc(size * sizeof(tuple));
 	r.size=size;
@@ -44,6 +49,7 @@ int main(int argc, char const *argv[])
 	R = reorderRelation(&r,&hash1);
 	printf("Exited reordering function\n");
 	CheckR(r,hash1);
+        hash1=0;
 
 
 	printf("\n\n------------Test 2: keys are 0 - %d (reversed):------------\n\n",size-1);
@@ -57,6 +63,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(&r,&hash1);
         printf("Exited reordering function\n");
 	CheckR(r,hash1);
+        hash1=0;
 
 
         printf("\n\n------------Test 3: %d identical keys:------------\n\n",size);
@@ -70,6 +77,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(&r,&hash1);
         printf("Exited reordering function\n");
 	CheckR(r,hash1);
+        hash1=0;
 
 
         printf("\n\n------------Test 4: %d keys with 1%% of them being identical:------------\n\n",size);
@@ -84,6 +92,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(&r,&hash1);
         printf("Exited reordering function\n");
 	CheckR(r,hash1);
+        hash1=0;
 
 
         printf("\n\n------------Test 5: %d keys with 10%% of them being identical:------------\n\n",size);
@@ -98,6 +107,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(&r,&hash1);
         printf("Exited reordering function\n");
 	CheckR(r,hash1);
+        hash1=0;
 
 
         printf("\n\n------------Test 6: Empty relation:------------\n\n");
@@ -105,8 +115,9 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(&r,&hash1);
         printf("Exited reordering function\n");
-	r.size = size;
 	CheckR(r,hash1);
+	r.size = size;
+        hash1=0;
 
 
         printf("\n\n------------Test 7: %d keys with 2 groups of 10%% and 20%% of them being identical within each group:------------\n\n",size);
@@ -122,6 +133,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(&r,&hash1);
         printf("Exited reordering function\n");
         CheckR(r,hash1);
+        hash1=0;
 
 
 	printf("\n\n------------Test 8: %d keys that only have values [0-9]:------------\n\n",size);
@@ -136,7 +148,22 @@ int main(int argc, char const *argv[])
         printf("Exited reordering function\n");
         CheckR(r,hash1);
 
-	printf("\n\n------------Test 9: %d keys with some of them sneakily being in the same bucket, 10%% being identical, 20%% more also being identical:------------\n\n",size);
+
+	printf("\n\n------------Test 9: Sorting the S after Test 8, with the keys being random:------------\n\n");
+        for (uint32_t i=0; i<size; i++)
+        {
+                random = rand();
+                r.tuples[i].key = random;
+                r.tuples[i].payload = 837376;
+        }
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
+        CheckR(r,hash1);
+	hash1=0;
+
+
+	printf("\n\n------------Test 10: %d keys with some of them sneakily being in the same bucket, 10%% being identical, 20%% more also being identical:------------\n\n",size);
         for (uint32_t i=0; i<size; i++)
         {
                 random = rand();
@@ -157,6 +184,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(&r,&hash1);
         printf("Exited reordering function\n");
         CheckR(r,hash1);
+	hash1 = 0;
 
 
 	printf("\n\n------------Test 9: 0xFFFFFFFF-1 (max number) keys:------------\n\n");
