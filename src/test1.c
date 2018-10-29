@@ -14,12 +14,12 @@ void CheckR(relation r, uint32_t hash1)
 		value = r.tuples[i].key % hash1;
 		if (value < current)
 		{
-			printf("R has not been sorted properly\n");
+			printf("----------FAIL: R has not been sorted properly\n");
 			return;
 		}
 		current = value;
 	}
-	printf("R has been sorted properly\n");
+	printf("----------PASS: R has been sorted properly\n");
 }
 
 int main(int argc, char const *argv[])
@@ -40,9 +40,9 @@ int main(int argc, char const *argv[])
 		r.tuples[i].key = random;
 		r.tuples[i].payload = 837376;
 	}
-	printf("Entering stupidly named reordering function\n");
-	R = reordereRelation(&r,&hash1);
-	printf("Exited stupidly named reordering function\n");
+	printf("Entering reordering function\n");
+	R = reorderRelation(&r,&hash1);
+	printf("Exited reordering function\n");
 	CheckR(r,hash1);
 
 
@@ -53,9 +53,9 @@ int main(int argc, char const *argv[])
                 r.tuples[i].key = size -1 -i;
                 r.tuples[i].payload = 837376;
         }
-        printf("Entering stupidly named reordering function\n");
-        R = reordereRelation(&r,&hash1);
-        printf("Exited stupidly named reordering function\n");
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
 	CheckR(r,hash1);
 
 
@@ -66,9 +66,9 @@ int main(int argc, char const *argv[])
                 r.tuples[i].key = random;
                 r.tuples[i].payload = 837376;
         }
-        printf("Entering stupidly named reordering function\n");
-        R = reordereRelation(&r,&hash1);
-        printf("Exited stupidly named reordering function\n");
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
 	CheckR(r,hash1);
 
 
@@ -80,9 +80,9 @@ int main(int argc, char const *argv[])
                 else r.tuples[i].key = random;
 		r.tuples[i].payload = 837376;
         }
-        printf("Entering stupidly named reordering function\n");
-        R = reordereRelation(&r,&hash1);
-        printf("Exited stupidly named reordering function\n");
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
 	CheckR(r,hash1);
 
 
@@ -94,17 +94,17 @@ int main(int argc, char const *argv[])
                 else r.tuples[i].key = random;
                 r.tuples[i].payload = 837376;
         }
-        printf("Entering stupidly named reordering function\n");
-        R = reordereRelation(&r,&hash1);
-        printf("Exited stupidly named reordering function\n");
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
 	CheckR(r,hash1);
 
 
         printf("\n\n------------Test 6: Empty relation:------------\n\n");
 	r.size = 0;
-        printf("Entering stupidly named reordering function\n");
-        R = reordereRelation(&r,&hash1);
-        printf("Exited stupidly named reordering function\n");
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
 	r.size = size;
 	CheckR(r,hash1);
 
@@ -118,9 +118,9 @@ int main(int argc, char const *argv[])
                 else r.tuples[i].key = random;
                 r.tuples[i].payload = 837376;
         }
-        printf("Entering stupidly named reordering function\n");
-        R = reordereRelation(&r,&hash1);
-        printf("Exited stupidly named reordering function\n");
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
         CheckR(r,hash1);
 
 
@@ -131,9 +131,9 @@ int main(int argc, char const *argv[])
                 r.tuples[i].key = random % 10;
                 r.tuples[i].payload = 837376;
         }
-        printf("Entering stupidly named reordering function\n");
-        R = reordereRelation(&r,&hash1);
-        printf("Exited stupidly named reordering function\n");
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
         CheckR(r,hash1);
 
 	printf("\n\n------------Test 9: %d keys with some of them sneakily being in the same bucket, 10%% being identical, 20%% more also being identical:------------\n\n",size);
@@ -149,13 +149,13 @@ int main(int argc, char const *argv[])
 		else if (i%primeNumber3 == 0) r.tuples[i].key = i;
 		else if (i%primeNumber4 == 0) r.tuples[i].key = i;
 		else if (i%10==0) r.tuples[i].key = 0;
-                /*else if (i%10==1 || i%10==2) r.tuples[i].key = 1;*/
+                else if (i%10==1 || i%10==2) r.tuples[i].key = 1;
                 else r.tuples[i].key = random;
                 r.tuples[i].payload = 837376;
         }
-        printf("Entering stupidly named reordering function\n");
-        R = reordereRelation(&r,&hash1);
-        printf("Exited stupidly named reordering function\n");
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
         CheckR(r,hash1);
 
 
@@ -171,9 +171,9 @@ int main(int argc, char const *argv[])
                 r.tuples[i].key = random;
                 r.tuples[i].payload = 837376;
         }
-        printf("Entering stupidly named reordering function\n");
-        R = reordereRelation(&r,&hash1);
-        printf("Exited stupidly named reordering function\n");
+        printf("Entering reordering function\n");
+        R = reorderRelation(&r,&hash1);
+        printf("Exited reordering function\n");
 	CheckR(r,hash1);*/
 
 

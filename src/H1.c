@@ -137,7 +137,7 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
         return hist;
 }
 
-reorderedR * reordereRelation(relation * r, uint32_t *hash1)
+reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 {
 
 	if (r==NULL) return NULL;
