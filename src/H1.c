@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include "basicStructs.h"
+#include "viceFunctions.h"
 
-#define CACHE_SIZE 256000
+#define ACCEPTANCE_LIMIT 3
 
 uint32_t Hash1_2(int32_t key, uint32_t len) {                    //Pure genius.
    return key % len;
@@ -34,9 +35,10 @@ uint32_t FindNextPrime(uint32_t candidate)
 }
 
 
-char IdenticalityTest(relation *r)		//not used, but cool
+char IdenticalityTest(relation *r, uint32_t limit)		//not used, but cool
 {
-	uint32_t size = r->size, searchSize = size/10, limit = (CACHE_SIZE / sizeof(tuple))/10 , sames=0;
+	limit/=10;
+	uint32_t size = r->size, searchSize = size/10, sames=0;
 	int32_t value = r->tuples[0].key, newValue;
 	for (uint32_t i=0; i<searchSize; i++)
 	{
@@ -55,26 +57,28 @@ char IdenticalityTest(relation *r)		//not used, but cool
 void rSwap(tuple * t,uint32_t *hash_values, uint32_t i, uint32_t j)
 {
 //	printf("swapping %d with %d\n",i,j);
-	int32_t temp;
-	temp = t[i].key;
+	int32_t tempi;
+	uint32_t tempu;
+	tempi = t[i].key;
 	t[i].key = t[j].key;
-	t[j].key = temp;
+	t[j].key = tempi;
 
-	temp = t[i].payload;
+	tempu = t[i].payload;
         t[i].payload = t[j].payload;
-        t[j].payload = temp;
+        t[j].payload = tempu;
 
-	temp = hash_values[i];
+	tempu = hash_values[i];
         hash_values[i] = hash_values[j];
-        hash_values[j] = temp;
+        hash_values[j] = tempu;
 }
 
-uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_values, uint32_t *groups)
+uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_values, uint32_t *groups, uint32_t *fix)
 {
 	*groups = 0;
+	*fix = 0;
 	uint32_t maxBucketSize = floor(CACHE_SIZE / sizeof(tuple));
 	printf("maxBucketSize is %d\n", maxBucketSize);
-	uint32_t i, size = r->size, value, reduction=0;
+	uint32_t i, size = r->size, value, reduction=0, max=0, min=r->size;
 	for (i = 0; i < hash1; i++) hist[i] = 0;
 
         for (i = 0; i < size; i++)
@@ -87,38 +91,48 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
         for (i=0; i<hash1; i++)
         {
 		value = hist[i];
-		if (hist[i] > 2*maxBucketSize)
+		if (value > ACCEPTANCE_LIMIT*maxBucketSize)
 		{
-			reduction += hist[i];
+			reduction += value;
 			(*groups)++;
+			if (value < min) min = value;
+		}
+		else if (value > maxBucketSize && value <= ACCEPTANCE_LIMIT*maxBucketSize && value > *fix)
+		{
+			*fix = value;
+			if (value > max) max = value;
 		}
         }
-	printf("Reduction is %d and the groups are %d\n",reduction, *groups);
+	printf("Max size of bucket within acceptable limits is  %d and min size of ignored is %d\n",max,min);
+	printf("Reduction is %d and the groups are %d, while fix is %d\n",reduction, *groups, *fix);
 	return reduction;
 }
 
 
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
-	uint32_t size = r->size, *hist,i,value, groups;
+	uint32_t size = r->size, *hist,i,value, groups, fix, prevFix=0, repeats=0, initial = *hash1;
 	hist = malloc(*hash1 * sizeof(uint32_t));
 
-	uint32_t reduction = DoTheHash(r,*hash1,hist,hash_values,&groups);
+	uint32_t reduction = DoTheHash(r,*hash1,hist,hash_values,&groups,&fix);
 
 	if (reduction > 0)
 	{
 		*hash1 = FindNextPrime(floor(1.05 * ((size-reduction) * sizeof(tuple) / CACHE_SIZE) + groups));
+		printf("Reduction was made, current hash1 is %d\n",*hash1);
 		hist = realloc(hist,*hash1 * sizeof(uint32_t));
-
-		for (i = 0; i < *hash1; i++) hist[i] = 0;
-
-        	for (i = 0; i < size; i++)
-        	{
-                	value = Hash1_2(r->tuples[i].key,*hash1);
-                	hash_values[i] = value;
-                	hist[value] = hist[value] + 1;
-        	}
+		DoTheHash(r,*hash1,hist,hash_values,&groups,&fix);
 	}
+
+	while (fix!=0)
+        {
+                if (fix > prevFix*0.99 && fix < prevFix*1.01) break;
+		prevFix = fix;
+                *hash1 = FindNextPrime(*hash1+1);
+		printf("Fix attempt was made, current hash1 is %d\n",*hash1);
+                hist = realloc(hist,*hash1 * sizeof(uint32_t));
+                DoTheHash(r,*hash1,hist,hash_values,&groups,&fix);
+        }
 
         return hist;
 }

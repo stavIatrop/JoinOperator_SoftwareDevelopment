@@ -1,5 +1,6 @@
 #ifndef BASIC_STRUCTS_H
 #define BASIC_STRUCTS_H
+#define CACHE_SIZE 256000
 
 #include <stdint.h>
 
