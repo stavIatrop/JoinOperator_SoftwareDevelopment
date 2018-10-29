@@ -3,7 +3,7 @@ CC = gcc
 SOURCE = src/mainTest.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
 SOURCE_UT = src/indexSearchTesting.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
 
-NAME_OF_EXECUTABLE = mainTest
+NAME_OF_EXECUTABLE = mainUt
 NAME_OF_UT = unitTest
 
 OBJECT = $(SOURCE:.c=.o)
@@ -27,7 +27,7 @@ $(NAME_OF_EXECUTABLE): $(OBJECT)
 	$(CC) -g  -O0 $(OBJECT) -o $@ -lm -lcunit
 	@echo Compile Main Test
 	@echo 
-	
+
 $(NAME_OF_UT): $(OBJECT_UT)
 	$(CC) -g  -O0 $(OBJECT_UT) -o $@ -lm -lcunit
 
@@ -36,7 +36,7 @@ $(NAME_OF_UT): $(OBJECT_UT)
 	$(CC) -c $< -o $@ -lm -lcunit
 
 
-runTest: executable
+runMainUt: executable
 	./$(NAME_OF_EXECUTABLE)
 
 runUt: ut

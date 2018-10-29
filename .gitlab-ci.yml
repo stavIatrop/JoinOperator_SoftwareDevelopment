@@ -17,4 +17,4 @@ UnitTest:
 
 MainTest:
   script:
-    - make runTest
+    - make runMainUt
