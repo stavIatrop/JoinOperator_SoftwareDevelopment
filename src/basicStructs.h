@@ -78,6 +78,6 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1);
 indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2);
 
 //Kalyteros
-headResult * search(indexArray indArr, reorderedR * s, uint32_t hash2);
+headResult * search(indexArray * indArr, reorderedR * s, uint32_t hash2);
 
 #endif

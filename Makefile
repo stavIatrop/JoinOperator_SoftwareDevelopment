@@ -20,12 +20,12 @@ executable: $(SOURCE) $(NAME_OF_EXECUTABLE)
 
 ut: $(SOURCE_UT) $(NAME_OF_UT)
 	$(CC) -g -O0 -Wall -o  $(NAME_OF_UT) $(SOURCE_UT) -lm -lcunit
-	@echo Compile Unit Test
+	@echo Compiled Mini Unit Tests
 	@echo 
 
 $(NAME_OF_EXECUTABLE): $(OBJECT)
 	$(CC) -g  -O0 $(OBJECT) -o $@ -lm -lcunit
-	@echo Compile Main Test
+	@echo Compiled Main Test
 	@echo 
 
 $(NAME_OF_UT): $(OBJECT_UT)

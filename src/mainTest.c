@@ -30,19 +30,19 @@ int initialiseStructs(void) {
 	r->size=size;
         s->size=size2;
 
-        uint32_t random;
-	srand(time(NULL));
+        //uint32_t random;
+	//srand(time(NULL));
 
 	for (uint32_t i=0; i<size; i++)
         {
-                random = rand();
+                //random = rand();
                 r->tuples[i].key = i;
                 r->tuples[i].payload = i;
         }
 
         for (uint32_t i=0; i<size2; i++)
         {
-                random = rand();
+                //random = rand();
                 s->tuples[i].key = i;
                 s->tuples[i].payload = i;
         }
@@ -53,7 +53,7 @@ int initialiseStructs(void) {
 
         indexA = indexing(R, hash1, 101);
 
-        list = search(*indexA, S, 101);
+        list = search(indexA, S, 101);
 
         return 0;
 }

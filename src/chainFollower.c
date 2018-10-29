@@ -34,8 +34,8 @@ void followChain(headResult * resultList, relationIndex rIndex, tuple t, uint32_
         }
 }
 
-void searchKey(indexArray indArr, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb, uint32_t key, uint32_t h2) {
-        relationIndex keyIndex = indArr.indexes[key];
+void searchKey(indexArray * indArr, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb, uint32_t key, uint32_t h2) {
+        relationIndex keyIndex = indArr->indexes[key];
 
         if(keyIndex.buckets == NULL) {
                 return;
@@ -44,9 +44,10 @@ void searchKey(indexArray indArr, headResult * resultList, tuple * checkedTuples
         for(uint32_t whichTup = 0; whichTup < tuplesNumb; whichTup++) {
                 followChain(resultList, keyIndex, checkedTuples[whichTup], h2);
         }
+
 }
 
-headResult * search(indexArray indArr, reorderedR * s, uint32_t hash2) {
+headResult * search(indexArray * indArr, reorderedR * s, uint32_t hash2) {
         uint32_t size;
         tuple * startTup = NULL;
         uint32_t key1;
