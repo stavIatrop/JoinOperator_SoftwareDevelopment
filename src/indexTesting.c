@@ -40,22 +40,22 @@ int InitializeRor() {
 
 	int j = 3;
 	for( i = 0; i < 5; i++) {
-		ror->rel->tuples[i].key = j;
 		ror->rel->tuples[i].payload = j;
+		ror->rel->tuples[i].key = j;
 		j += 3; 
 	}
 
 	j = 1;
 	for( i = 5; i < 10; i++) {
-		ror->rel->tuples[i].key = j;
 		ror->rel->tuples[i].payload = j;
+		ror->rel->tuples[i].key = j;
 		j += 3; 
 	}	
 
 	j = 2;
 	for( i = 10; i < 15; i++) {
-		ror->rel->tuples[i].key = j;
 		ror->rel->tuples[i].payload = j;
+		ror->rel->tuples[i].key = j;
 		j += 3; 
 	}	
 
@@ -78,14 +78,14 @@ void testStartOfBucket() {
 
 	relation *rel = getStartOfBucket(ror, 1);
 
-	CU_ASSERT(rel->tuples[0].payload == 1);
+	CU_ASSERT(rel->tuples[0].key == 1);
 	free(rel);
 	rel = getStartOfBucket(ror, 2);
-	CU_ASSERT(rel->tuples[3].payload == 11);
+	CU_ASSERT(rel->tuples[3].key == 11);
 	free(rel);
 
 	rel = getStartOfBucket(ror, 0);
-	CU_ASSERT(rel->tuples[1].payload == 6);
+	CU_ASSERT(rel->tuples[1].key == 6);
 	free(rel);
 
 	return;
@@ -111,8 +111,8 @@ int InitializeIndexTest() {
 	rel->tuples = (tuple *) malloc(NUM_OF_TUPLES * sizeof(tuple));
 	int i;
 	for( i = 0; i < NUM_OF_TUPLES; i++){
-		rel->tuples[i].key = i;
-		rel->tuples[i].payload = i + 1;
+		rel->tuples[i].payload = i;
+		rel->tuples[i].key = i + 1;
 	}
 
 	int bucketSize = hash2Range(HASH2);

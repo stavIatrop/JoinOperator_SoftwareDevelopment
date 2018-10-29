@@ -3,7 +3,7 @@
 #include "basicStructs.h"
 
 
-relationIndex initializeIndex(int bucketSize, relation * rel, int key) {
+relationIndex initializeIndex(uint32_t bucketSize, relation * rel, int32_t key) {
 
 	relationIndex newIndex;
 	newIndex.key = key;
@@ -14,7 +14,7 @@ relationIndex initializeIndex(int bucketSize, relation * rel, int key) {
 		return newIndex;
 	}
 	newIndex.chain = (uint32_t *) malloc(rel->size * sizeof(uint32_t));
-	int i;
+	uint32_t i;
 	for( i = 0; i < rel->size; i++)
 		newIndex.chain[i] = 0;
 
@@ -26,7 +26,7 @@ relationIndex initializeIndex(int bucketSize, relation * rel, int key) {
 
 }
 
-indexArray * initializeIndexArray(int size){
+indexArray * initializeIndexArray(uint32_t size){
 
 	indexArray * newIndexArray = (indexArray *) malloc(sizeof(indexArray));
 	newIndexArray->size = size;
@@ -37,7 +37,7 @@ indexArray * initializeIndexArray(int size){
 
 void freeIndexArray(indexArray * idxArray) {
 
-	int i;
+	uint32_t i;
 	for (i = 0; i < idxArray->size; i++){
 
 		free((idxArray->indexes)[i].chain);

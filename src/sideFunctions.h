@@ -5,8 +5,8 @@
 
 #include "basicStructs.h"
 
-relation * getStartOfBucket(reorderedR * , int );
-void buildIndex(relationIndex * , int );
-void updateChain(uint32_t * , uint32_t * , int , int );
+relation * getStartOfBucket(reorderedR * , uint32_t );
+void buildIndex(relationIndex * , uint32_t );
+void updateChain(uint32_t * , uint32_t * , uint32_t , uint32_t );
 
 #endif

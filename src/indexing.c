@@ -5,16 +5,16 @@
 
 indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2) {
 
-	int sizeOfIndex = hash1Range(hash1);
+	uint32_t sizeOfIndex = hash1Range(hash1);
 	indexArray * mainIndexArray = initializeIndexArray(sizeOfIndex);
 
-	int i, whichPsum = 0;
+	uint32_t i, whichPsum = 0;
 	for( i = 0; i < sizeOfIndex; i++) {
 
 		if(i == (ror->pSumArr).psum[whichPsum].h1Res){ 			//index is created when there is a bucket of i's
 
 			relation * rel = getStartOfBucket(ror, whichPsum);
-			int bucketArrSize = hash2Range(hash2);
+			uint32_t bucketArrSize = hash2Range(hash2);
 			mainIndexArray->indexes[i] = initializeIndex(bucketArrSize, rel, i);
 
 			buildIndex( &(mainIndexArray->indexes[i]), hash2);  

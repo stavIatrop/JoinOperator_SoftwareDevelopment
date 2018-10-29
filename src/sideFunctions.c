@@ -4,10 +4,10 @@
 #include "basicStructs.h"
 #include "hashing.h"
 
-relation * getStartOfBucket(reorderedR * ror, int whichPsum) {  		//computes and returns the start index of a bucket
+relation * getStartOfBucket(reorderedR * ror, uint32_t whichPsum) {  		//computes and returns the start index of a bucket
 
 	relation * newRelation = (relation *) malloc(sizeof(relation));
-	int index;
+	uint32_t index;
 	index = ror->pSumArr.psum[whichPsum].offset; 								//startIndex of specific bucket
 	tuple * tempTuple;
 	tempTuple =	&(ror->rel->tuples[index]); 
@@ -25,9 +25,9 @@ relation * getStartOfBucket(reorderedR * ror, int whichPsum) {  		//computes and
 }
 
 
-void updateChain(uint32_t * chain, uint32_t * buckets, int hash2Index, int i) {
+void updateChain(uint32_t * chain, uint32_t * buckets, uint32_t hash2Index, uint32_t i) {
 
-	int temp;
+	uint32_t temp;
 	temp = buckets[hash2Index];
 	buckets[hash2Index] = i + 1;
 	chain[i] = temp;
@@ -37,14 +37,14 @@ void updateChain(uint32_t * chain, uint32_t * buckets, int hash2Index, int i) {
 
 
 
-void buildIndex(relationIndex * oneIndex, int hash2) {
+void buildIndex(relationIndex * oneIndex, uint32_t hash2) {
 
-	int chainSize = oneIndex->rel->size;								//chainSize is the same with the size of bucket
+	uint32_t chainSize = oneIndex->rel->size;								//chainSize is the same with the size of bucket
 
-	int i, hash2Index;
+	uint32_t i, hash2Index;
 	for (i = 0; i < chainSize; i++) {									//loop through elements of bucket
 
-		hash2Index = hashing(oneIndex->rel->tuples[i].payload, hash2);
+		hash2Index = hashing(oneIndex->rel->tuples[i].key, hash2);
 
 		updateChain(oneIndex->chain, oneIndex->buckets, hash2Index, i);
 
