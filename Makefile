@@ -1,7 +1,7 @@
 CC = gcc
-SOURCE = src/searchTesting.c src/resultListManip.c src/hashing.c src/chainFollower.c
+SOURCE = src/indexSearchTesting.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c 
 
-NAME_OF_EXECUTABLE = searchTest
+NAME_OF_EXECUTABLE = indexSearchIndexTest
 
 OBJECT = $(SOURCE:.c=.o)
 
@@ -10,8 +10,8 @@ VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-le
 all: executable
 	@echo Compile finished
 
-executable: $(SOURCE_INDEX) $(NAME_OF_EXECUTABLE_INDEX)
-	$(CC) -g -O0 -Wall -o  $(NAME_OF_EXECUTABLE_INDEX) $(SOURCE_INDEX) -lm -lcunit
+executable: $(SOURCE) $(NAME_OF_EXECUTABLE)
+	$(CC) -g -O0 -Wall -o  $(NAME_OF_EXECUTABLE) $(SOURCE) -lm -lcunit
  
 $(NAME_OF_EXECUTABLE): $(OBJECT)
 	$(CC) -g  -O0 $(OBJECT) -o $@ -lm -lcunit
@@ -21,7 +21,7 @@ $(NAME_OF_EXECUTABLE): $(OBJECT)
 	$(CC) -c $< -o $@ -lm -lcunit
 
 
-runSearchTest: executable
+runTest: executable
 	./$(NAME_OF_EXECUTABLE)
 
 runValgrind: executable
