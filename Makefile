@@ -50,5 +50,6 @@ cacheMisses: executable
 
 clean:
 	rm -f $(NAME_OF_EXECUTABLE)
+	rm -f $(NAME_OF_UT)
 	rm -f src/*.o
 
