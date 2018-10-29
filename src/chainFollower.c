@@ -8,19 +8,19 @@
 #include "chainFollowerInterface.h"
 
 //DO NOT KNOW IF CACHE LOCALITY IS ACHIEVED DUE TO POINTERS
-void followChain(headResult * resultList, relationIndex rIndex, tuple t, int h2) {
-        uint32_t hashRes = performHash(t.payload, h2);
+void followChain(headResult * resultList, relationIndex rIndex, tuple t, uint32_t h2) {
+        uint32_t hashRes = performHash(t.key, h2);
         uint32_t chainPointer = rIndex.buckets[hashRes] - 1;
         //Case: No matching h2
         if(chainPointer == EMPTY_BUCKET) {
                 return;
         }
         while(1) {
-                if(rIndex.rel->tuples[chainPointer].payload == t.payload) {
+                if(rIndex.rel->tuples[chainPointer].key == t.key) {
                         //printf("RowId = ")
-                        tuple * temp = (tuple *) malloc(sizeof(tuple));
-                        temp->key = rIndex.rel->tuples[chainPointer].key;
-                        temp->payload = t.key;
+                        rowTuple * temp = (rowTuple *) malloc(sizeof(rowTuple));
+                        temp->rowR = rIndex.rel->tuples[chainPointer].payload;
+                        temp->rowS = t.payload;
                         pushResult(resultList, temp);
                         free(temp);
                 }
@@ -34,24 +34,24 @@ void followChain(headResult * resultList, relationIndex rIndex, tuple t, int h2)
         }
 }
 
-void searchKey(indexArray indArr, headResult * resultList, tuple * checkedTuples, int tuplesNumb, int key, int h2) {
+void searchKey(indexArray indArr, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb, uint32_t key, uint32_t h2) {
         relationIndex keyIndex = indArr.indexes[key];
 
         if(keyIndex.buckets == NULL) {
                 return;
         }
 
-        for(int whichTup = 0; whichTup < tuplesNumb; whichTup++) {
+        for(uint32_t whichTup = 0; whichTup < tuplesNumb; whichTup++) {
                 followChain(resultList, keyIndex, checkedTuples[whichTup], h2);
         }
 }
 
 headResult * search(indexArray indArr, reorderedR * s, uint32_t hash2) {
-        int size = -1;
+        uint32_t size;
         tuple * startTup = NULL;
-        int key1 = -1;
+        uint32_t key1;
         headResult * resultList = initialiseResultHead();
-        for(int whichKey = 0; whichKey < s->pSumArr.psumSize; whichKey++) {
+        for(uint32_t whichKey = 0; whichKey < s->pSumArr.psumSize; whichKey++) {
                 if(whichKey < s->pSumArr.psumSize - 1) {
                         size = s->pSumArr.psum[whichKey + 1].offset -  s->pSumArr.psum[whichKey].offset;
                 }

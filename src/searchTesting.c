@@ -20,9 +20,9 @@ int createList(void) {
         list = initialiseResultHead();
 
         for(int i = 0; i < TUPLE_NUMB; i++) {
-                tuple temp;
-                temp.key = (int32_t) i;
-                temp.payload = (uint32_t) i;
+                rowTuple temp;
+                temp.rowR = (int32_t) i;
+                temp.rowS = (uint32_t) i;
 
                 pushResult(list, &temp);
         }
@@ -46,28 +46,28 @@ void testValues(void) {
         for(int i = 0; i < testV1 / tuplesPerNode; i++) {
                 temp = temp->nextNode;
         }
-        CU_ASSERT(temp->tuples[testV1 % tuplesPerNode].key == testV1);
+        CU_ASSERT(temp->tuples[testV1 % tuplesPerNode].rowR == testV1);
 
         int testV2 = 10000;
         temp = list->firstNode;
         for(int i = 0; i < testV2 / tuplesPerNode; i++) {
                 temp = temp->nextNode;
         }
-        CU_ASSERT(temp->tuples[testV2 % tuplesPerNode].key == testV2);
+        CU_ASSERT(temp->tuples[testV2 % tuplesPerNode].rowR == testV2);
 
         int testV3 = 500000;
         temp = list->firstNode;
         for(int i = 0; i < testV3 / tuplesPerNode; i++) {
                 temp = temp->nextNode;
         }
-        CU_ASSERT(temp->tuples[testV3 % tuplesPerNode].key == testV3);
+        CU_ASSERT(temp->tuples[testV3 % tuplesPerNode].rowR == testV3);
 
         int testV4 = TUPLE_NUMB - 1;
         temp = list->firstNode;
         for(int i = 0; i < testV4 / tuplesPerNode; i++) {
                 temp = temp->nextNode;
         }
-        CU_ASSERT(temp->tuples[testV4 % tuplesPerNode].key == testV4);
+        CU_ASSERT(temp->tuples[testV4 % tuplesPerNode].rowR == testV4);
 }
 
 /*CHAIN FOLLOWER TESTS*/
@@ -81,14 +81,14 @@ int initialiseChainFollower() {
         rIndex->rel->size = 20;
 
         for(int i = 0; i < rIndex->rel->size; i++) {
-                rIndex->rel->tuples[i].key = i;
-                rIndex->rel->tuples[i].payload = 12;
+                rIndex->rel->tuples[i].payload = i;
+                rIndex->rel->tuples[i].key = 12;
         }
 
         for(int i = 0; i < 10; i++) {
                 rIndex->buckets[i] = 0;
         }
-        rIndex->rel->tuples[2].payload = 2;
+        rIndex->rel->tuples[2].key = 2;
 
         //CARE: The above and below structs do not follow the rules
         rIndex->buckets[2] = 8;
@@ -114,26 +114,26 @@ int freeIndex(void) {
 
 void testChainFollowNonExistent(void) {
         tuple t;
-        t.key = 5;
-        t.payload = 13;
+        t.key = 13;
+        t.payload = 5;
         
         followChain(list, *rIndex, t, 10);
-        fflush(stdout);
         CU_ASSERT(list->numbOfNodes == 0);
 }
 
 void testChainFollowExists(void) {
         tuple t;
-        t.key = 5;
-        t.payload = 12;
+        t.key = 12;
+        t.payload = 5;
 
         followChain(list, *rIndex, t, 10);
 
         CU_ASSERT(list->numbOfNodes == 1);
+
         CU_ASSERT(list->firstNode->size == 3);
-        CU_ASSERT(list->firstNode->tuples[0].key == 7);
-        CU_ASSERT(list->firstNode->tuples[1].key == 4);
-        CU_ASSERT(list->firstNode->tuples[2].key == 3);
+        CU_ASSERT(list->firstNode->tuples[0].rowR == 7);
+        CU_ASSERT(list->firstNode->tuples[1].rowR == 4);
+        CU_ASSERT(list->firstNode->tuples[2].rowR == 3);
 }
 
 

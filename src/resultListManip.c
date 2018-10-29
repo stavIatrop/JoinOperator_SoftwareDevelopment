@@ -14,7 +14,7 @@ headResult * initialiseResultHead() {
 
 resultNode * initialiseResultNode() {
         resultNode * newNode = (resultNode *) malloc(sizeof(resultNode));
-        newNode->tuples = (tuple *) malloc(MB);
+        newNode->tuples = (rowTuple *) malloc(MB);
         newNode->size = 0;
         newNode->nextNode = NULL;
         return newNode;
@@ -22,7 +22,7 @@ resultNode * initialiseResultNode() {
 
 
 
-void pushResult(headResult * head, tuple * t) {
+void pushResult(headResult * head, rowTuple * t) {
         int maxTuples = MB / sizeof(tuple);
         resultNode * finalNode = NULL;
         if(head->numbOfNodes == 0) {
@@ -45,8 +45,8 @@ void pushResult(headResult * head, tuple * t) {
                 }
         }
 
-        finalNode->tuples[finalNode->size].key = t->key;
-        finalNode->tuples[finalNode->size].payload = t->payload;
+        finalNode->tuples[finalNode->size].rowR = t->rowR;
+        finalNode->tuples[finalNode->size].rowS = t->rowS;
         finalNode->size += 1;
 
 }

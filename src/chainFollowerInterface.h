@@ -5,7 +5,7 @@
 
 #define EMPTY_BUCKET -1
 
-void followChain(headResult * resultList, relationIndex rIndex, tuple t, int h2);
-void searchKey(indexArray indArr, headResult * resultList, tuple * checkedTuples, int tuplesNumb, int key, int h2);
+void followChain(headResult * resultList, relationIndex rIndex, tuple t, uint32_t h2);
+void searchKey(indexArray indArr, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb, uint32_t key, uint32_t h2);
 
 #endif
