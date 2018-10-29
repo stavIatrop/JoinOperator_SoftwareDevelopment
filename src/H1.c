@@ -16,20 +16,20 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 		R->pSumArr.psum = NULL;
 		return R;
 	}
-	uint32_t size = r->size, value, i, *hash_values, *hist;
+	uint32_t size = r->size, i, *hash_values, *hist;
 
 	hash_values = malloc(size * sizeof(uint32_t));
 
         if (*hash1==0)
 	{
-		*hash1 = FindNextPrime(floor(1.05 * (size * sizeof(tuple) / CACHE_SIZE)) + 1);
+		*hash1 = FindNextPrime(floor(ERROR_MARGIN * (size * sizeof(tuple) / CACHE_SIZE)) + 1);
 		hist = Hash1(r,hash1,hash_values);
 	}
 	else
 	{
-		uint32_t groups, fix;
+		uint32_t groups, bad, max;
 		hist = malloc(*hash1 * sizeof(uint32_t));
-		DoTheHash(r,*hash1,hist,hash_values,&groups,&fix);
+		DoTheHash(r,*hash1,hist,hash_values,&groups,&bad,&max);
 	}
 
 	printf("hash1 is %d\n", *hash1);
@@ -46,6 +46,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	pSumArray *psum;
 	psum = &(R->pSumArr);
 	psum->psumSize = buckets;
+//	printf("psumSize = %d\n",psum->psumSize);
 	psum->psum = malloc(buckets * sizeof(pSumTuple));
 
 	uint32_t j = 0, prevJ;

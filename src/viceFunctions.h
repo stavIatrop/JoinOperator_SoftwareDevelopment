@@ -10,7 +10,7 @@ char IdenticalityTest(relation *, uint32_t);
 
 void rSwap(tuple *,uint32_t *, uint32_t, uint32_t);
 
-uint32_t DoTheHash(relation *, uint32_t, uint32_t *, uint32_t *, uint32_t *, uint32_t *);
+uint32_t DoTheHash(relation *, uint32_t, uint32_t *, uint32_t *, uint32_t *, uint32_t *, uint32_t *);
 
 uint32_t *Hash1(relation *,uint32_t *, uint32_t *);
 
