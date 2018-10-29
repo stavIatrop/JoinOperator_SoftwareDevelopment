@@ -56,12 +56,8 @@ int main(int argc, char const *argv[])
         //        printf("Row1 = %d | Row2 = %d\n", list->firstNode->tuples[j].rowR, list->firstNode->tuples[j].rowS);
         //}
 
-        if(checkResults(list) == 0) {
-                printf("Passed Test\n");
-        }
-        else {
-                printf("Failed Test\n");
-        }
+        int result = checkResults(list);
+        
 
 
         freeResultList(list);
@@ -74,6 +70,12 @@ int main(int argc, char const *argv[])
         free(R);
         free(S);
 
+        if(result == 0) {
+                return 0;
+        }
+        else {
+                return -1;
+        }
 
         return 0;
 }
