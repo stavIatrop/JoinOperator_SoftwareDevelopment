@@ -43,6 +43,7 @@ typedef struct RelationIndex {
        uint32_t * buckets;
        relation * rel;
        int32_t key;
+       relationIndex * next;
 } relationIndex;
 
 typedef struct IndexArray {
