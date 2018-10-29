@@ -1,8 +1,7 @@
 CC = gcc
+SOURCE = src/searchTesting.c src/resultListManip.c src/hashing.c src/chainFollower.c
 
-SOURCE = src/indexTesting.c src/indexManip.c src/indexing.c src/sideFunctions.c src/hashing.c
-
-NAME_OF_EXECUTABLE = indexingTest
+NAME_OF_EXECUTABLE = searchTest
 
 OBJECT = $(SOURCE:.c=.o)
 
@@ -11,8 +10,8 @@ VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-le
 all: executable
 	@echo Compile finished
 
-executable: $(SOURCE) $(NAME_OF_EXECUTABLE)
-	$(CC) -g -O0 -Wall -o  $(NAME_OF_EXECUTABLE) $(SOURCE) -lm -lcunit
+executable: $(SOURCE_INDEX) $(NAME_OF_EXECUTABLE_INDEX)
+	$(CC) -g -O0 -Wall -o  $(NAME_OF_EXECUTABLE_INDEX) $(SOURCE_INDEX) -lm -lcunit
  
 $(NAME_OF_EXECUTABLE): $(OBJECT)
 	$(CC) -g  -O0 $(OBJECT) -o $@ -lm -lcunit
@@ -34,3 +33,4 @@ cacheMisses: executable
 clean:
 	rm -f $(NAME_OF_EXECUTABLE)
 	rm -f src/*.o
+
