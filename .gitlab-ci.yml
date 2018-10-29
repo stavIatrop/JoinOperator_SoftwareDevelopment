@@ -13,4 +13,4 @@ before_script:
 
 TestSearch:
   script:
-    - make runSearchTest
+    - make runTest

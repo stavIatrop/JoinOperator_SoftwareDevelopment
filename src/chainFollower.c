@@ -9,7 +9,7 @@
 
 //DO NOT KNOW IF CACHE LOCALITY IS ACHIEVED DUE TO POINTERS
 void followChain(headResult * resultList, relationIndex rIndex, tuple t, uint32_t h2) {
-        uint32_t hashRes = performHash(t.key, h2);
+        uint32_t hashRes = hashing(t.key, h2);
         uint32_t chainPointer = rIndex.buckets[hashRes] - 1;
         //Case: No matching h2
         if(chainPointer == EMPTY_BUCKET) {
