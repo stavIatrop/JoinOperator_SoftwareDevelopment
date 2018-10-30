@@ -8,5 +8,8 @@
 relation * getStartOfBucket(reorderedR * , uint32_t );
 void buildIndex(relationIndex * , uint32_t );
 void updateChain(uint32_t * , uint32_t * , uint32_t , uint32_t );
+void buildSubIndex(relationIndex ** , uint32_t , uint32_t , uint32_t , uint32_t , tuple * , uint32_t );
+relation * getStartOfSubBucket(tuple *, uint32_t , uint32_t );
+
 
 #endif
