@@ -22,7 +22,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 
         if (*hash1==0)
 	{
-		*hash1 = FindNextPrime(floor(ERROR_MARGIN * (size * sizeof(tuple) / CACHE_SIZE)) + 1);
+		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size * sizeof(tuple) / CACHE_SIZE)) + 1);
 		hist = Hash1(r,hash1,hash_values);
 	}
 	else
@@ -116,6 +116,14 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	}
 
 //	printf("Sorted r\n");
+	char a = 0;
+	while (*hash1)
+	{
+		*hash1 >>= 1;
+		a++;
+	}
+	*hash1 = a-1;
+	printf("should be 4: %d", *hash1);
 	R->rel = r;
 	free(hist);
 	free(helpPSum);

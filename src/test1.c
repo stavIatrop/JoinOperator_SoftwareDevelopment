@@ -49,7 +49,7 @@ int main(int argc, char const *argv[])
 	printf("Entering reordering function\n");
 	R = reorderRelation(r,&hash1);
 	printf("Exited reordering function\n");
-	CheckR(r,hash1);
+	CheckR(r,pow(2,hash1));
         hash1=0;
 
 
@@ -63,7 +63,7 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
-	CheckR(r,hash1);
+	CheckR(r,pow(2,hash1));
         hash1=0;
 
 
@@ -77,7 +77,7 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
-	CheckR(r,hash1);
+	CheckR(r,pow(2,hash1));
         hash1=0;
 
 
@@ -92,7 +92,7 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
-	CheckR(r,hash1);
+	CheckR(r,pow(2,hash1));
         hash1=0;
 
 
@@ -107,7 +107,7 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
-	CheckR(r,hash1);
+	CheckR(r,pow(2,hash1));
         hash1=0;
 
 
@@ -116,7 +116,7 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
-	CheckR(r,hash1);
+	CheckR(r,pow(2,hash1));
 	r->size = size;
         hash1=0;
 
@@ -133,7 +133,7 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
-        CheckR(r,hash1);
+        CheckR(r,pow(2,hash1));
         hash1=0;
 
 
@@ -147,10 +147,26 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
-        CheckR(r,hash1);
+        CheckR(r,pow(2,hash1));
+	hash1=0;
 
 
-	printf("\n\n------------Test 9: Sorting the S after Test 8, with the keys being random:------------\n\n");
+	printf("\n\n------------Test 9: Random keys with 10%% having the same last 11 bits:------------\n\n");
+        for (uint32_t i=0; i<size; i++)
+        {
+                random = rand();
+                if (i%10==0) r->tuples[i].key = random << 11;
+		else r->tuples[i].key = random;
+                r->tuples[i].payload = 837376;
+        }
+        printf("Entering reordering function\n");
+        R = reorderRelation(r,&hash1);
+        printf("Exited reordering function\n");
+        CheckR(r,pow(2,hash1));
+	hash1=0;
+
+
+	printf("\n\n------------Test 10: %d keys with some of them sneakily being in the same bucket:------------\n\n",size);
         for (uint32_t i=0; i<size; i++)
         {
                 random = rand();
@@ -160,31 +176,7 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
-        CheckR(r,hash1);
-	hash1=0;
-
-
-	printf("\n\n------------Test 10: %d keys with some of them sneakily being in the same bucket:------------\n\n",size);
-        for (uint32_t i=0; i<size; i++)
-        {
-                random = rand();
-		uint32_t primeNumber1 = 331;
-		uint32_t primeNumber2 = FindNextPrime(primeNumber1 + 1);
-		uint32_t primeNumber3 = FindNextPrime(primeNumber2 + 1);
-		uint32_t primeNumber4 = FindNextPrime(primeNumber3 + 1);
-                if (i%primeNumber1 == 0) r->tuples[i].key = i;
-		else if (i%primeNumber2 == 0) r->tuples[i].key = i;
-		else if (i%primeNumber3 == 0) r->tuples[i].key = i;
-		else if (i%primeNumber4 == 0) r->tuples[i].key = i;
-		//else if (i%10==0) r->tuples[i].key = 0;
-                //else if (i%10==1 || i%10==2) r->tuples[i].key = 1;
-                else r->tuples[i].key = random;
-                r->tuples[i].payload = 837376;
-        }
-        printf("Entering reordering function\n");
-        R = reorderRelation(r,&hash1);
-        printf("Exited reordering function\n");
-        CheckR(r,hash1);
+        CheckR(r,pow(2,hash1));
 	hash1 = 0;
 
 
@@ -193,9 +185,9 @@ int main(int argc, char const *argv[])
         {
                 random = rand();
                 uint32_t primeNumber1 = 331;
-                uint32_t primeNumber2 = FindNextPrime(primeNumber1 + 1);
-                uint32_t primeNumber3 = FindNextPrime(primeNumber2 + 1);
-                uint32_t primeNumber4 = FindNextPrime(primeNumber3 + 1);
+                uint32_t primeNumber2 = FindNextPower(primeNumber1 + 1);
+                uint32_t primeNumber3 = FindNextPower(primeNumber2 + 1);
+                uint32_t primeNumber4 = FindNextPower(primeNumber3 + 1);
                 if (i%primeNumber1 == 0) r->tuples[i].key = i;
                 else if (i%primeNumber2 == 0) r->tuples[i].key = i;
                 else if (i%primeNumber3 == 0) r->tuples[i].key = i;
@@ -208,7 +200,7 @@ int main(int argc, char const *argv[])
         printf("Entering reordering function\n");
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
-        CheckR(r,hash1);
+        CheckR(r,pow(2,hash1));
         hash1 = 0;
 
 

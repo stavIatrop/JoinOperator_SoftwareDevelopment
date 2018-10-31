@@ -4,9 +4,9 @@
 
 uint32_t Hash1_2(int32_t, uint32_t);
 
-uint32_t FindNextPrime(uint32_t);
+uint32_t FindNextPower(uint32_t);
 
-char IdenticalityTest(relation *, uint32_t);
+double IdenticalityTest(relation *);
 
 void rSwap(tuple *,uint32_t *, uint32_t, uint32_t);
 
