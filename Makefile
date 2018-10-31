@@ -53,7 +53,7 @@ runUt: ut
 	./$(NAME_OF_UT)
 
 runMain:
-	./$(NAME_OF_MAIN) -R testTables/file3_10 -S testTables/file3_10 -r 1 -s 2 -t binary
+	./$(NAME_OF_MAIN) -R testTables/file3_10 -S testTables/file3_10 -r 1 -s 2 -t binary -o testTables/outFile
 
 runValgrind: executable
 	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_EXECUTABLE)

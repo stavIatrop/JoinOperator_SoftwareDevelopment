@@ -14,7 +14,6 @@
 
 int main(int argc, char *argv[])
 {
-        //char file[500] = "testTables/r3_10000000";
 
         arguments * args = readArguments(argc, argv);
         if(args == NULL) {
@@ -24,7 +23,13 @@ int main(int argc, char *argv[])
 
 
         table * r = readTable(args->rPath, args->type);
+        if(r == NULL) {
+                return -1;
+        }
         table * s = readTable(args->sPath, args->type);
+        if(s == NULL) {
+                return -1;
+        }
 
         printTable(r);
         printTable(s);
@@ -34,6 +39,20 @@ int main(int argc, char *argv[])
 
         printRelation(rRel);
         printRelation(sRel);
+
+        /*headResult * list = initialiseResultHead();
+
+        
+        for(int i = 0; i < 10000000; i++) {
+                rowTuple temp;
+                temp.rowR = (int32_t) i;
+                temp.rowS = (uint32_t) i;
+                pushResult(list, &temp);
+        }
+
+        if(writeList(list, args->outPath) != 0) {
+                return -1;
+        }*/
 
         return 0;
 }

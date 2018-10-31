@@ -26,7 +26,7 @@ typedef struct Arguments {
         int32_t colR;
 
         int type;
-        //char outPath[500];
+        char outPath[500];
 } arguments;
 
 arguments * readArguments(int argc, char *argv[]);
@@ -38,6 +38,8 @@ int applyLine(table * t, int32_t whichCol, char * buffer);
 relation * extractRelation(table * t, int column);
 void printTable(table * t);
 void printRelation(relation * r);
+
+int writeList(headResult * head, char * outPath);
 
 
 #endif

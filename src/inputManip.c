@@ -9,19 +9,16 @@
 
 arguments * readArguments(int argc, char *argv[]) {
 
-        /*if(argc != 6) {
-                return NULL;
-        }*/
-
         char charType[500];
         charType[0] = '!';
         arguments * args = (arguments *) malloc(sizeof(arguments));
         args->rPath[0]='!';
         args->sPath[0]='!';
+        args->outPath[0]='!';
         args->colR = -1;
         args->colS = -1;
         int opt;
-        while((opt = getopt(argc, argv, "R:S:r:s:t:")) != -1)
+        while((opt = getopt(argc, argv, "R:S:r:s:t:o:")) != -1)
         {
                 switch(opt)
                 {
@@ -40,12 +37,15 @@ arguments * readArguments(int argc, char *argv[]) {
                         case 't':
                                 strcpy(charType, optarg);
                                 break;
+                        case 'o':
+                                strcpy(args->outPath, optarg);
+                                break;
                         case '?':
                                 return NULL;
                 }
         }
 
-        if((args->rPath[0] == '!') || (args->sPath[0] == '!') || (args->colR == -1) || (args->colS == -1) || (charType[0] == '!')) {
+        if((args->rPath[0] == '!') || (args->sPath[0] == '!') || (args->colR == -1) || (args->colS == -1) || (charType[0] == '!') || (args->outPath[0] == '!')) {
                 return NULL;
         }
 
@@ -60,6 +60,26 @@ arguments * readArguments(int argc, char *argv[]) {
         }
 
         return args;
+}
+
+int writeList(headResult * head, char * outPath) {
+        FILE * outputFile = fopen(outPath, "w");
+        if(outputFile == NULL) {
+                perror("Failed to open output file");
+                return -1;
+        }
+
+        if(head->numbOfNodes != 0) {
+                resultNode * writeNode = head->firstNode;
+                for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+                        if(fwrite(writeNode->tuples, sizeof(tuple), writeNode->size, outputFile) != writeNode->size) {
+                                perror("Failed to write node");
+                                return -1;
+                        }
+                        writeNode = writeNode->nextNode;
+                }
+        }
+        return 0;
 }
 
 table * readTable(char * filePath, int fileType) {
@@ -175,6 +195,8 @@ relation * extractRelation(table * t, int column) {
 
         return r;
 }
+
+
 
 //DEBUG PURPOSES
 void printTable(table * t) {

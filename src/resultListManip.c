@@ -14,7 +14,7 @@ headResult * initialiseResultHead() {
 
 resultNode * initialiseResultNode() {
         resultNode * newNode = (resultNode *) malloc(sizeof(resultNode));
-        newNode->tuples = (rowTuple *) malloc(MB);
+        newNode->tuples = (rowTuple *) calloc(MB, sizeof(char));
         newNode->size = 0;
         newNode->nextNode = NULL;
         return newNode;
