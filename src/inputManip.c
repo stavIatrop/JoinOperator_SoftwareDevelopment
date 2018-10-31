@@ -2,13 +2,69 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <getopt.h>
 
 #include "inputInterface.h"
 #include "basicStructs.h"
 
-table * readTable(char * filePath) {
-        char * tempLine = NULL;
+arguments * readArguments(int argc, char *argv[]) {
 
+        /*if(argc != 6) {
+                return NULL;
+        }*/
+
+        char charType[500];
+        charType[0] = '!';
+        arguments * args = (arguments *) malloc(sizeof(arguments));
+        args->rPath[0]='!';
+        args->sPath[0]='!';
+        args->colR = -1;
+        args->colS = -1;
+        int opt;
+        while((opt = getopt(argc, argv, "R:S:r:s:t:")) != -1)
+        {
+                switch(opt)
+                {
+                        case 'R':
+                                strcpy(args->rPath, optarg);
+                                break;
+                        case 'S':
+                                strcpy(args->sPath, optarg);
+                                break;
+                        case 'r':
+                                args->colR = atoi(optarg);
+                                break;
+                        case 's':
+                                args->colS = atoi(optarg);
+                                break;
+                        case 't':
+                                strcpy(charType, optarg);
+                                break;
+                        case '?':
+                                return NULL;
+                }
+        }
+
+        if((args->rPath[0] == '!') || (args->sPath[0] == '!') || (args->colR == -1) || (args->colS == -1) || (charType[0] == '!')) {
+                return NULL;
+        }
+
+        if(strcmp(charType, "binary") == 0) {
+                args->type = BINARY_FILE;
+        }
+        else if(strcmp(charType, "ascii") == 0) {
+                args->type = ASCII_FILE;
+        }
+        else {
+                return NULL;
+        }
+
+        return args;
+}
+
+table * readTable(char * filePath, int fileType) {
+        
+        size_t len;
         table * t = (table *) malloc(sizeof(table));
         if(t == NULL) {
                 perror("Failed to malloc table");
@@ -22,7 +78,6 @@ table * readTable(char * filePath) {
         }
 
         char * firstLine = NULL;
-        size_t len = 0;
         if(getline(&firstLine, &len, inputFile) != -1) {
                t->columns = atoi(strtok(firstLine, " \n"));
                t->rows = atoi(strtok(NULL, " \n"));
@@ -39,32 +94,59 @@ table * readTable(char * filePath) {
                 return NULL;
         }
         for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
-                t->content[whichCol] = (int32_t *) malloc(t->rows * sizeof(int32_t));
+                t->content[whichCol] = (int32_t *) calloc(t->rows, sizeof(int32_t));
                 if(t->content[whichCol] == NULL) {
                         perror("Failed to malloc row of column");
                         return NULL;
                 }
         }
 
+        if(fileType == ASCII_FILE) {
+                if(readAsciiTable(t, inputFile) != 0) {
+                        return NULL;
+                }
+        }
+        else if(fileType == BINARY_FILE) {
+                if(readBinTable(t, inputFile) != 0) {
+                        return NULL;
+                }
+        }
+
+        fclose(inputFile);
+
+        return t;
+
+}
+
+int readAsciiTable(table * t, FILE * inputFile) {
+        char * tempLine = NULL;
+        size_t len;
         for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
                 len = 0;
                 tempLine = NULL;
 
                 if(getline(&tempLine, &len, inputFile) == -1) {
                         perror("Failed to read table column");
-                        return NULL;
+                        return -1;
                 }
                 if(applyLine(t, whichCol, tempLine) == -1) {
                         printf("Failed to apply line\n");
-                        return NULL;
+                        return -1;
                 }
 
                 free(tempLine);          
         }
-        fclose(inputFile);
+        return 0;
+}
 
-        return t;
-
+int readBinTable(table * t, FILE * inputFile) {
+        for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
+                if(fread(t->content[whichCol], sizeof(int32_t), t->rows, inputFile) != t->rows) {
+                        perror("Failed to read binary line");
+                        return -1;
+                }
+        }
+        return 0;
 }
 
 int applyLine(table * t, int32_t whichCol, char * buffer) {

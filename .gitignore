@@ -4,3 +4,7 @@ searchTest
 .vscode
 indexingTest
 testTables/*
+main
+mainUt
+unitTest
+createTable
