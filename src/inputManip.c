@@ -196,7 +196,13 @@ relation * extractRelation(table * t, int column) {
         return r;
 }
 
-
+void freeTable(table * t) {
+        for(int i = 0; i < t->columns; i++) {
+                free(t->content[i]);
+        }
+        free(t->content);
+        free(t);
+}
 
 //DEBUG PURPOSES
 void printTable(table * t) {

@@ -38,6 +38,7 @@ int applyLine(table * t, int32_t whichCol, char * buffer);
 relation * extractRelation(table * t, int column);
 void printTable(table * t);
 void printRelation(relation * r);
+void freeTable(table * t);
 
 int writeList(headResult * head, char * outPath);
 
