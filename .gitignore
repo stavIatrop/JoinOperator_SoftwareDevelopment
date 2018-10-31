@@ -1,3 +1,11 @@
 src/*.o
 *.o
+searchTest
 .vscode
+indexingTest
+testTables/*
+main
+mainUt
+unitTest
+createTable
+inputUt

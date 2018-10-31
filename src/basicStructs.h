@@ -4,6 +4,8 @@
 #include <stdint.h>
 
 #define CACHE_SIZE 256000
+#define ERROR_MARGIN 1.05
+#define BUCKET_MEMORY_LIMIT (2<<29)
 
 typedef struct Tuple {
         int32_t key;
@@ -43,6 +45,7 @@ typedef struct RelationIndex {
        uint32_t * buckets;
        relation * rel;
        int32_t key;
+       struct RelationIndex * next;
 } relationIndex;
 
 typedef struct IndexArray {
@@ -78,6 +81,6 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1);
 indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2);
 
 //Kalyteros
-headResult * search(indexArray indArr, reorderedR * s, uint32_t hash2);
+headResult * search(indexArray * indArr, reorderedR * s, uint32_t hash2);
 
 #endif
