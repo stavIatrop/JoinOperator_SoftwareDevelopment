@@ -3,11 +3,12 @@
 #include "basicStructs.h"
 
 
-relationIndex initializeIndex(uint32_t bucketSize, relation * rel, int32_t key, relationIndex * next) {
+relationIndex initializeIndex(uint32_t bucketSize, relation * rel, int32_t key, relationIndex * next, uint32_t hash2) {
 
 	relationIndex newIndex;
 	newIndex.key = key;
 	newIndex.rel = rel;
+	newIndex.hash2 = hash2;
 	newIndex.next = next; 
 	if (rel == NULL) {
 		newIndex.chain = NULL;

@@ -13,8 +13,5 @@ before_script:
 
 UnitTest:
   script:
-    - make runUt
+    - make runIndexTest
 
-MainTest:
-  script:
-    - make runMainUt

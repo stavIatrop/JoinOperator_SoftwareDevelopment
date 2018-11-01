@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <math.h>
 
 #include "basicStructs.h"
 #include "indexManip.h"
@@ -84,7 +85,7 @@ void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, ui
 
 
 		*oneIndex = (relationIndex *) malloc(sizeof(relationIndex));
-		**oneIndex = initializeIndex(bucketSize, rel, i, NULL);
+		**oneIndex = initializeIndex(bucketSize, rel, i, NULL, hash2);
 		buildIndex( *oneIndex, hash1, hash2);
 		oneIndex = &((*oneIndex)->next);
 		sizeIndexedSofar += eachSize;
@@ -93,3 +94,32 @@ void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, ui
 
 	return;
 }
+
+
+_Bool IsPowerOfTwo(uint32_t x)
+{
+	return ((x & (x - 1)) == 0);
+}
+
+uint32_t findPowerOf2Hash(uint32_t range) {
+
+	uint32_t flag = 0;
+	if (range == 1)
+		return 0;
+	while(flag == 0 ) {
+
+		if (IsPowerOfTwo(range)) {
+			flag =1;
+			break;
+		}
+		range--;
+
+	}
+
+	return range;
+}
+
+
+
+
+

@@ -22,7 +22,7 @@ $(NAME_OF_EXECUTABLE): $(OBJECT)
 	$(CC) -c $< -o $@ -lm -lcunit
 
 
-runSearchTest: executable
+runIndexTest: executable
 	./$(NAME_OF_EXECUTABLE)
 
 runValgrind: executable

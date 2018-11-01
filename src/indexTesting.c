@@ -92,23 +92,23 @@ void testStartOfBucket() {
 	return;
 }
 
-void testIndexing() {
+void testIndexing() {		//for CACHE_SIZE = 120
 
 
 	indexA = indexing(ror, HASH1, HASH2);
 
-	CU_ASSERT(indexA->indexes[1].buckets[0] == 3);
-	CU_ASSERT(indexA->indexes[1].buckets[1] == 4);
-	
-	for(int i = 2; i < hash2Range(HASH2); i ++)
-		CU_ASSERT(indexA->indexes[1].buckets[i] == 0);
 
-	CU_ASSERT(indexA->indexes[1].chain[0] == 0);
-	CU_ASSERT(indexA->indexes[1].chain[1] == 1);
-	CU_ASSERT(indexA->indexes[1].chain[2] == 2);
+	int i;
+	for(i = 0; i < 3; i++) {
+		CU_ASSERT(indexA->indexes[1].chain[i] == i);
+	}
 	CU_ASSERT(indexA->indexes[1].chain[3] == 0);
-	CU_ASSERT(indexA->indexes[1].next->chain[0] == 0);
-	CU_ASSERT(indexA->indexes[1].next->buckets[1] == 1);
+	CU_ASSERT(indexA->indexes[1].chain[4] == 4);
+
+	for(i = 2; i < hash2Range(indexA->indexes[1].hash2); i++)
+		CU_ASSERT(indexA->indexes[1].buckets[i] == 0);
+	CU_ASSERT(indexA->indexes[1].buckets[0] == 3);
+	CU_ASSERT(indexA->indexes[1].buckets[1] == 5);
 	return;
 }
 
@@ -124,7 +124,7 @@ int InitializeIndexTest() {
 	}
 
 	int bucketSize = hash2Range(HASH2);
-	oneIndex = initializeIndex(bucketSize, rel, 6, NULL);
+	oneIndex = initializeIndex(bucketSize, rel, 6, NULL, HASH2);
 	return 0;
 
 }
