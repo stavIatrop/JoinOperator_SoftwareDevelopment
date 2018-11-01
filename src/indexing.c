@@ -17,11 +17,11 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2) {
 			uint32_t bucketArrSize = hash2Range(hash2);
 			uint32_t sizeOfIndex = sizeof(uint32_t) + rel->size * (sizeof(tuple) + sizeof(uint32_t)) + bucketArrSize * sizeof(uint32_t); //size + size of a bucket + size of chain + size of bucketIndexArray
 			
-			if( sizeOfIndex / CACHE_SIZE <= 1 ) {				//if indexStruct fits in cache
+			if((double) sizeOfIndex / (double)CACHE_SIZE <= 1 ) {				//if indexStruct fits in cache
 
 				mainIndexArray->indexes[i] = initializeIndex(bucketArrSize, rel, i, NULL);
 
-				buildIndex( &(mainIndexArray->indexes[i]), hash2);  
+				buildIndex( &(mainIndexArray->indexes[i]), hash1, hash2);  
 
 			} else {											//indexStruct doesn't fit in cache
 
@@ -36,11 +36,10 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2) {
 
 				mainIndexArray->indexes[i] = initializeIndex(bucketArrSize, rel, i, NULL);
 
-				buildIndex(&(mainIndexArray->indexes[i]), hash2);
+				buildIndex(&(mainIndexArray->indexes[i]), hash1, hash2);
 				sizeAll -= eachSize;
 				sizeIndexedSoFar += eachSize;
-
-				buildSubIndex(&(mainIndexArray->indexes[i].next), hash2, sizeAll, eachSize, sizeIndexedSoFar, startOfBuck, i);
+				buildSubIndex(&(mainIndexArray->indexes[i].next), hash1, hash2, sizeAll, eachSize, sizeIndexedSoFar, startOfBuck, i);
 			}
 			whichPsum++;
 			

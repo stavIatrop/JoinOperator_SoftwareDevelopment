@@ -39,15 +39,14 @@ void updateChain(uint32_t * chain, uint32_t * buckets, uint32_t hash2Index, uint
 
 
 
-void buildIndex(relationIndex * oneIndex, uint32_t hash2) {
+void buildIndex(relationIndex * oneIndex, uint32_t hash1, uint32_t hash2) {
 
 	uint32_t chainSize = oneIndex->rel->size;							//chainSize is the same with the size of bucket
 
 	uint32_t i, hash2Index;
 	for (i = 0; i < chainSize; i++) {									//loop through elements of bucket
 
-		hash2Index = hashing(oneIndex->rel->tuples[i].key, hash2);
-
+		hash2Index = hashing(oneIndex->rel->tuples[i].key, hash1, hash2);
 		updateChain(oneIndex->chain, oneIndex->buckets, hash2Index, i);
 
 	}
@@ -69,7 +68,7 @@ relation * getStartOfSubBucket(tuple *startOfBuck, uint32_t sizeIndexedSofar, ui
 }
 
 
-void buildSubIndex(relationIndex ** oneIndex, uint32_t hash2, uint32_t sizeAll, uint32_t eachSize, uint32_t sizeIndexedSofar, tuple * startOfBuck, uint32_t i) {
+void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, uint32_t sizeAll, uint32_t eachSize, uint32_t sizeIndexedSofar, tuple * startOfBuck, uint32_t i) {
 
 	 
 	uint32_t bucketSize = hash2Range(hash2);
@@ -77,8 +76,7 @@ void buildSubIndex(relationIndex ** oneIndex, uint32_t hash2, uint32_t sizeAll, 
 
 	while(sizeAll > 0) {
 
-		if( sizeAll - eachSize < 0) {
-
+		if( sizeAll < eachSize) {
 			eachSize = sizeAll;
 		}
 
@@ -87,9 +85,8 @@ void buildSubIndex(relationIndex ** oneIndex, uint32_t hash2, uint32_t sizeAll, 
 
 		*oneIndex = (relationIndex *) malloc(sizeof(relationIndex));
 		**oneIndex = initializeIndex(bucketSize, rel, i, NULL);
-		buildIndex( *oneIndex, hash2);
+		buildIndex( *oneIndex, hash1, hash2);
 		oneIndex = &((*oneIndex)->next);
-
 		sizeIndexedSofar += eachSize;
 		sizeAll -= eachSize;
 	}
