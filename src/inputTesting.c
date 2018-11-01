@@ -1,15 +1,21 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <CUnit/Automated.h>
 #include <CUnit/CUnit.h>
 #include "CUnit/Basic.h"
 
 #include "inputInterface.h"
 #include "basicStructs.h"
+#include "resultListInterface.h"
+
+#define OUTPUT_SIZE 200000
 
 FILE * inputFile = NULL;
+FILE * outputFile = NULL;
 table * t = NULL;
+headResult * list;
 
 //Test readAsciiTable
 int initAsciiTable() {
@@ -152,12 +158,72 @@ void testExtractRelation() {
         freeTable(t);
 }
 
+//Test Write Output
+int initOutput() {
+        list = initialiseResultHead();
+        for(int32_t i = 0; i < OUTPUT_SIZE; i++) {
+                rowTuple temp;
+                temp.rowR = i;
+                temp.rowS = i;
+                pushResult(list, &temp);
+        }
+        writeList(list, "smallTestTables/out_bin");
+
+        if((outputFile = fopen("smallTestTables/out_bin", "r")) == NULL) {
+                return -1;
+        }
+        return 0;
+}
+
+int freeOutput() {
+        freeResultList(list);
+        fclose(outputFile);
+
+        return 0;
+}
+
+void checkSize() {
+        char * firstLine = malloc(500 * sizeof(char));
+        size_t len;
+        getline(&firstLine, &len, outputFile);
+
+        int size = atoi(strtok(firstLine, "\n"));
+        CU_ASSERT(size == OUTPUT_SIZE);
+        free(firstLine);
+}
+
+void checkTuples() {
+        tuple * tuples = calloc(OUTPUT_SIZE, sizeof(tuple));
+        int totalReads = 0, reads = 0;
+
+        while((reads = fread(tuples + totalReads * sizeof(tuple), sizeof(tuple), OUTPUT_SIZE, outputFile)) + totalReads != OUTPUT_SIZE) {
+                if(reads <= 0) {
+                        CU_ASSERT(1 == 0);
+                        break;
+                }
+                totalReads += reads;
+        }
+
+        CU_ASSERT(reads == OUTPUT_SIZE);
+        CU_ASSERT(tuples[0].key == 0);
+        CU_ASSERT(tuples[0].payload == 0);
+        CU_ASSERT(tuples[50000].key == 50000);
+        CU_ASSERT(tuples[50000].payload == 50000);
+        CU_ASSERT(tuples[135678].key == 135678);
+        CU_ASSERT(tuples[135678].payload == 135678);
+        CU_ASSERT(tuples[OUTPUT_SIZE - 1].key == OUTPUT_SIZE - 1);
+        CU_ASSERT(tuples[OUTPUT_SIZE - 1].payload == OUTPUT_SIZE - 1);
+
+        free(tuples);
+}
+
 int main(void) {
 
 	CU_pSuite pSuite1 = NULL;
 	CU_pSuite pSuite2 = NULL;
 	CU_pSuite pSuite3 = NULL;
 	CU_pSuite pSuite4 = NULL;
+	CU_pSuite pSuite5 = NULL;
 
 
 	//Initialize the CUnit test registry
@@ -216,6 +282,21 @@ int main(void) {
 
    /* add the tests to the suite */
    if ((NULL == CU_add_test(pSuite4, "Test Values", testExtractRelation)))
+   {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   /* add a suite to the registry */
+   pSuite5 = CU_add_suite("Test Write Output", initOutput, freeOutput);
+   if (NULL == pSuite5) {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   /* add the tests to the suite */
+   if ((NULL == CU_add_test(pSuite5, "Test Size of Output", checkSize)) ||
+        (NULL == CU_add_test(pSuite5, "Test Values of Output", checkTuples)))
    {
       CU_cleanup_registry();
       return CU_get_error();

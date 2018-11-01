@@ -84,15 +84,17 @@ int writeList(headResult * head, char * outPath) {
         }
 
         if(head->numbOfNodes != 0) {
+                int writes = 0;
                 resultNode * writeNode = head->firstNode;
                 for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
-                        if(fwrite(writeNode->tuples, sizeof(tuple), writeNode->size, outputFile) != writeNode->size) {
+                        if((writes = fwrite(writeNode->tuples, sizeof(tuple), writeNode->size, outputFile)) != writeNode->size) {
                                 perror("Failed to write node");
                                 return -1;
                         }
                         writeNode = writeNode->nextNode;
                 }
         }
+        fclose(outputFile);
         return 0;
 }
 

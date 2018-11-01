@@ -3,7 +3,7 @@ CC = gcc
 SOURCE = src/mainTest.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
 SOURCE_UT = src/indexSearchTesting.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
 SOURCE_MAIN = src/main.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
-SOURCE_INPUT_UT = src/inputTesting.c src/inputManip.c
+SOURCE_INPUT_UT = src/inputTesting.c src/inputManip.c src/resultListManip.c
 
 NAME_OF_EXECUTABLE = mainUt
 NAME_OF_UT = unitTest

@@ -4,6 +4,7 @@ searchTest
 .vscode
 indexingTest
 testTables/*
+smallTestTables/out_bin
 main
 mainUt
 unitTest
