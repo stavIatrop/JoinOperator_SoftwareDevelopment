@@ -38,7 +38,7 @@ void pushResult(headResult * head, rowTuple * t) {
                 }
 
                 //CASE: Node is full
-                if(finalNode->size > maxTuples) {
+                if(finalNode->size == maxTuples) {
                         finalNode->nextNode = initialiseResultNode();
                         head->numbOfNodes += 1;
                         finalNode = finalNode->nextNode;

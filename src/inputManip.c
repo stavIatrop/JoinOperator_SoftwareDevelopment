@@ -69,6 +69,20 @@ int writeList(headResult * head, char * outPath) {
                 return -1;
         }
 
+        uint32_t totalSize = 0;
+        if(head->numbOfNodes != 0) {
+                resultNode * temp = head->firstNode;
+                for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+                        totalSize += temp->size;
+                        temp = temp->nextNode;
+                }
+        }
+
+        if(fprintf(outputFile, "%u\n", totalSize) < 0) {
+                perror("Failed to write number of results");
+                return -1;
+        }
+
         if(head->numbOfNodes != 0) {
                 resultNode * writeNode = head->firstNode;
                 for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {

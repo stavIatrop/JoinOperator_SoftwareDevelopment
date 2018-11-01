@@ -28,7 +28,7 @@ indexArray * indexA = NULL;
 
 headResult * list = NULL;
 relationIndex * rIndex = NULL;
-int tuplesPerNode = MB / sizeof(tuple) + 1;
+int tuplesPerNode = MB / sizeof(tuple);
 
 int InitializeRor() {
 
