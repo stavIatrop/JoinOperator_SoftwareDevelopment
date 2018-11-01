@@ -25,8 +25,8 @@ int initAsciiTable() {
         inputFile  = fopen("smallTestTables/file3_10ascii", "r");
 
         //Burn the first line
-        char * firstLine = malloc(500);
-        size_t len;
+        char * firstLine = NULL;
+        size_t len = 0;
         if(getline(&firstLine, &len, inputFile) == -1) {
                 return -1;
         }
@@ -69,8 +69,8 @@ int initBinTable() {
         inputFile  = fopen("smallTestTables/file3_10", "r");
 
         //Burn the first line
-        char * firstLine = malloc(500);
-        size_t len;
+        char * firstLine = NULL;
+        size_t len = 0;
         if(getline(&firstLine, &len, inputFile) == -1) {
                 return -1;
         }
@@ -183,8 +183,8 @@ int freeOutput() {
 }
 
 void checkSize() {
-        char * firstLine = malloc(500 * sizeof(char));
-        size_t len;
+        char * firstLine = NULL;
+        size_t len = 0;
         getline(&firstLine, &len, outputFile);
 
         int size = atoi(strtok(firstLine, "\n"));
