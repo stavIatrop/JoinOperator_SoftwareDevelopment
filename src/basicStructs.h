@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define CACHE_SIZE (2<<15)
+#define AVAILABLE_CACHE_SIZE CACHE_SIZE * 2 / 3
 #define ERROR_MARGIN 1.05
 #define BUCKET_MEMORY_LIMIT (2<<28)
 #define FIRST_REORDERED 100

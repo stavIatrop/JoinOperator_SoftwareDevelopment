@@ -49,7 +49,7 @@ void rSwap(tuple * t,uint32_t *hash_values, uint32_t i, uint32_t j)
 uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_values, uint32_t *max)
 {
 	*max = 0;
-	uint32_t maxBucketSize = floor(CACHE_SIZE / sizeof(tuple));
+	uint32_t maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple));
 	uint32_t i, size = r->size, value, bad=0;
 	for (i = 0; i < hash1; i++) hist[i] = 0;
 
@@ -76,7 +76,7 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
-	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(CACHE_SIZE / sizeof(tuple)), nextPower;
+	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
 	printf("maxBucketSize is %d\n", maxBucketSize);
 	hist = malloc(*hash1 * sizeof(uint32_t));
 	double identicality=0;
@@ -87,7 +87,7 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 	{
 		identicality = sqrt(IdenticalityTest(r));
 		printf("Identicality is %f\n", identicality);
-		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size*(1-identicality) * sizeof(tuple) / CACHE_SIZE)) + 1);
+		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size*(1-identicality) * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1);
 		hist = realloc(hist,*hash1 * sizeof(uint32_t));
                 bad = DoTheHash(r,*hash1,hist,hash_values,&max);
 	}

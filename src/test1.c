@@ -29,7 +29,7 @@ void CheckR(relation *r, uint32_t hash1)
 
 int main(int argc, char const *argv[])
 {
-	uint32_t hash1=FIRST_REORDERED, size = 10;
+	uint32_t hash1=FIRST_REORDERED, size = 10000000;
 	relation *r;
 	r = malloc(sizeof(relation));
 	r->tuples = malloc(size * sizeof(tuple));
