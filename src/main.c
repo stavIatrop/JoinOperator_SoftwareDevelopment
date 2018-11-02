@@ -49,17 +49,20 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
         for (uint32_t i=0; i<size; i++)
         {
-                r->tuples[i].key = 5;
+                random = rand();
+                r->tuples[i].key = random;
                 r->tuples[i].payload = 837376;
+                //r->tuples[i].key = 5;
+                //r->tuples[i].payload = 837376;
         }
 
         for (uint32_t i=0; i<10000000; i++)
         {
                 random = rand();
-                //s->tuples[i].key = random;
-                //s->tuples[i].payload = 837376;
-                s->tuples[i].key = i;
-                s->tuples[i].payload = i;
+                s->tuples[i].key = random;
+                s->tuples[i].payload = 837376;
+                //s->tuples[i].key = i;
+                //s->tuples[i].payload = i;
         }
         //Reordering
 

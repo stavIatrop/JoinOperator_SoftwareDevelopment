@@ -47,8 +47,9 @@ void followChain(headResult * resultList, relationIndex * rIndex, tuple t, uint3
         }
 
 }*/
-
+int counter = 0;
 void searchKeyRec(relationIndex * keyIndex, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb, uint32_t h1) {
+        //printf("%d\n", counter++);
         if(keyIndex->rel == NULL) {
                 return;
         }
@@ -78,6 +79,7 @@ headResult * search(indexArray * indArr, reorderedR * s) {
                 key1 = s->pSumArr.psum[whichKey].h1Res;
                 startTup = &(s->rel->tuples[s->pSumArr.psum[whichKey].offset]);
 
+                //printf("kalopisis %d\n", indArr->size);
                 searchKeyRec(&(indArr->indexes[key1]), resultList, startTup, size, (uint32_t) log2(indArr->size));
         }
 
