@@ -29,7 +29,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	{
 		uint32_t max;
 		hist = malloc(*hash1 * sizeof(uint32_t));
-		DoTheHash(r,*hash1,hist,hash_values,&max);
+		DoTheHash(r,pow(2,*hash1),hist,hash_values,&max);
 	}
 
 	printf("hash1 is %d\n", *hash1);
@@ -123,7 +123,6 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 		a++;
 	}
 	*hash1 = a-1;
-	printf("should be 4: %d", *hash1);
 	R->rel = r;
 	free(hist);
 	free(helpPSum);

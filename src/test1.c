@@ -29,7 +29,7 @@ void CheckR(relation *r, uint32_t hash1)
 
 int main(int argc, char const *argv[])
 {
-	uint32_t hash1=FIRST_REORDERED, size = 10000000;
+	uint32_t hash1=FIRST_REORDERED, size = 10;
 	relation *r;
 	r = malloc(sizeof(relation));
 	r->tuples = malloc(size * sizeof(tuple));
@@ -177,26 +177,6 @@ int main(int argc, char const *argv[])
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
         CheckR(r,pow(2,hash1));
-	hash1 = FIRST_REORDERED;
-
-
-	printf("\n\n------------Test 12: One billion keys:------------\n\n");
-	size = 500000000;
-	free(r);
-	relation *s;
-        s = malloc(sizeof(relation));
-        s->tuples = malloc(size * sizeof(tuple));
-        s->size=size;
-	printf("size has been set to %d\n", size);
-	for (uint32_t i=0; i<size; i++)
-        {
-                s->tuples[i].key = rand();
-                s->tuples[i].payload = 837376;
-        }
-        printf("Entering reordering function\n");
-        R = reorderRelation(s,&hash1);
-        printf("Exited reordering function\n");
-	CheckR(r,pow(2,hash1));
 	hash1 = FIRST_REORDERED;
 
 
