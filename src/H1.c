@@ -22,11 +22,12 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 
         if (*hash1==FIRST_REORDERED)
 	{
-		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size * sizeof(tuple) / CACHE_SIZE)) + 1);
+		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1);
 		hist = Hash1(r,hash1,hash_values);
 	}
 	else
 	{
+		*hash1 = pow(2,*hash1);
 		uint32_t max;
 		hist = malloc(*hash1 * sizeof(uint32_t));
 		DoTheHash(r,pow(2,*hash1),hist,hash_values,&max);
@@ -104,7 +105,6 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 		if (flag==0) break;
 		while (hash_values[i] != current_bucket)
 		{
-//			printf("i is %d, hash_value is %d, helpPSum is %d and members is %d\n",i,hash_values[i],helpPSum[hash_values[i]],members[hash_values[i]]);
 			while (hash_values[helpPSum[hash_values[i]] + members[hash_values[i]]] == hash_values[i])
 			{
 				members[hash_values[i]] = members[hash_values[i]] + 1;
