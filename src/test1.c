@@ -29,7 +29,7 @@ void CheckR(relation *r, uint32_t hash1)
 
 int main(int argc, char const *argv[])
 {
-	uint32_t hash1=0, size = 10000000;
+	uint32_t hash1=FIRST_REORDERED, size = 10000000;
 	relation *r;
 	r = malloc(sizeof(relation));
 	r->tuples = malloc(size * sizeof(tuple));
@@ -50,7 +50,7 @@ int main(int argc, char const *argv[])
 	R = reorderRelation(r,&hash1);
 	printf("Exited reordering function\n");
 	CheckR(r,pow(2,hash1));
-        hash1=0;
+        hash1=FIRST_REORDERED;
 
 
 	printf("\n\n------------Test 2: keys are 0 - %d (reversed):------------\n\n",size-1);
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
 	CheckR(r,pow(2,hash1));
-        hash1=0;
+        hash1=FIRST_REORDERED;
 
 
         printf("\n\n------------Test 3: %d identical keys:------------\n\n",size);
@@ -78,7 +78,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
 	CheckR(r,pow(2,hash1));
-        hash1=0;
+        hash1=FIRST_REORDERED;
 
 
         printf("\n\n------------Test 4: %d keys with 1%% of them being identical:------------\n\n",size);
@@ -93,7 +93,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
 	CheckR(r,pow(2,hash1));
-        hash1=0;
+        hash1=FIRST_REORDERED;
 
 
         printf("\n\n------------Test 5: %d keys with 10%% of them being identical:------------\n\n",size);
@@ -108,7 +108,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
 	CheckR(r,pow(2,hash1));
-        hash1=0;
+        hash1=FIRST_REORDERED;
 
 
         printf("\n\n------------Test 6: Empty relation:------------\n\n");
@@ -118,7 +118,7 @@ int main(int argc, char const *argv[])
         printf("Exited reordering function\n");
 	CheckR(r,pow(2,hash1));
 	r->size = size;
-        hash1=0;
+        hash1=FIRST_REORDERED;
 
 
         printf("\n\n------------Test 7: %d keys with 2 groups of 10%% and 20%% of them being identical within each group:------------\n\n",size);
@@ -134,7 +134,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
         CheckR(r,pow(2,hash1));
-        hash1=0;
+        hash1=FIRST_REORDERED;
 
 
 	printf("\n\n------------Test 8: %d keys that only have values [0-9]:------------\n\n",size);
@@ -148,7 +148,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
         CheckR(r,pow(2,hash1));
-	hash1=0;
+	hash1=FIRST_REORDERED;
 
 
 	printf("\n\n------------Test 9: Random keys with 10%% having the same last 11 bits:------------\n\n");
@@ -163,7 +163,7 @@ int main(int argc, char const *argv[])
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
         CheckR(r,pow(2,hash1));
-	hash1=0;
+	hash1=FIRST_REORDERED;
 
 
 	printf("\n\n------------Test 10: %d keys with some of them sneakily being in the same bucket:------------\n\n",size);
@@ -177,49 +177,27 @@ int main(int argc, char const *argv[])
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
         CheckR(r,pow(2,hash1));
-	hash1 = 0;
+	hash1 = FIRST_REORDERED;
 
 
-	printf("\n\n------------Test 11: %d keys with some of them sneakily being in the same bucket and 0.5%% being identical:------------\n\n",size);
-        for (uint32_t i=0; i<size; i++)
-        {
-                random = rand();
-                uint32_t primeNumber1 = 331;
-                uint32_t primeNumber2 = FindNextPower(primeNumber1 + 1);
-                uint32_t primeNumber3 = FindNextPower(primeNumber2 + 1);
-                uint32_t primeNumber4 = FindNextPower(primeNumber3 + 1);
-                if (i%primeNumber1 == 0) r->tuples[i].key = i;
-                else if (i%primeNumber2 == 0) r->tuples[i].key = i;
-                else if (i%primeNumber3 == 0) r->tuples[i].key = i;
-                else if (i%primeNumber4 == 0) r->tuples[i].key = i;
-                else if (i%500==0) r->tuples[i].key = 1;
-                //else if (i%10==1 || i%10==2) r->tuples[i].key = 1;
-                else r->tuples[i].key = random;
-                r->tuples[i].payload = 837376;
-        }
-        printf("Entering reordering function\n");
-        R = reorderRelation(r,&hash1);
-        printf("Exited reordering function\n");
-        CheckR(r,pow(2,hash1));
-        hash1 = 0;
-
-
-	printf("\n\n------------Test 9: 0xFFFFFFFF-1 (max number) keys:------------\n\n");
-        printf("Not implemented yet.\n");
-	/*size = 1000000000;
-	r.size = size;
+	printf("\n\n------------Test 12: One billion keys:------------\n\n");
+	size = 500000000;
+	free(r);
+	relation *s;
+        s = malloc(sizeof(relation));
+        s->tuples = malloc(size * sizeof(tuple));
+        s->size=size;
 	printf("size has been set to %d\n", size);
 	for (uint32_t i=0; i<size; i++)
         {
-		if (i<0) printf("AAAAAAAAA");
-                random = rand();
-                r.tuples[i].key = random;
-                r.tuples[i].payload = 837376;
+                s->tuples[i].key = rand();
+                s->tuples[i].payload = 837376;
         }
         printf("Entering reordering function\n");
-        R = reorderRelation(&r,&hash1);
+        R = reorderRelation(s,&hash1);
         printf("Exited reordering function\n");
-	CheckR(r,hash1);*/
+	CheckR(r,pow(2,hash1));
+	hash1 = FIRST_REORDERED;
 
 
 	free(R->rel->tuples);

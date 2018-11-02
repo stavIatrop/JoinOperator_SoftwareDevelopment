@@ -20,15 +20,15 @@ uint32_t FindNextPower(uint32_t number)
 
 double IdenticalityTest(relation *r)
 {
-	uint32_t size = r->size, sames=0;
+	uint32_t size = r->size, sames=0, limit = size/10;
 	int32_t value = r->tuples[0].key, newValue;
-	for (uint32_t i=0; i<size; i++)
+	for (uint32_t i=0; i<limit; i++)
 	{
 		newValue = r->tuples[rand() % size].key;
 		if (newValue == value) sames++;
 		value = newValue;
 	}
-	return (double) sames / size;
+	return (double) sames / limit;
 }
 
 
@@ -80,7 +80,7 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
-	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(CACHE_SIZE / sizeof(tuple));
+	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(CACHE_SIZE / sizeof(tuple)), nextPower;
 	hist = malloc(*hash1 * sizeof(uint32_t));
 	double identicality=0;
 
@@ -101,17 +101,18 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 	printf("max is %d, *hash1 is %d\n",max,*hash1);
 	while (1)
         {
-		*hash1 = (*hash1) << (uint32_t) log2(FindNextPower(max / maxBucketSize));
-		if (*hash1 > size || *hash1 > BUCKET_MEMORY_LIMIT || max <= 1.1 * identicality * size)
+		nextPower = (uint32_t)log2(FindNextPower(max/maxBucketSize)+1);
+                printf("Next power is %d\n", nextPower);
+		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * identicality * size)
 		{
 			*hash1 = beginning;
         	        hist = realloc(hist,*hash1 * sizeof(uint32_t));
 	                bad = DoTheHash(r,*hash1,hist,hash_values,&max);
 			return hist;
 		}
+		*hash1 = (*hash1) << nextPower;
                 if (bad != prevBad) beginning = *hash1;
 		prevBad = bad;
-		printf("Next power is %d\n",(uint32_t)log2(FindNextPower(max/maxBucketSize)));
 		printf("Fix attempt was made, current hash1 is %d\n",*hash1);
                 hist = realloc(hist,*hash1 * sizeof(uint32_t));
                 bad = DoTheHash(r,*hash1,hist,hash_values,&max);
