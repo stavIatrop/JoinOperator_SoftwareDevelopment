@@ -12,6 +12,7 @@ void buildSubIndex(relationIndex ** , uint32_t , uint32_t, uint32_t , uint32_t ,
 relation * getStartOfSubBucket(tuple *, uint32_t , uint32_t );
 _Bool IsPowerOfTwo(uint32_t );
 uint32_t findPowerOf2Hash(uint32_t );
+void recomputeSizes(uint32_t * , uint32_t * , uint32_t ); 
 
 
 #endif

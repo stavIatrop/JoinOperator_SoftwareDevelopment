@@ -28,20 +28,22 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2) {
 
 			} else {												//indexStruct doesn't fit in cache
 
-				if( (bucketArrSize * sizeof(uint32_t)) > (CACHE_SIZE/3)) {						//if bucketSize is greater than one third of cache
+				// if( (bucketArrSize * sizeof(uint32_t)) > (CACHE_SIZE/3)) {						//if bucketSize is greater than one third of cache
 
-					uint32_t newHash2Range = floor( CACHE_SIZE / (3 * sizeof(uint32_t) ) );		//re-compute hash2
-					newHash2Range = findPowerOf2Hash(newHash2Range);
-					hash2Var = (uint32_t)log2(newHash2Range);
-					bucketArrSize = newHash2Range;
-				}
+				// 	uint32_t newHash2Range = floor( CACHE_SIZE / (3 * sizeof(uint32_t) ) );		//re-compute hash2
+				// 	newHash2Range = findPowerOf2Hash(newHash2Range);
+				// 	hash2Var = (uint32_t)log2(newHash2Range);
+				// 	bucketArrSize = newHash2Range;
+				// }
 
 				uint32_t sizeAll = rel->size;					//size of the whole bucket
-
-				uint32_t eachSize = ( CACHE_SIZE - sizeof(uint32_t) - bucketArrSize * sizeof(uint32_t)) / (sizeof(tuple) + sizeof(uint32_t));	 	//compute size of chain and subBucket so as to fit in cache	
-				if( eachSize > sizeAll) {
-					eachSize = sizeAll;
-				}
+				uint32_t eachSize;
+				// uint32_t eachSize = ( CACHE_SIZE - sizeof(uint32_t) - bucketArrSize * sizeof(uint32_t)) / (sizeof(tuple) + sizeof(uint32_t));	 	//compute size of chain and subBucket so as to fit in cache	
+				// if( eachSize > sizeAll) {
+				// 	eachSize = sizeAll;
+				// }
+				recomputeSizes(&eachSize, &hash2Var, sizeAll);
+				bucketArrSize = hash2Range(hash2Var);
 				uint32_t sizeIndexedSoFar = 0;
 
 				tuple * startOfBuck = rel->tuples;				//store start of initial bucket
