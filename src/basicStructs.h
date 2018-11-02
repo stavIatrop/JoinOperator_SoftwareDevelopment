@@ -5,7 +5,7 @@
 
 #define CACHE_SIZE 256000
 #define ERROR_MARGIN 1.05
-#define BUCKET_MEMORY_LIMIT (2<<29)
+#define BUCKET_MEMORY_LIMIT (2<<28)
 
 typedef struct Tuple {
         int32_t key;

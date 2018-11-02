@@ -27,9 +27,9 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	}
 	else
 	{
-		uint32_t groups, bad, max;
+		uint32_t max;
 		hist = malloc(*hash1 * sizeof(uint32_t));
-		DoTheHash(r,*hash1,hist,hash_values,&groups,&bad,&max);
+		DoTheHash(r,*hash1,hist,hash_values,&max);
 	}
 
 	printf("hash1 is %d\n", *hash1);
