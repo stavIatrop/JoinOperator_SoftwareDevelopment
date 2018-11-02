@@ -4,12 +4,9 @@
 #include "basicStructs.h"
 #include "viceFunctions.h"
 
-#define ACCEPTANCE_LIMIT 4
-
 uint32_t Hash1_2(int32_t key, uint32_t len) {                    //Pure genius.
    return key % len;
 }
-
 
 uint32_t FindNextPower(uint32_t number)
 {
@@ -53,7 +50,6 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 {
 	*max = 0;
 	uint32_t maxBucketSize = floor(CACHE_SIZE / sizeof(tuple));
-	printf("maxBucketSize is %d\n", maxBucketSize);
 	uint32_t i, size = r->size, value, bad=0;
 	for (i = 0; i < hash1; i++) hist[i] = 0;
 
@@ -81,12 +77,12 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
 	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(CACHE_SIZE / sizeof(tuple)), nextPower;
+	printf("maxBucketSize is %d\n", maxBucketSize);
 	hist = malloc(*hash1 * sizeof(uint32_t));
 	double identicality=0;
 
 	uint32_t bad = DoTheHash(r,*hash1,hist,hash_values,&max);
 
-	printf("bad is %d\n", bad);
 	if (bad > 0)
 	{
 		identicality = sqrt(IdenticalityTest(r));
@@ -98,7 +94,6 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 	beginning = *hash1;
 	prevBad = bad;
 
-	printf("max is %d, *hash1 is %d\n",max,*hash1);
 	while (1)
         {
 		nextPower = (uint32_t)log2(FindNextPower(max/maxBucketSize)+1);
