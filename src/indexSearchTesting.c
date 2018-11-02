@@ -124,7 +124,7 @@ int InitializeIndexTest() {
 	}
 
 	int bucketSize = hash2Range(HASH2);
-	oneIndex = initializeIndex(bucketSize, rel, 6);
+	oneIndex = initializeIndex(bucketSize, rel, 6, NULL);
 	return 0;
 
 }

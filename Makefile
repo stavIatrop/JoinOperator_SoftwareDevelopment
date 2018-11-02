@@ -17,7 +17,7 @@ OBJECT_INPUT_UT = $(SOURCE_INPUT_UT:.c=.o)
 
 VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes -v
 
-all: executable ut mainTarget inputUtTarget
+all: mainTarget inputUtTarget
 	@echo  
 	@echo Compile finished
 
@@ -67,7 +67,7 @@ runInputUt:
 	./$(NAME_OF_INPUT_UT)
 
 runMain:
-	./$(NAME_OF_MAIN) -R testTables/file3_10 -S testTables/file3_10 -r 1 -s 2 -t binary -o testTables/outFile
+	./$(NAME_OF_MAIN) -R testTables/rTest3_1000000 -S testTables/rTest3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
 
 runValgrind:
 	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/file3_10 -S testTables/file3_10 -r 1 -s 2 -t binary -o testTables/outFile
