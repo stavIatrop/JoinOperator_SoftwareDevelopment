@@ -3,11 +3,13 @@
 #include "basicStructs.h"
 
 
-relationIndex initializeIndex(uint32_t bucketSize, relation * rel, int32_t key) {
+relationIndex initializeIndex(uint32_t bucketSize, relation * rel, int32_t key, relationIndex * next, uint32_t hash2) {
 
 	relationIndex newIndex;
 	newIndex.key = key;
-	newIndex.rel = rel; 
+	newIndex.rel = rel;
+	newIndex.hash2 = hash2;
+	newIndex.next = next; 
 	if (rel == NULL) {
 		newIndex.chain = NULL;
 		newIndex.buckets = NULL;
@@ -35,13 +37,40 @@ indexArray * initializeIndexArray(uint32_t size){
 
 }
 
+void RecFree(relationIndex * indexes) {
+
+	relationIndex * temp =  indexes;
+		
+	while (temp->next != NULL) {
+
+		RecFree(temp->next);
+	}
+
+	free(temp->chain);
+	free(temp->buckets);
+	free(temp->rel);
+	free(temp);
+
+	return;
+}
+
+
 void freeIndexArray(indexArray * idxArray) {
 
 	uint32_t i;
 	for (i = 0; i < idxArray->size; i++){
 
-		free((idxArray->indexes)[i].chain);
-		free((idxArray->indexes)[i].buckets);
+		if(idxArray->indexes[i].next != NULL) {		//because first nodes of every index are not dynamically allocated
+			
+			RecFree(idxArray->indexes[i].next);
+
+		}else {
+
+			free(idxArray->indexes[i].chain);
+			free(idxArray->indexes[i].buckets);
+			free(idxArray->indexes[i].rel);
+		}
+		
 	}
 	
 	free(idxArray->indexes);
