@@ -8,7 +8,6 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2) {
 
 	uint32_t sizeOfIndexArray = hash1Range(hash1);
 	indexArray * mainIndexArray = initializeIndexArray(sizeOfIndexArray);
-	printf("ARRAY_SIZE = %d\n", sizeOfIndexArray);
 	uint32_t hash2Var;
 
 	uint32_t i, whichPsum = 0;
@@ -62,7 +61,6 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2) {
 			whichPsum++;
 			
 		}else { 												//otherwise no index is created for bucket of i's 
-			printf("CREATING EMPTY INDEX: %d | %d\n", i,  (ror->pSumArr).psum[whichPsum].h1Res);
 			mainIndexArray->indexes[i] = initializeIndex(0, NULL, i, NULL, 0);
 		}
 	}

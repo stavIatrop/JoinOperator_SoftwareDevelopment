@@ -66,7 +66,8 @@ int main(int argc, char const *argv[])
                         return -1;
                 }
                 for(int whichInt = 0; whichInt < rows * cols; whichInt++) {
-                        array[whichInt] = rand();
+                        //array[whichInt] = rand();
+                        array[whichInt] = whichInt;
                 }
                 fwrite(array, sizeof(int32_t), rows * cols, f);
         }

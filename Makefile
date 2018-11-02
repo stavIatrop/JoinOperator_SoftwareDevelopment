@@ -67,10 +67,10 @@ runInputUt:
 	./$(NAME_OF_INPUT_UT)
 
 runMain:
-	./$(NAME_OF_MAIN) -R smallTestTables/file3_10 -S smallTestTables/file3_10 -r 1 -s 2 -t binary -o testTables/outFile
+	./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 1 -t binary -o testTables/outFile
 
 runValgrind:
-	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R smallTestTables/file3_10 -S smallTestTables/file3_10 -r 1 -s 2 -t binary -o testTables/outFile
+	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/rTest3_1000000 -S testTables/rTest3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
 
 cacheMisses: executable
 	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_EXECUTABLE)

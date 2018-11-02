@@ -27,12 +27,13 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	}
 	else
 	{
+		*hash1 = pow(2,*hash1);
 		uint32_t max;
 		hist = malloc(*hash1 * sizeof(uint32_t));
-		DoTheHash(r,pow(2,*hash1),hist,hash_values,&max);
+		DoTheHash(r,*hash1,hist,hash_values,&max);
 	}
 
-	printf("hash1 is %d\n", *hash1);
+	printf("aaaaaaaaaaaaaaaahash1 is %d\n", *hash1);
 //	printf("final hash1 is %d\n",*hash1);
 
         uint32_t buckets = *hash1;

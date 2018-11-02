@@ -11,7 +11,6 @@
 //DO NOT KNOW IF CACHE LOCALITY IS ACHIEVED DUE TO POINTERS
 void followChain(headResult * resultList, relationIndex * rIndex, tuple t, uint32_t h1) {
         uint32_t hashRes = hashing(t.key, h1, rIndex->hash2);
-        printf("Hash res = %d | hash2 = %d\n", hashRes, rIndex->hash2);
         uint32_t chainPointer = rIndex->buckets[hashRes] - 1;
         //Case: No matching h2
         if(chainPointer == EMPTY_BUCKET) {
@@ -69,7 +68,6 @@ headResult * search(indexArray * indArr, reorderedR * s) {
         tuple * startTup = NULL;
         uint32_t key1;
         headResult * resultList = initialiseResultHead();
-        printf("INEDEXES = %d\n", indArr->size);
         for(uint32_t whichKey = 0; whichKey < s->pSumArr.psumSize; whichKey++) {
                 if(whichKey < s->pSumArr.psumSize - 1) {
                         size = s->pSumArr.psum[whichKey + 1].offset -  s->pSumArr.psum[whichKey].offset;
@@ -80,7 +78,6 @@ headResult * search(indexArray * indArr, reorderedR * s) {
                 key1 = s->pSumArr.psum[whichKey].h1Res;
                 startTup = &(s->rel->tuples[s->pSumArr.psum[whichKey].offset]);
 
-                printf("Key1 = %d\n", key1);
                 searchKeyRec(&(indArr->indexes[key1]), resultList, startTup, size, (uint32_t) log2(indArr->size));
         }
 
