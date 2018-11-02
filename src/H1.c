@@ -20,7 +20,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 
 	hash_values = malloc(size * sizeof(uint32_t));
 
-        if (*hash1==0)
+        if (*hash1==FIRST_REORDERED)
 	{
 		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size * sizeof(tuple) / CACHE_SIZE)) + 1);
 		hist = Hash1(r,hash1,hash_values);
