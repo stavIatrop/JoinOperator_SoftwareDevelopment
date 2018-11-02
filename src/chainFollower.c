@@ -8,8 +8,8 @@
 #include "chainFollowerInterface.h"
 
 //DO NOT KNOW IF CACHE LOCALITY IS ACHIEVED DUE TO POINTERS
-void followChain(headResult * resultList, relationIndex * rIndex, tuple t, uint32_t h2) {
-        uint32_t hashRes = hashing(t.key, h2);
+void followChain(headResult * resultList, relationIndex * rIndex, tuple t) {
+        uint32_t hashRes = hashing(t.key, rIndex->hash2);
         uint32_t chainPointer = rIndex->buckets[hashRes] - 1;
         //Case: No matching h2
         if(chainPointer == EMPTY_BUCKET) {
@@ -34,7 +34,7 @@ void followChain(headResult * resultList, relationIndex * rIndex, tuple t, uint3
         }
 }
 
-void searchKey(indexArray * indArr, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb, uint32_t key, uint32_t h2) {
+void searchKey(indexArray * indArr, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb, uint32_t key) {
         relationIndex keyIndex = indArr->indexes[key];
 
         if(keyIndex.buckets == NULL) {
@@ -42,24 +42,24 @@ void searchKey(indexArray * indArr, headResult * resultList, tuple * checkedTupl
         }
 
         for(uint32_t whichTup = 0; whichTup < tuplesNumb; whichTup++) {
-                followChain(resultList, &keyIndex, checkedTuples[whichTup], h2);
+                followChain(resultList, &keyIndex, checkedTuples[whichTup]);
         }
 
 }
 
-void searchKeyRec(relationIndex * keyIndex, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb, uint32_t h2) {
+void searchKeyRec(relationIndex * keyIndex, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb) {
         if(keyIndex == NULL) {
                 return;
         }
 
         for(uint32_t whichTup = 0; whichTup < tuplesNumb; whichTup++) {
-                followChain(resultList, keyIndex, checkedTuples[whichTup], h2);
+                followChain(resultList, keyIndex, checkedTuples[whichTup]);
         }
 
         //Will uncomment when keyIndex->next is initialised properly
-        //if(keyIndex->next != NULL) {
-        //        searchKeyRec(keyIndex->next, resultList, checkedTuples, tuplesNumb, h2);
-        //}
+        if(keyIndex->next != NULL) {
+                searchKeyRec(keyIndex->next, resultList, checkedTuples, tuplesNumb);
+        }
 }
 
 headResult * search(indexArray * indArr, reorderedR * s, uint32_t hash2) {
@@ -77,7 +77,7 @@ headResult * search(indexArray * indArr, reorderedR * s, uint32_t hash2) {
                 key1 = s->pSumArr.psum[whichKey].h1Res;
                 startTup = &(s->rel->tuples[s->pSumArr.psum[whichKey].offset]);
 
-                searchKeyRec(&(indArr->indexes[key1]), resultList, startTup, size, hash2);
+                searchKeyRec(&(indArr->indexes[key1]), resultList, startTup, size);
         }
 
         return resultList;

@@ -272,6 +272,8 @@ int initialiseChainFollower() {
         rIndex->rel->tuples[2].key = 2;
 
         //CARE: The above and below structs do not follow the rules
+        rIndex->hash2 = 10;
+        rIndex->next = NULL;
         rIndex->buckets[2] = 8;
         rIndex->chain[7] = 5;
         rIndex->chain[4] = 4;
@@ -298,7 +300,7 @@ void testChainFollowNonExistent(void) {
         t.key = 13;
         t.payload = 5;
         
-        followChain(list, rIndex, t, 10);
+        followChain(list, rIndex, t);
         CU_ASSERT(list->numbOfNodes == 0);
 }
 
@@ -307,7 +309,7 @@ void testChainFollowExists(void) {
         t.key = 12;
         t.payload = 5;
 
-        followChain(list, rIndex, t, 10);
+        followChain(list, rIndex, t);
 
         CU_ASSERT(list->numbOfNodes == 1);
 

@@ -41,11 +41,12 @@ typedef struct ReorderedR {
 
 //<-- Index structs
 typedef struct RelationIndex {
-       uint32_t * chain;
-       uint32_t * buckets;
-       relation * rel;
-       int32_t key;
-       struct RelationIndex * next;
+        uint32_t * chain;
+        uint32_t * buckets;
+        relation * rel;
+        int32_t key;
+        struct RelationIndex * next;
+        uint32_t hash2;
 } relationIndex;
 
 typedef struct IndexArray {

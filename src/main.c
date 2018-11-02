@@ -40,6 +40,10 @@ int main(int argc, char *argv[])
         printRelation(rRel);
         printRelation(sRel);
 
+        freeTable(r);
+        freeTable(s);
+        free(args);
+
         /*headResult * list = initialiseResultHead();
 
         
