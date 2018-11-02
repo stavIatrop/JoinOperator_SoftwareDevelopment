@@ -11,10 +11,6 @@ before_script:
   - cd ..
   - make
 
-UnitTest:
-  script:
-    - make runUt
-
 InputTest:
   script:
     - make runInputUt
