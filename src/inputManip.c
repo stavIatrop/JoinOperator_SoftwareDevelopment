@@ -4,8 +4,8 @@
 #include <string.h>
 #include <getopt.h>
 
-#include "inputInterface.h"
 #include "basicStructs.h"
+#include "inputInterface.h"
 
 arguments * readArguments(int argc, char *argv[]) {
 
@@ -62,7 +62,7 @@ arguments * readArguments(int argc, char *argv[]) {
         return args;
 }
 
-int writeList(headResult * head, char * outPath) {
+int writeList(struct HeadResult * head, char * outPath) {
         FILE * outputFile = fopen(outPath, "w");
         if(outputFile == NULL) {
                 perror("Failed to open output file");

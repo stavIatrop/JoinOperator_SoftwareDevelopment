@@ -92,7 +92,7 @@ void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, ui
 		sizeIndexedSofar += eachSize;
 		sizeAll -= eachSize;
 	}
-	printf("sizeNext(%d)\n", sizeNext );
+	//printf("sizeNext(%d)\n", sizeNext );
 	return;
 }
 
