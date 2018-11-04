@@ -14,8 +14,15 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1) {
 	uint32_t i, whichPsum = 0;
 	for( i = 0; i < sizeOfIndexArray; i++) {
 
+		if( whichPsum >= (ror->pSumArr).psumSize) { 				//no index is created if we have examined the whole psumArray		
+
+			mainIndexArray->indexes[i] = initializeIndex(0, NULL, i, NULL, 0);
+			continue;
+		}
+
 		hash2Var = hash2;
-		if(i == (ror->pSumArr).psum[whichPsum].h1Res){ 			//index is created when there is a bucket of i's
+
+		if(i == (ror->pSumArr).psum[whichPsum].h1Res ){ 			//index is created when there is a bucket of i's
 
 			relation * rel = getStartOfBucket(ror, whichPsum);
 			uint32_t bucketArrSize = hash2Range(hash2Var);

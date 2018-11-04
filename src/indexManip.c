@@ -41,11 +41,11 @@ void RecFree(relationIndex * indexes) {
 
 	relationIndex * temp =  indexes;
 		
-	while (temp->next != NULL) {
+	if (temp->next != NULL) {
 
 		RecFree(temp->next);
 	}
-
+	
 	free(temp->chain);
 	free(temp->buckets);
 	free(temp->rel);
@@ -58,11 +58,17 @@ void RecFree(relationIndex * indexes) {
 void freeIndexArray(indexArray * idxArray) {
 
 	uint32_t i;
+	
 	for (i = 0; i < idxArray->size; i++){
 
+		
 		if(idxArray->indexes[i].next != NULL) {		//because first nodes of every index are not dynamically allocated
 			
 			RecFree(idxArray->indexes[i].next);
+
+			free(idxArray->indexes[i].chain);
+			free(idxArray->indexes[i].buckets);
+			free(idxArray->indexes[i].rel);	
 
 		}else {
 
