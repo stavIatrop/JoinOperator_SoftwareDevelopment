@@ -16,7 +16,7 @@ void Powerful()
 	CU_ASSERT(FindNextPower(65)==128);
 	CU_ASSERT(FindNextPower(0)==1);
 	CU_ASSERT(FindNextPower(64)==64);
-	CU_ASSERT(FindNextPower(2<<29+1)==2<<30);
+	CU_ASSERT(FindNextPower((2<<29)+1)==2<<30);
 	CU_ASSERT(FindNextPower(1)==1);
 	CU_ASSERT(FindNextPower(3)==4);
 }
@@ -118,7 +118,10 @@ int main(void) {
    CU_basic_set_mode(CU_BRM_VERBOSE);
    CU_basic_run_tests();
 
+   unsigned int returnValue  = CU_get_number_of_tests_failed();
+
    CU_cleanup_registry();
-   return CU_get_error();
+
+   return returnValue;
 
 }
