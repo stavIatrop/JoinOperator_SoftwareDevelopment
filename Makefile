@@ -1,23 +1,23 @@
 CC = gcc
 
 SOURCE = src/mainTest.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
-SOURCE_UT = src/indexSearchTesting.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
+SOURCE_SEARCH_LIST_UT = src/searchListTesting.c src/resultListManip.c src/hashing.c src/chainFollower.c
 SOURCE_MAIN = src/main.c src/radixHashJoin.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
 SOURCE_INPUT_UT = src/inputTesting.c src/inputManip.c src/resultListManip.c
 
 NAME_OF_EXECUTABLE = mainUt
-NAME_OF_UT = unitTest
+NAME_OF_SEARCH_LIST_UT = searchListUnitTest
 NAME_OF_MAIN = main
 NAME_OF_INPUT_UT = inputUt
 
 OBJECT = $(SOURCE:.c=.o)
-OBJECT_UT = $(SOURCE_UT:.c=.o)
+OBJECT_SEARCH_LIST_UT = $(SOURCE_SEARCH_LIST_UT:.c=.o)
 OBJECT_MAIN = $(SOURCE_MAIN:.c=.o)
 OBJECT_INPUT_UT = $(SOURCE_INPUT_UT:.c=.o)
 
 VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes -v
 
-all: mainTarget inputUtTarget
+all: mainTarget inputUtTarget searchListUt
 	@echo  
 	@echo Compile finished
 
@@ -26,9 +26,9 @@ executable: $(SOURCE) $(NAME_OF_EXECUTABLE)
 	@echo Compiled Main Test
 	@echo 
 
-ut: $(SOURCE_UT) $(NAME_OF_UT)
-	$(CC) -g -O0 -Wall -o  $(NAME_OF_UT) $(SOURCE_UT) -lm -lcunit
-	@echo Compiled Mini Unit Tests
+searchListUt: $(SOURCE_SEARCH_LIST_UT) $(NAME_OF_SEARCH_LIST_UT)
+	$(CC) -g -O0 -Wall -o  $(NAME_OF_SEARCH_LIST_UT) $(SOURCE_SEARCH_LIST_UT) -lm -lcunit
+	@echo Compiled Search and List Unit tests
 	@echo 
 
 inputUtTarget: $(SOURCE_INPUT_UT) $(NAME_OF_INPUT_UT)
@@ -44,8 +44,8 @@ mainTarget: $(SOURCE_MAIN) $(NAME_OF_MAIN)
 $(NAME_OF_EXECUTABLE): $(OBJECT)
 	$(CC) -g  -O0 $(OBJECT) -o $@ -lm -lcunit
 	
-$(NAME_OF_UT): $(OBJECT_UT)
-	$(CC) -g  -O0 $(OBJECT_UT) -o $@ -lm -lcunit
+$(NAME_OF_SEARCH_LIST_UT): $(OBJECT_SEARCH_LIST_UT)
+	$(CC) -g  -O0 $(OBJECT_SEARCH_LIST_UT) -o $@ -lm -lcunit
 
 $(NAME_OF_MAIN): $(OBJECT_MAIN)
 	$(CC) -g  -O0 $(OBJECT_MAIN) -o $@ -lm -lcunit
@@ -60,8 +60,8 @@ $(NAME_OF_INPUT_UT): $(OBJECT_INPUT_UT)
 runMainUt: executable
 	./$(NAME_OF_EXECUTABLE)
 
-runUt: ut
-	./$(NAME_OF_UT)
+runSearchListUt: searchListUt
+	./$(NAME_OF_SEARCH_LIST_UT)
 
 runInputUt:
 	./$(NAME_OF_INPUT_UT)
@@ -77,7 +77,7 @@ cacheMisses:
 
 clean:
 	rm -f $(NAME_OF_EXECUTABLE)
-	rm -f $(NAME_OF_UT)
+	rm -f $(NAME_OF_SEARCH_LIST_UT)
 	rm -f $(NAME_OF_MAIN)
 	rm -f $(NAME_OF_INPUT_UT)
 	rm -f src/*.o
