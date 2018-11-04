@@ -96,10 +96,10 @@ runIndexingUt:
 	./$(NAME_OF_INDEXING_UT)
 
 runMain:
-	./$(NAME_OF_MAIN) -R testTables/r5Same1_10000000 -S testTables/r7Same1_10000000 -r 0 -s 0 -t binary -o testTables/outFile
+	./$(NAME_OF_MAIN) -R testTables/r3_10000000_random -S testTables/r3_10000000_random -r 1 -s 2 -t binary -o testTables/outFile
 
 runValgrind:
-	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/r5Same1_10000000 -S testTables/r7Same1_10000000 -r 0 -s 0 -t binary -o testTables/outFile
+	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/r3_10000000_random -S testTables/r3_10000000_random -r 1 -s 2 -t binary -o testTables/outFile
 
 cacheMisses:
 	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile

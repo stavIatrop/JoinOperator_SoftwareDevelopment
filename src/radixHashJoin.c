@@ -110,6 +110,6 @@ headResult * radixHashJoin(table * rTable, table * sTable, int32_t colR, int32_t
         free(RoS);
         
         freeIndexArray(indArr);
-
+        
         return results;
 }
