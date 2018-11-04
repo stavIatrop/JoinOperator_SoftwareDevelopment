@@ -306,6 +306,10 @@ int main(void) {
    CU_basic_run_tests();
 
    CU_cleanup_registry();
-   return CU_get_error();
+   
+   unsigned int returnValue  = CU_get_number_of_tests_failed();
 
+   CU_cleanup_registry();
+
+   return returnValue;
 }
