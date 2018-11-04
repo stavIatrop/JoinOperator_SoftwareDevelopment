@@ -25,7 +25,7 @@ double IdenticalityTest(relation *r)
 		if (newValue == value) sames++;
 		value = newValue;
 	}
-	return (double) sames / limit;
+	return (double) sqrt((double)sames / limit);
 }
 
 
@@ -82,15 +82,6 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 	double identicality=0;
 
 	uint32_t bad = DoTheHash(r,*hash1,hist,hash_values,&max);
-
-	/*if (bad > 0)
-	{
-		identicality = sqrt(IdenticalityTest(r));
-		printf("Identicality is %f\n", identicality);
-		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size*(1-identicality) * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1);
-		hist = realloc(hist,*hash1 * sizeof(uint32_t));
-                bad = DoTheHash(r,*hash1,hist,hash_values,&max);
-	}*/
 	beginning = *hash1;
 	prevBad = bad;
 
