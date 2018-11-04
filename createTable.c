@@ -16,7 +16,7 @@ int digitsOfInt(uint32_t integer)
 int main(int argc, char const *argv[])
 {
         if(argc != 5) {
-                printf("Wrong arguments: ./createTable <cols> <rows> <fileName>\n");
+                printf("Wrong arguments: ./createTable <cols> <rows> <fileName> ascii/bin\n");
                 return -1;
         }
 
