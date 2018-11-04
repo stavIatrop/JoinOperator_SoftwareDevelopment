@@ -14,3 +14,11 @@ before_script:
 InputTest:
   script:
     - make runInputUt
+  
+SearchListTest:
+  script:
+    - make runSearchListUt
+
+ReorderTest:
+  script:
+    - make runReorderingUt

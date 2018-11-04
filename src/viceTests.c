@@ -16,7 +16,7 @@ void Powerful()
 	CU_ASSERT(FindNextPower(65)==128);
 	CU_ASSERT(FindNextPower(0)==1);
 	CU_ASSERT(FindNextPower(64)==64);
-	CU_ASSERT(FindNextPower(2<<29+1)==2<<30);
+	CU_ASSERT(FindNextPower((2<<29)+1)==2<<30);
 	CU_ASSERT(FindNextPower(1)==1);
 	CU_ASSERT(FindNextPower(3)==4);
 }
