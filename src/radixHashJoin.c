@@ -53,8 +53,7 @@ headResult * radixHashJoin(table * rTable, table * sTable, int32_t colR, int32_t
 
 	if (abs(rRel->size - sRel->size) < 100000 || abs(rRel->size - sRel->size) > 10000000)
 	{
-		printf("r = %f, s = %f\n", rIdenticality, sIdenticality);
-		if ((rRel->size)*(1-sqrt(sIdenticality)) <= (sRel->size)*(1-sqrt(rIdenticality)))
+		if ((rRel->size)*(1-sqrt(rIdenticality)) <= (sRel->size)*(1-sqrt(sIdenticality)))
 		{
 			RoR = reorderRelation(rRel, &h1);
 			RoS = reorderRelation(sRel, &h1);
@@ -67,7 +66,7 @@ headResult * radixHashJoin(table * rTable, table * sTable, int32_t colR, int32_t
 	}
 	else
 	{
-		if ((rRel->size)*(1-sqrt(rIdenticality)) >= (sRel->size)*(1-sqrt(sIdenticality)))
+		if ((rRel->size)*(1-sqrt(sIdenticality)) >= (sRel->size)*(1-sqrt(rIdenticality)))
                 {
                         RoR = reorderRelation(rRel, &h1);
                         RoS = reorderRelation(sRel, &h1);

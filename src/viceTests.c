@@ -63,7 +63,16 @@ int freeIdentical()
 
 void Cloning()
 {
-	CU_ASSERT(IdenticalityTest(r1) >= 0.09 && IdenticalityTest(r1) <= 0.11);
+	uint32_t successes = 0;
+	printf("%f\n", IdenticalityTest(r1));
+	for (uint32_t i=0; i<100; i++)
+	{
+		if (IdenticalityTest(r1) >= 0.09 && IdenticalityTest(r1) <= 0.11)
+		{
+			successes++;
+		}
+	}
+	CU_ASSERT(successes>=50);
 	CU_ASSERT(IdenticalityTest(r2) >= 0.09 && IdenticalityTest(r2) <= 0.11);
 	CU_ASSERT(IdenticalityTest(r3) >= 0.09 && IdenticalityTest(r3) <= 0.11);
 }

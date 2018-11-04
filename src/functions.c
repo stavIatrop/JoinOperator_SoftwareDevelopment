@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include "basicStructs.h"
 #include "viceFunctions.h"
 
@@ -17,15 +18,16 @@ uint32_t FindNextPower(uint32_t number)
 
 double IdenticalityTest(relation *r)
 {
-	uint32_t size = r->size, sames=0, limit = size/10;
+	uint32_t size = r->size, limit = size/4, sames=0;
 	int32_t value = r->tuples[0].key, newValue;
+	srand(time(NULL));
 	for (uint32_t i=0; i<limit; i++)
 	{
 		newValue = r->tuples[rand() % size].key;
 		if (newValue == value) sames++;
-		value = newValue;
+		else value = newValue;
 	}
-	return (double) sqrt((double)sames / limit);
+	return sqrt((double)sames / limit);
 }
 
 
@@ -79,7 +81,7 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
 	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
 	hist = malloc(*hash1 * sizeof(uint32_t));
-	double identicality=0;
+	double identicality=IdenticalityTest(r);
 
 	uint32_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
 	beginning = *hash1;
@@ -90,6 +92,7 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 		nextPower = (uint32_t)log2(FindNextPower(max/maxBucketSize)+1);
 		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * identicality * size)
 		{
+			if (*hash1==beginning) return hist;
 			*hash1 = beginning;
         	        hist = realloc(hist,*hash1 * sizeof(uint32_t));
 	                bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
