@@ -18,7 +18,7 @@ uint32_t FindNextPower(uint32_t number)
 
 double IdenticalityTest(relation *r)
 {
-	uint32_t size = r->size, limit = size/4, sames=0;
+	uint32_t size = r->size, limit = size/10, sames=0;
 	int32_t value = r->tuples[0].key, newValue;
 	srand(time(NULL));
 	for (uint32_t i=0; i<limit; i++)
