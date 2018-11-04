@@ -19,6 +19,11 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	uint32_t size = r->size, i, *hash_values, *hist;
 
 	hash_values = malloc(size * sizeof(uint32_t));
+	if (hash_values==NULL)
+	{
+		perror("Wrong arguments");
+                exit(1);
+	}
 
         if (*hash1==FIRST_REORDERED)
 	{
@@ -30,6 +35,11 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 		*hash1 = pow(2,*hash1);
 		uint32_t max;
 		hist = malloc(*hash1 * sizeof(uint32_t));
+		if (hist ==NULL)
+		{
+			perror("Wrong arguments");
+                	exit(1);
+		}
 		DoTheHash(r,*hash1,hist,hash_values,&max,1);
 	}
 
@@ -38,13 +48,30 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	for (i = 0; i < *hash1; i++) if (hist[i] == 0) buckets--;
 
 	reorderedR *R = malloc(sizeof(reorderedR));
+	if (R ==NULL)
+        {
+               	perror("Wrong arguments");
+                exit(1);
+        }
 	pSumArray *psum;
 	psum = &(R->pSumArr);
 	psum->psumSize = buckets;
 	psum->psum = malloc(buckets * sizeof(pSumTuple));
+	if (psum->psum ==NULL)
+        {
+                perror("Wrong arguments");
+                exit(1);
+        }
+
 
 	uint32_t j = 0, prevJ;
 	uint32_t *helpPSum = malloc((*hash1) * sizeof(uint32_t));
+	if (helpPSum ==NULL)
+        {
+                perror("Wrong arguments");
+                exit(1);
+        }
+
 	while (hist[j]==0)
 	{
 		helpPSum[j]=0;
@@ -70,6 +97,12 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	}
 
 	uint32_t current_bucket = psum->psum[0].h1Res, current = 0, *members = malloc(*hash1 * sizeof(uint32_t));
+	if (members ==NULL)
+        {
+                perror("Wrong arguments");
+                exit(1);
+        }
+
 
 	for (i=0; i<*hash1; i++)
 	{

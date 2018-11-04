@@ -62,7 +62,7 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
                 hist[value] = hist[value] + 1;
         }
 
-	if (trivial!=0) return 0; 
+	if (trivial!=0) return 0;
 
         for (i=0; i<hash1; i++)
         {
@@ -81,6 +81,12 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
 	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
 	hist = malloc(*hash1 * sizeof(uint32_t));
+	if (hist ==NULL)
+        {
+                perror("Wrong arguments");
+                exit(1);
+        }
+
 	double identicality=IdenticalityTest(r);
 
 	uint32_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
@@ -95,13 +101,25 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 			if (*hash1==beginning) return hist;
 			*hash1 = beginning;
         	        hist = realloc(hist,*hash1 * sizeof(uint32_t));
-	                bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
+			if (hist ==NULL)
+       			{
+        		        perror("Wrong arguments");
+		                exit(1);
+		        }
+
+	                DoTheHash(r,*hash1,hist,hash_values,&max,1);
 			return hist;
 		}
 		*hash1 = (*hash1) << nextPower;
                 if (bad != prevBad) beginning = *hash1;
 		prevBad = bad;
                 hist = realloc(hist,*hash1 * sizeof(uint32_t));
+		if (hist ==NULL)
+        	{
+	                perror("Wrong arguments");
+	                exit(1);
+	        }
+
                 bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
         }
 

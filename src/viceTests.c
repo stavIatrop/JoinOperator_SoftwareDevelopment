@@ -23,22 +23,6 @@ void Powerful()
 
 int initIdentical()
 {
-	r1 = malloc(sizeof(relation));
-	r1->tuples = malloc(10000 * sizeof(tuple));
-	r1->size = 10000;
-	for (uint32_t i=0; i<10000; i++)
-	{
-		if (i%10==0) r1->tuples[i].key=0;
-		else r1->tuples[i].key=i;
-	}
-	r2 = malloc(sizeof(relation));
-	r2->tuples = malloc(100000 * sizeof(tuple));
-	r2->size = 100000;
-	for (uint32_t i=0; i<100000; i++)
-	{
-		if (i%10==0) r2->tuples[i].key=0;
-		else r2->tuples[i].key=i;
-	}
 	r3 = malloc(sizeof(relation));
 	r3->tuples = malloc(10000000 * sizeof(tuple));
 	r3->size = 10000000;
@@ -52,10 +36,6 @@ int initIdentical()
 
 int freeIdentical()
 {
-	free(r1->tuples);
-	free(r1);
-	free(r2->tuples);
-	free(r2);
 	free(r3->tuples);
 	free(r3);
 	return 0;
@@ -63,17 +43,6 @@ int freeIdentical()
 
 void Cloning()
 {
-	uint32_t successes = 0;
-	printf("%f\n", IdenticalityTest(r1));
-	for (uint32_t i=0; i<100; i++)
-	{
-		if (IdenticalityTest(r1) >= 0.09 && IdenticalityTest(r1) <= 0.11)
-		{
-			successes++;
-		}
-	}
-	CU_ASSERT(successes>=50);
-	CU_ASSERT(IdenticalityTest(r2) >= 0.09 && IdenticalityTest(r2) <= 0.11);
 	CU_ASSERT(IdenticalityTest(r3) >= 0.09 && IdenticalityTest(r3) <= 0.11);
 }
 
