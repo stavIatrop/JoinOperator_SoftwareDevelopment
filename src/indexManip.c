@@ -41,7 +41,7 @@ void RecFree(relationIndex * indexes) {
 
 	relationIndex * temp =  indexes;
 		
-	while (temp->next != NULL) {
+	if (temp->next != NULL) {
 
 		RecFree(temp->next);
 	}

@@ -82,10 +82,10 @@ runReorderingUt:
 	./$(NAME_OF_REORDERING_UT)
 
 runMain:
-	./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/r3_100000 -r 1 -s 1 -t binary -o testTables/outFile
+	./$(NAME_OF_MAIN) -R testTables/r3_10000000_random -S testTables/r3_10000000_random -r 1 -s 2 -t binary -o testTables/outFile
 
 runValgrind:
-	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
+	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/r3_10000000_random -S testTables/r3_10000000_random -r 1 -s 2 -t binary -o testTables/outFile
 
 cacheMisses:
 	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
