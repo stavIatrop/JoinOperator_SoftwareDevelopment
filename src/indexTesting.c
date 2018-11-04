@@ -22,6 +22,8 @@ relationIndex oneIndex;
 
 reorderedR * ror = NULL;
 indexArray * indexA = NULL;
+relationIndex * newIndex = NULL;
+tuple * startOfBucket = NULL;
 
 int InitializeRor() {
 
@@ -60,6 +62,13 @@ int InitializeRor() {
 		j += 3; 
 	}	
 
+	startOfBucket = (tuple *) malloc(NUM_OF_TUPLES * sizeof(tuple));
+	for(i = 0; i < 10; i++) {
+
+		startOfBucket[i].payload = i;
+		startOfBucket[i].key = (i + 1) * 25;
+	}
+
 
 	return 0;
 
@@ -92,25 +101,39 @@ void testStartOfBucket() {
 	return;
 }
 
-void testIndexing() {		//for CACHE_SIZE = 120
+void testBuildSubIndex() {
 
+	uint32_t sizeAll = 10, eachSize = 3, key = 10, sizeIndexedSofar = 3;
+	sizeAll -= eachSize;
+	buildSubIndex(&newIndex, HASH1, HASH2, sizeAll, eachSize, sizeIndexedSofar, startOfBucket, key);
+	
+	relationIndex * temp = newIndex;
 
-	indexA = indexing(ror, HASH1, HASH2);
+	CU_ASSERT(temp->buckets[12] == 1);
+	CU_ASSERT(temp->buckets[15] == 2);
+	CU_ASSERT(temp->buckets[2] == 3);
 
+	for(int i = 0; i < eachSize; i++ )
+		CU_ASSERT(temp->chain[i] == 0);
 
-	int i;
-	for(i = 0; i < 3; i++) {
-		CU_ASSERT(indexA->indexes[1].chain[i] == i);
-	}
-	CU_ASSERT(indexA->indexes[1].chain[3] == 0);
-	CU_ASSERT(indexA->indexes[1].chain[4] == 4);
+	temp = temp->next;
 
-	for(i = 2; i < hash2Range(indexA->indexes[1].hash2); i++)
-		CU_ASSERT(indexA->indexes[1].buckets[i] == 0);
-	CU_ASSERT(indexA->indexes[1].buckets[0] == 3);
-	CU_ASSERT(indexA->indexes[1].buckets[1] == 5);
+	CU_ASSERT(temp->buckets[5] == 1);
+	CU_ASSERT(temp->buckets[9] == 2);
+	CU_ASSERT(temp->buckets[12] == 3);
+	for(int i = 0; i < eachSize; i++ )
+		CU_ASSERT(temp->chain[i] == 0);
+
+	temp = temp->next;
+
+	CU_ASSERT(temp->buckets[15] == 1);
+	
+	for(int i = 0; i < 1; i++ )
+		CU_ASSERT(temp->chain[i] == 0);
+
 	return;
 }
+
 
 int InitializeIndexTest() {
 
@@ -223,6 +246,14 @@ void testHashing() {
 	value = hashing(value, HASH1, HASH2);
 	CU_ASSERT(value == 6);
 
+	value = 666;
+	value = hashing(value, HASH1, HASH2);
+	CU_ASSERT(value == 2);
+	
+	value = 2147483;
+	value = hashing(value, HASH1, HASH2);
+	CU_ASSERT(value == 9);
+	
 
 	return;
 }
@@ -275,7 +306,7 @@ int main(void) {
 
    /* add the tests to the 3rd suite */
    if ((NULL == CU_add_test(pSuite3, "Test getStartOfBucket", testStartOfBucket )) ||
-   		(NULL == CU_add_test(pSuite3, "Test indexing", testIndexing )))
+   		(NULL == CU_add_test(pSuite3, "Test buildSubIndex", testBuildSubIndex )))
    {
       CU_cleanup_registry();
       return CU_get_error();

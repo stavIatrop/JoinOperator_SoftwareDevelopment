@@ -64,11 +64,11 @@ relation * getStartOfSubBucket(tuple *startOfBuck, uint32_t sizeIndexedSofar, ui
 	tuple * tempTuple;
 	tempTuple =	&(startOfBuck[sizeIndexedSofar]); 
 	newRelation->tuples = tempTuple;
-
+	
 	return newRelation;
 }
 
-
+//when this function is called, indexing has already construct head of indexingList
 void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, uint32_t sizeAll, uint32_t eachSize, uint32_t sizeIndexedSofar, tuple * startOfBuck, uint32_t i) {
 
 	
@@ -83,7 +83,7 @@ void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, ui
 
 		relation * rel = getStartOfSubBucket(startOfBuck, sizeIndexedSofar, eachSize);
 
-
+		
 		*oneIndex = (relationIndex *) malloc(sizeof(relationIndex));
 		**oneIndex = initializeIndex(bucketSize, rel, i, NULL, hash2);
 		buildIndex( *oneIndex, hash1, hash2);

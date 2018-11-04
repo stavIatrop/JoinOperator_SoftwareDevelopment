@@ -18,5 +18,5 @@ uint32_t hashing(int32_t value, uint32_t hash1, uint32_t hash2) {
 	value >>= hash1;
 	
 	uint32_t range = hash2Range(hash2);
-	return ( value ^ (value >> (hash1 + 5)) ^ (value >> (hash1 + 10) )) & (range - 1);	
+	return ( value ^ (value >> (hash1 + 3)) ^ (value >> (hash1 + 5) )) & (range - 1);	
 }
