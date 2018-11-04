@@ -71,7 +71,7 @@ relation * getStartOfSubBucket(tuple *startOfBuck, uint32_t sizeIndexedSofar, ui
 
 void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, uint32_t sizeAll, uint32_t eachSize, uint32_t sizeIndexedSofar, tuple * startOfBuck, uint32_t i) {
 
-	int sizeNext = 1;
+	
 	uint32_t bucketSize = hash2Range(hash2);
 	
 
@@ -85,14 +85,12 @@ void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, ui
 
 
 		*oneIndex = (relationIndex *) malloc(sizeof(relationIndex));
-		sizeNext++;
 		**oneIndex = initializeIndex(bucketSize, rel, i, NULL, hash2);
 		buildIndex( *oneIndex, hash1, hash2);
 		oneIndex = &((*oneIndex)->next);
 		sizeIndexedSofar += eachSize;
 		sizeAll -= eachSize;
 	}
-	printf("sizeNext(%d)\n", sizeNext );
 	return;
 }
 
