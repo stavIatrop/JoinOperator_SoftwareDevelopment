@@ -85,10 +85,10 @@ runMain:
 	./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 1 -t binary -o testTables/outFile
 
 runValgrind:
-	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/rTest3_1000000 -S testTables/rTest3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
+	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
 
 cacheMisses:
-	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_MAIN) -R testTables/rTest3_1000000 -S testTables/rTest3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
+	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
 
 clean:
 	rm -f $(NAME_OF_EXECUTABLE)
