@@ -4,12 +4,13 @@
 #include "hashing.h"
 #include "indexManip.h"
 
-indexArray * indexing(reorderedR * ror, uint32_t hash1, uint32_t hash2) {
+indexArray * indexing(reorderedR * ror, uint32_t hash1) {
 
 	uint32_t sizeOfIndexArray = hash1Range(hash1);
 	indexArray * mainIndexArray = initializeIndexArray(sizeOfIndexArray);
+	uint32_t range = (CACHE_SIZE - AVAILABLE_CACHE_SIZE) / sizeof(uint32_t);
+	uint32_t hash2 = (uint32_t) log2(range);
 	uint32_t hash2Var;
-
 	uint32_t i, whichPsum = 0;
 	for( i = 0; i < sizeOfIndexArray; i++) {
 

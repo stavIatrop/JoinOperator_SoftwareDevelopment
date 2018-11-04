@@ -25,7 +25,7 @@ double IdenticalityTest(relation *r)
 		if (newValue == value) sames++;
 		value = newValue;
 	}
-	return (double) sames / limit;
+	return (double) sqrt((double)sames / limit);
 }
 
 
@@ -46,7 +46,7 @@ void rSwap(tuple * t,uint32_t *hash_values, uint32_t i, uint32_t j)
         hash_values[j] = tempu;
 }
 
-uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_values, uint32_t *max)
+uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_values, uint32_t *max, char trivial)
 {
 	*max = 0;
 	uint32_t maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple));
@@ -60,6 +60,8 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
                 hist[value] = hist[value] + 1;
         }
 
+	if (trivial!=0) return 0; 
+
         for (i=0; i<hash1; i++)
         {
 		value = hist[i];
@@ -69,7 +71,6 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 			*max += value;
 		}
         }
-	printf("Max size of bucket not within acceptable limits is %d and the number of bad buckets is %d\n",*max,bad);
 	return bad;
 }
 
@@ -77,39 +78,29 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
 	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
-	printf("maxBucketSize is %d\n", maxBucketSize);
 	hist = malloc(*hash1 * sizeof(uint32_t));
 	double identicality=0;
 
-	uint32_t bad = DoTheHash(r,*hash1,hist,hash_values,&max);
-
-	/*if (bad > 0)
-	{
-		identicality = sqrt(IdenticalityTest(r));
-		printf("Identicality is %f\n", identicality);
-		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size*(1-identicality) * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1);
-		hist = realloc(hist,*hash1 * sizeof(uint32_t));
-                bad = DoTheHash(r,*hash1,hist,hash_values,&max);
-	}*/
+	uint32_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
 	beginning = *hash1;
 	prevBad = bad;
 
-	while (1)
+	while (bad > 0)
         {
 		nextPower = (uint32_t)log2(FindNextPower(max/maxBucketSize)+1);
-                printf("Next power is %d\n", nextPower);
 		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * identicality * size)
 		{
 			*hash1 = beginning;
         	        hist = realloc(hist,*hash1 * sizeof(uint32_t));
-	                bad = DoTheHash(r,*hash1,hist,hash_values,&max);
+	                bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
 			return hist;
 		}
 		*hash1 = (*hash1) << nextPower;
                 if (bad != prevBad) beginning = *hash1;
 		prevBad = bad;
-		printf("Fix attempt was made, current hash1 is %d\n",*hash1);
                 hist = realloc(hist,*hash1 * sizeof(uint32_t));
-                bad = DoTheHash(r,*hash1,hist,hash_values,&max);
+                bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
         }
+
+	return hist;
 }

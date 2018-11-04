@@ -8,6 +8,8 @@
 #define BINARY_FILE 1
 #define ASCII_FILE 2
 
+//typedef struct HeadResult headResult;
+
 typedef struct Table {
         uint32_t columns;
         uint32_t rows;
@@ -41,6 +43,8 @@ void printRelation(relation * r);
 void freeTable(table * t);
 
 int writeList(headResult * head, char * outPath);
+
+headResult * radixHashJoin(table * rTable, table * sTable, int32_t colR, int32_t colS);
 
 
 #endif
