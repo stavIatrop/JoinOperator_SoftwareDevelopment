@@ -8,10 +8,13 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1) {
 
 	uint32_t sizeOfIndexArray = hash1Range(hash1);
 	indexArray * mainIndexArray = initializeIndexArray(sizeOfIndexArray);
-	uint32_t range = (CACHE_SIZE - AVAILABLE_CACHE_SIZE) / sizeof(uint32_t);
-	uint32_t hash2 = (uint32_t) log2(range);
+
+	uint32_t range = (CACHE_SIZE - AVAILABLE_CACHE_SIZE) / sizeof(uint32_t);		//computing hash2 range so that the bucketArray in indexing occupies
+	uint32_t hash2 = (uint32_t) log2(range);										//no more than CACHE_SIZE - AVAILABLE_CACHE_SIZE
 	uint32_t hash2Var;
-	uint32_t i, whichPsum = 0;
+
+	uint32_t i, whichPsum = 0;			//whichPsum stores index to PsumArray , increases every time an indexArray entry is constructed
+
 	for( i = 0; i < sizeOfIndexArray; i++) {
 
 		if( whichPsum >= (ror->pSumArr).psumSize) { 				//no index is created if we have examined the whole psumArray		
@@ -50,7 +53,7 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1) {
 				// if( eachSize > sizeAll) {
 				// 	eachSize = sizeAll;
 				// }
-				recomputeSizes(&eachSize, &hash2Var, sizeAll);
+				recomputeSizes(&eachSize, &hash2Var, sizeAll);  //re-compute size of each subBucket and hash2 range so as to fit in cache
 				bucketArrSize = hash2Range(hash2Var);
 				uint32_t sizeIndexedSoFar = 0;
 
