@@ -21,6 +21,10 @@ headResult * list;
 indexArray * indexA;
 uint32_t hash1=0, size = 10000000, size2 = 2000000;
 
+
+// !! WHOLE FILE DEPRECATED, does not work !!
+
+
 int initialiseStructs(void) {
         r = (relation *) malloc(sizeof(relation));
         s = (relation *) malloc(sizeof(relation));

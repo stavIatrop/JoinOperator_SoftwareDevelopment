@@ -5,7 +5,7 @@
 #include "basicStructs.h"
 #include "viceFunctions.h"
 
-uint32_t Hash1_2(int32_t key, uint32_t len) {                    //Pure genius.
+uint32_t Hash1_2(int32_t key, uint32_t len) {
    return key % len;
 }
 
@@ -27,7 +27,7 @@ double IdenticalityTest(relation *r) //described in viceFunctions.h
 		if (newValue == value) sames++;
 		else value = newValue;
 	}
-	return sqrt((double)sames / limit); //cool maths
+	return sqrt((double)sames / limit);
 }
 
 
@@ -79,7 +79,7 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
-	uint32_t size = r->size, *hist, prevBad, max, bads, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
+	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
 	hist = malloc(*hash1 * sizeof(uint32_t));
 	if (hist ==NULL)
         {
@@ -97,7 +97,8 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
         {
 		nextPower = (uint32_t)log2(FindNextPower(max/maxBucketSize)+1);
 		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * identicality * size)
-		{		//the last check in the f is because identical keys cannot be separated.
+		{		
+			//the last check in the f is because identical keys cannot be separated.
 			if (*hash1==beginning) return hist;
 			*hash1 = beginning;
         	        hist = realloc(hist,*hash1 * sizeof(uint32_t));

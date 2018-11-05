@@ -8,8 +8,6 @@
 #define BINARY_FILE 1
 #define ASCII_FILE 2
 
-//typedef struct HeadResult headResult;
-
 typedef struct Table {
         uint32_t columns;
         uint32_t rows;

@@ -83,7 +83,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1);
 //Stavroula
 indexArray * indexing(reorderedR * ror, uint32_t hash1);
 
-//Kalyteros
+//Mixalhs
 headResult * search(indexArray * indArr, reorderedR * s);
 
 #endif

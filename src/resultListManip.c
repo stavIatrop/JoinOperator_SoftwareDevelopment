@@ -66,7 +66,7 @@ void freeResultNode(resultNode * node) {
         free(node);
 }
 
-//It expects that rowIdS matches rowIdR
+//It expects that rowIdS matches rowIdR (for debugging purposes)
 int checkResults(headResult * head) {
         resultNode * currNode;
         if(head->firstNode == NULL) {
