@@ -18,17 +18,17 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	}
 	uint32_t size = r->size, i, *hash_values, *hist;
 
-	hash_values = malloc(size * sizeof(uint32_t));
+	hash_values = malloc(size * sizeof(uint32_t));	//stores the hash value of every key
 	if (hash_values==NULL)
 	{
 		perror("Wrong arguments");
                 exit(1);
 	}
 
-        if (*hash1==FIRST_REORDERED)
+        if (*hash1==FIRST_REORDERED) //hash1 contains the bucket size, or FIRST_REORDERED if it has to be calculated
 	{
-		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1);
-		hist = Hash1(r,hash1,hash_values);
+		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
+		hist = Hash1(r,hash1,hash_values); //hist contains the histogram
 	}
 	else
 	{
@@ -45,7 +45,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 
         uint32_t buckets = *hash1;
 
-	for (i = 0; i < *hash1; i++) if (hist[i] == 0) buckets--;
+	for (i = 0; i < *hash1; i++) if (hist[i] == 0) buckets--; //psum only contains entries for the hash values with at least 1 element
 
 	reorderedR *R = malloc(sizeof(reorderedR));
 	if (R ==NULL)
@@ -65,7 +65,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 
 
 	uint32_t j = 0, prevJ;
-	uint32_t *helpPSum = malloc((*hash1) * sizeof(uint32_t));
+	uint32_t *helpPSum = malloc((*hash1) * sizeof(uint32_t)); //like psum, but contains entries for all hash values. Needed to sort
 	if (helpPSum ==NULL)
         {
                 perror("Wrong arguments");
@@ -95,7 +95,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 		helpPSum[j] = psum->psum[i].offset;
 		prevJ = j++;
 	}
-
+							//members counts how many elements have been sorted so far for each hash value
 	uint32_t current_bucket = psum->psum[0].h1Res, current = 0, *members = malloc(*hash1 * sizeof(uint32_t));
 	if (members ==NULL)
         {
@@ -111,7 +111,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 
 	char flag = 1;
 
-	for (i = 0; i < size; i++)
+	for (i = 0; i < size; i++)	//This sorting is done in O(n) time
 	{
 		while (members[current_bucket] == hist[current_bucket])
                 {
@@ -141,7 +141,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	{
 		*hash1 >>= 1;
 		a++;
-	}
+	}	//returns *hash1=n, the number of least important bits used by the hash function
 	*hash1 = a-1;
 	R->rel = r;
 	free(hist);
