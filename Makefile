@@ -1,7 +1,7 @@
 CC = gcc
 
 SOURCE = src/mainTest.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
-SOURCE_SEARCH_LIST_UT = src/searchListTesting.c src/resultListManip.c src/hashing.c src/chainFollower.c
+SOURCE_SEARCH_LIST_UT = src/searchListTesting.c src/resultListManip.c src/chainFollower.c src/hashing.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
 SOURCE_MAIN = src/main.c src/radixHashJoin.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
 SOURCE_INPUT_UT = src/inputTesting.c src/inputManip.c src/resultListManip.c
 SOURCE_REORDERING_UT = src/viceTests.c src/functions.c
@@ -100,6 +100,9 @@ runMain:
 
 runValgrind:
 	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/r3_10000000_random -S testTables/r3_10000000_random -r 1 -s 2 -t binary -o testTables/outFile
+
+runValgrindUt:
+	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_INDEXING_UT)
 
 cacheMisses:
 	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile

@@ -1,3 +1,8 @@
+  Ανάπτυξη Λογισμικού Για Πληροφοριακά Συστήματα
+                    Μέρος 1  
+ 
+
+
 tableCreator: gcc -o createTable createTable.c  
 	      ./createTable `cols` `rows` `outFile` `bin` (for binary) (SUGGESTED)  
 	      ./createTable `cols` `rows` `outFile` `ascii` (for ascii)  

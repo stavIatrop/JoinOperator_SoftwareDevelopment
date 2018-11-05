@@ -29,7 +29,155 @@ indexArray * indexA = NULL;
 headResult * list = NULL;
 relationIndex * rIndex = NULL;
 int tuplesPerNode = MB / sizeof(tuple);
+reorderedR * RoR = NULL, * RoS = NULL;
+int sizeR = 1000, sizeS = 1000;
+relation * rRel, * sRel;
 
+/*SEARCH TESTS*/
+int initialiseRelations() {
+        rRel = malloc(sizeof(relation));
+        sRel = malloc(sizeof(relation));
+
+        
+        rRel->tuples = malloc(sizeR * sizeof(tuple));
+	rRel->size=sizeR;
+        sRel->tuples = malloc(sizeS * sizeof(tuple));
+	sRel->size=sizeS;
+
+        //srand(time(NULL));
+        return 0;
+
+}
+
+int freeRelations() {
+        free(rRel->tuples);
+        free(sRel->tuples);
+        free(rRel);
+        free(sRel);
+
+        return 0;
+}
+void testZeroResults() {
+        for (uint32_t i=0; i<sizeR; i++)
+        {
+                //random = rand();
+                rRel->tuples[i].key = 5;
+                rRel->tuples[i].payload = i;
+        }
+
+        for (uint32_t i=0; i<sizeS; i++)
+        {
+                //random = rand();
+                sRel->tuples[i].key = 6;
+                sRel->tuples[i].payload = i;
+        }
+
+        uint32_t h1 = FIRST_REORDERED;
+        RoR = reorderRelation(rRel, &h1);
+        RoS = reorderRelation(sRel, &h1);
+
+        indexA = indexing(RoR, h1);
+
+        list = search(indexA, RoS);
+
+        CU_ASSERT(list->numbOfNodes == 0);
+
+        free(RoR->pSumArr.psum);
+        free(RoR);
+        free(RoS->pSumArr.psum);
+        free(RoS);
+        
+        freeIndexArray(indexA);
+
+        freeResultList(list);
+}
+
+void testOrderedResults() {
+        for (uint32_t i=0; i<sizeR; i++)
+        {
+                //random = rand();
+                rRel->tuples[i].key = i;
+                rRel->tuples[i].payload = i;
+        }
+
+        for (uint32_t i=0; i<sizeS; i++)
+        {
+                //random = rand();
+                sRel->tuples[i].key = i;
+                sRel->tuples[i].payload = i;
+        }
+
+        uint32_t h1 = FIRST_REORDERED;
+        RoR = reorderRelation(rRel, &h1);
+        RoS = reorderRelation(sRel, &h1);
+
+        indexA = indexing(RoR, h1);
+
+        list = search(indexA, RoS);
+
+        CU_ASSERT(list->numbOfNodes == sizeR / tuplesPerNode + 1);
+        resultNode * node = list->firstNode;
+        int whichRes = 0;
+        for(int i = 0; i < list->numbOfNodes; i++) {
+                for(int j = 0; j < node->size; j++) {
+                        CU_ASSERT(node->tuples[j].rowR == node->tuples[j].rowS);
+                        CU_ASSERT(node->tuples[j].rowR == whichRes);
+                        whichRes++;
+                }
+                node = node->nextNode;
+        }
+
+        free(RoR->pSumArr.psum);
+        free(RoR);
+        free(RoS->pSumArr.psum);
+        free(RoS);
+        
+        freeIndexArray(indexA);
+
+        freeResultList(list);
+}
+
+void testInversedOrderedResults() {
+        for (uint32_t i=0; i<sizeR; i++)
+        {
+                //random = rand();
+                rRel->tuples[i].key = i;
+                rRel->tuples[i].payload = i;
+        }
+
+        for (uint32_t i=0; i<sizeS; i++)
+        {
+                //random = rand();
+                sRel->tuples[i].key = sizeR - i;
+                sRel->tuples[i].payload = i;
+        }
+
+        uint32_t h1 = FIRST_REORDERED;
+        RoR = reorderRelation(rRel, &h1);
+        RoS = reorderRelation(sRel, &h1);
+
+        indexA = indexing(RoR, h1);
+
+        list = search(indexA, RoS);
+
+        CU_ASSERT(list->numbOfNodes == sizeR / tuplesPerNode + 1);
+        resultNode * node = list->firstNode;
+        for(int i = 0; i < list->numbOfNodes; i++) {
+                for(int j = 0; j < node->size; j++) {
+                        CU_ASSERT(node->tuples[j].rowR == sizeR - node->tuples[j].rowS);
+                }
+                node = node->nextNode;
+        }
+
+        free(RoR->pSumArr.psum);
+        free(RoR);
+        free(RoS->pSumArr.psum);
+        free(RoS);
+        
+        freeIndexArray(indexA);
+
+        freeResultList(list);
+}
 
 /*RESULT LIST TESTS*/
 int createList(void) {
@@ -161,7 +309,7 @@ int main(void) {
 	// CU_pSuite pSuite2 = NULL;
 	// CU_pSuite pSuite3 = NULL;
 	CU_pSuite pSuite4 = NULL;
-   	// CU_pSuite pSuite5 = NULL;
+   	CU_pSuite pSuite5 = NULL;
 
 
 	//Initialize the CUnit test registry
@@ -184,19 +332,20 @@ int main(void) {
    }
 
 /* add a suite to the registry */
-//    pSuite5 = CU_add_suite("Chain Follower Suite", initialiseChainFollower, freeIndex);
-//    if (NULL == pSuite5) {
-//       CU_cleanup_registry();
-//       return CU_get_error();
-//    }
+   pSuite5 = CU_add_suite("Search Suite", initialiseRelations, freeRelations);
+   if (NULL == pSuite5) {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
 
-//     /* add the tests to the suite */
-//    if ((NULL == CU_add_test(pSuite5, "Test Non Existing Value", testChainFollowNonExistent)) ||
-//        (NULL == CU_add_test(pSuite5, "Test Existing Value", testChainFollowExists)))
-//    {
-//       CU_cleanup_registry();
-//       return CU_get_error();
-//    }
+    /* add the tests to the suite */
+   if ((NULL == CU_add_test(pSuite5, "Test No Matching Values", testZeroResults)) ||
+       (NULL == CU_add_test(pSuite5, "Test All Matching Values Ordered", testOrderedResults)) ||
+       (NULL == CU_add_test(pSuite5, "Test All Matching Values Inversed Ordered", testInversedOrderedResults)))
+   {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
    // CU_set_output_filename("Chain_Test");
    // CU_automated_run_tests();
    // CU_list_tests_to_file();
