@@ -22,3 +22,7 @@ SearchListTest:
 ReorderTest:
   script:
     - make runReorderingUt
+
+IndexingTest:
+  script:
+    - make runIndexingUt

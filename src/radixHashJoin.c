@@ -108,8 +108,8 @@ headResult * radixHashJoin(table * rTable, table * sTable, int32_t colR, int32_t
         free(RoR);
         free(RoS->pSumArr.psum);
         free(RoS);
-
+        
         freeIndexArray(indArr);
-
+        
         return results;
 }

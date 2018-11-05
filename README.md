@@ -1,8 +1,27 @@
-tableCreator: gcc -o createTable createTable.c  
-	      ./createTable `cols` `rows` `outFile` `bin` (for binary) (SUGGESTED)  
-	      ./createTable `cols` `rows` `outFile` `ascii` (for ascii)  
+ # Ανάπτυξη Λογισμικού Για Πληροφοριακά Συστήματα (Μέρος 1ο)
+   
+ ## Μέλη Ομάδας:
+ * Ιατροπούλου Σταυρούλα, 1115201500048
+ * Ξύδας Μιχαήλ, 1115201500116
+ * Στάης Βαλέριος, 1115201500148
+                 
+ 
 
-main: make  
-      ./main -R `path_of_R` -S `path_of_S` -r `col_R` -s `col_S` -t `binary/ascii` -o `outPath`  
+ ## Compile and Run
+Compile: `make` will compile all the executables (unit tests and main executable)  
 
-!! Για να λειτουργούν τα input test μην πειράξετε τα `file3_10, file3_10ascii` που βρίσκονται στο `smallTestTables` !!  
+Run:
+ * `./main -R path_of_R -S path_of_S -r col_R -s col_S -t binary/ascii -o outPath`  
+ (-R is the path of table R, -r is the column of table R that we want to be joined with column s of table S)
+ * `make runInputUt` runs the Input unit test
+ * `make runReorderingUt`runs the Hash1 and Reordering tests
+ * `make runIndexingUt` runs the Indexing unit tests
+ * `make runSearchListUt` runs the Search and List unit test functions
+
+
+!! In order for input test to be able to pass, `smallTestTables/file3_10, smallTestTables/file3_10ascii` must not be changed` !!  
+
+ ## File Creation Script
+
+ `gcc -o createTable createTable.c`  
+ `./createTable numb_of_cols numb_of_rows  out_file_path bin/ascii` (by deafault the values are random) 
