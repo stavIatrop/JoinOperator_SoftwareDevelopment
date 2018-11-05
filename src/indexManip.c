@@ -15,15 +15,17 @@ relationIndex initializeIndex(uint32_t bucketSize, relation * rel, int32_t key, 
 		newIndex.buckets = NULL;
 		return newIndex;
 	}
+
 	newIndex.chain = (uint32_t *) malloc(rel->size * sizeof(uint32_t));
 	uint32_t i;
 	for( i = 0; i < rel->size; i++)
 		newIndex.chain[i] = 0;
+	
 
 	newIndex.buckets = (uint32_t *) malloc(bucketSize * sizeof(uint32_t));
 	for( i = 0; i < bucketSize; i++)
 		newIndex.buckets[i] = 0;
-
+	
 	return newIndex;
 
 }

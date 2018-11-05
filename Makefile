@@ -95,6 +95,9 @@ runReorderingUt:
 runIndexingUt:
 	./$(NAME_OF_INDEXING_UT)
 
+runValIndexingUt:
+	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_INDEXING_UT)
+
 runMain:
 	./$(NAME_OF_MAIN) -R testTables/r3_10000000_random -S testTables/r3_10000000_random -r 1 -s 2 -t binary -o testTables/outFile
 

@@ -18,7 +18,7 @@
 uint32_t * chain = NULL;
 uint32_t * buckets = NULL;
 
-relationIndex oneIndex;
+relationIndex * oneIndex;
 
 reorderedR * ror = NULL;
 indexArray * indexA = NULL;
@@ -74,15 +74,32 @@ int InitializeRor() {
 
 }
 
+void RecFreeIndex(relationIndex * rI) {
+
+	relationIndex * temp = rI;
+
+	if(temp->next != NULL) 
+		RecFreeIndex(temp->next);
+
+	free(temp->chain);
+	free(temp->buckets);
+	free(temp->rel);
+	free(temp);
+	return;
+}
+
 int freeRor() {
 
 	free(ror->rel->tuples);
 	free(ror->rel);
 	free(ror->pSumArr.psum);
 	free(ror);
-	free(indexA);
+	free(startOfBucket);
+	RecFreeIndex(newIndex);
 	return 0;
 }
+
+
 
 void testStartOfBucket() {
 
@@ -147,47 +164,51 @@ int InitializeIndexTest() {
 	}
 
 	int bucketSize = hash2Range(HASH2);
-	oneIndex = initializeIndex(bucketSize, rel, 6, NULL, HASH2);
+	oneIndex = (relationIndex *) malloc(sizeof(relationIndex));
+	*oneIndex = initializeIndex(bucketSize, rel, 6, NULL, HASH2);
+
 	return 0;
 
 }
 
 int freeIndexTest() {
 
-	free(oneIndex.chain);
-	free(oneIndex.buckets);
-	free(oneIndex.rel);
+	free(oneIndex->chain);
+	free(oneIndex->buckets);
+	free(oneIndex->rel->tuples);
+	free(oneIndex->rel);
+	free(oneIndex);
 	return 0;
 }
 
 void testBuildIndex(){
 
 
-	buildIndex(&oneIndex, HASH1, HASH2);
+	buildIndex(oneIndex, HASH1, HASH2);
 
 	int i;
-	CU_ASSERT(oneIndex.chain[0]== 0);
-	CU_ASSERT(oneIndex.chain[1]== 1);
-	CU_ASSERT(oneIndex.chain[2]== 2);
+	CU_ASSERT(oneIndex->chain[0]== 0);
+	CU_ASSERT(oneIndex->chain[1]== 1);
+	CU_ASSERT(oneIndex->chain[2]== 2);
 	for(i = 3; i < 10; i++) {
-		CU_ASSERT(oneIndex.chain[i] == 0);
+		CU_ASSERT(oneIndex->chain[i] == 0);
 	}
 	
 	
-	CU_ASSERT(oneIndex.buckets[0] == 3);
-	CU_ASSERT(oneIndex.buckets[1] == 4);
-	CU_ASSERT(oneIndex.buckets[2] == 5);
-	CU_ASSERT(oneIndex.buckets[3] == 6);
-	CU_ASSERT(oneIndex.buckets[4] == 7);
-	CU_ASSERT(oneIndex.buckets[5] == 0);
-	CU_ASSERT(oneIndex.buckets[6] == 8);
-	CU_ASSERT(oneIndex.buckets[7] == 0);
-	CU_ASSERT(oneIndex.buckets[8] == 9);
-	CU_ASSERT(oneIndex.buckets[9] == 0);
-	CU_ASSERT(oneIndex.buckets[10] == 10);
+	CU_ASSERT(oneIndex->buckets[0] == 3);
+	CU_ASSERT(oneIndex->buckets[1] == 4);
+	CU_ASSERT(oneIndex->buckets[2] == 5);
+	CU_ASSERT(oneIndex->buckets[3] == 6);
+	CU_ASSERT(oneIndex->buckets[4] == 7);
+	CU_ASSERT(oneIndex->buckets[5] == 0);
+	CU_ASSERT(oneIndex->buckets[6] == 8);
+	CU_ASSERT(oneIndex->buckets[7] == 0);
+	CU_ASSERT(oneIndex->buckets[8] == 9);
+	CU_ASSERT(oneIndex->buckets[9] == 0);
+	CU_ASSERT(oneIndex->buckets[10] == 10);
 
 	for(i = 11; i < 16; i++)
-		CU_ASSERT(oneIndex.buckets[i] == 0);
+		CU_ASSERT(oneIndex->buckets[i] == 0);
 
 	return;
 }
@@ -276,7 +297,7 @@ int main(void) {
       return CU_get_error();
    }
 
-   /* add the tests to the suite */
+   // add the tests to the suite 
    if ((NULL == CU_add_test(pSuite, "Test updateChain", testUpdateChain)))
    {
       CU_cleanup_registry();
@@ -297,14 +318,14 @@ int main(void) {
       return CU_get_error();
    }
 
-   /* add a 3rd suite to the registry */
+    //add a 3rd suite to the registry 
    pSuite3 = CU_add_suite("Indexing Suite", InitializeRor, freeRor);
    if (NULL == pSuite3) {
       CU_cleanup_registry();
       return CU_get_error();
    }
 
-   /* add the tests to the 3rd suite */
+    //add the tests to the 3rd suite 
    if ((NULL == CU_add_test(pSuite3, "Test getStartOfBucket", testStartOfBucket )) ||
    		(NULL == CU_add_test(pSuite3, "Test buildSubIndex", testBuildSubIndex )))
    {
