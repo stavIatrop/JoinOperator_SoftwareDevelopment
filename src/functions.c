@@ -16,7 +16,7 @@ uint32_t FindNextPower(uint32_t number)
 	return power;
 }
 
-double IdenticalityTest(relation *r)
+double IdenticalityTest(relation *r) //described in viceFunctions.h
 {
 	uint32_t size = r->size, limit = size/10, sames=0;
 	int32_t value = r->tuples[0].key, newValue;
@@ -27,7 +27,7 @@ double IdenticalityTest(relation *r)
 		if (newValue == value) sames++;
 		else value = newValue;
 	}
-	return sqrt((double)sames / limit);
+	return sqrt((double)sames / limit); //cool maths
 }
 
 
@@ -49,7 +49,7 @@ void rSwap(tuple * t,uint32_t *hash_values, uint32_t i, uint32_t j)
 }
 
 uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_values, uint32_t *max, char trivial)
-{
+{	//hash1 is the number of buckets in the hashing, hist is the histogram and hash_values the hash value for each key
 	*max = 0;
 	uint32_t maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple));
 	uint32_t i, size = r->size, value, bad=0;
@@ -62,7 +62,7 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
                 hist[value] = hist[value] + 1;
         }
 
-	if (trivial!=0) return 0;
+	if (trivial!=0) return 0; //below here is only for calculating the best hash1. If we just want to do the hash, trivial!=0.
 
         for (i=0; i<hash1; i++)
         {
@@ -79,7 +79,7 @@ uint32_t DoTheHash(relation *r, uint32_t hash1, uint32_t *hist, uint32_t *hash_v
 
 uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
 {
-	uint32_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
+	uint32_t size = r->size, *hist, prevBad, max, bads, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
 	hist = malloc(*hash1 * sizeof(uint32_t));
 	if (hist ==NULL)
         {
@@ -97,7 +97,7 @@ uint32_t *Hash1(relation *r,uint32_t *hash1, uint32_t *hash_values)
         {
 		nextPower = (uint32_t)log2(FindNextPower(max/maxBucketSize)+1);
 		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * identicality * size)
-		{
+		{		//the last check in the f is because identical keys cannot be separated.
 			if (*hash1==beginning) return hist;
 			*hash1 = beginning;
         	        hist = realloc(hist,*hash1 * sizeof(uint32_t));
