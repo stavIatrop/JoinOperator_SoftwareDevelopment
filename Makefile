@@ -60,7 +60,7 @@ mainTarget: $(SOURCE_MAIN) $(NAME_OF_MAIN)
 
 $(NAME_OF_PROJECT_UT): $(OBJECT_PROJECT_UT)
 	$(CC) -g  -O0 $(OBJECT_PROJECT_UT) -o $@ -lm -lcunit
-	s
+	
 $(NAME_OF_SEARCH_LIST_UT): $(OBJECT_SEARCH_LIST_UT)
 	$(CC) -g  -O0 $(OBJECT_SEARCH_LIST_UT) -o $@ -lm -lcunit
 
