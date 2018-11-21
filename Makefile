@@ -120,5 +120,6 @@ clean:
 	rm -f $(NAME_OF_INPUT_UT)
 	rm -f $(NAME_OF_REORDERING_UT)
 	rm -f $(NAME_OF_INDEXING_UT)
+	rm -f $(NAME_OF_PROJECT_UT)
 	rm -f src/*.o
 
