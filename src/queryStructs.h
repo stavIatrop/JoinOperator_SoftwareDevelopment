@@ -27,10 +27,11 @@ typedef struct Inter {
         myint_t *joinedRels;
 } inter;
 
-typedef struct NodeInter {
+typedef struct NodeInter nodeInter;
+struct NodeInter {
         inter *data;
         nodeInter *next;
-} nodeInter;
+} ;
 
 typedef struct HeadInter {
         myint_t numOfIntermediates;
@@ -40,6 +41,7 @@ typedef struct HeadInter {
 typedef struct ColRel {
         myint_t rel;
         myint_t* col;
+        myint_t rows;
 } colRel;
 
 typedef struct Filter {
