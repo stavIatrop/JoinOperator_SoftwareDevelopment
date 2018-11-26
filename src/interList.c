@@ -5,18 +5,18 @@
 
 #include "queryStructs.h"
 
-inter * initialiseInter(myint_t cols, myint_t * joinedRels, myint_t ** rowIds) {
+inter * initialiseInter(myint_t cols, myint_t rows, myint_t * joinedRels, myint_t ** rowIds) {
     inter * retInter = (inter *) malloc(sizeof(inter));
     retInter->joinedRels = joinedRels;
     retInter->numOfCols = cols;
     retInter->rowIds = rowIds;
-
+    retInter->numbOfRows = rows;
     return retInter;
 }
 
-nodeInter * initialiseNode(myint_t cols, myint_t * joinedRels, myint_t ** rowIds) {
+nodeInter * initialiseNode(myint_t cols, myint_t rows, myint_t * joinedRels, myint_t ** rowIds) {
     nodeInter * node = (nodeInter *) malloc(sizeof(nodeInter));
-    node->data = initialiseInter(cols, joinedRels, rowIds);
+    node->data = initialiseInter(cols, rows, joinedRels, rowIds);
     node->next = NULL;
 
     return node;
@@ -32,8 +32,9 @@ headInter * initialiseHead() {
 
 void freeNode(nodeInter * node) {
     for(int whichCol = 0; whichCol < node->data->numOfCols; whichCol++) {
-        free(node->data->rowIds[whichCol]);
+       free(node->data->rowIds[whichCol]);
     }
+
     free(node->data->rowIds);
     free(node->data->joinedRels);
     free(node->data);
@@ -47,32 +48,40 @@ void freeNodeListRec(nodeInter * node) {
     freeNode(node);
 }
 void freeInterList(headInter * head) {
-    freeNodeListRec(head->start);
+    if(head != NULL) {
+        freeNodeListRec(head->start);
+    }
     free(head);
 
 }
 
-void pushInter(headInter * head ,myint_t cols, myint_t * joinedRels, myint_t ** rowIds) {
+void pushInter(headInter * head ,myint_t cols, myint_t rows, myint_t * joinedRels, myint_t ** rowIds) {
     if(head->numOfIntermediates == 0) {
-        head->start = initialiseNode(cols, joinedRels, rowIds);
+        head->start = initialiseNode(cols, rows, joinedRels, rowIds);
     }
     else {
         nodeInter * finalNode = head->start;
         for(int whichNode = 0; whichNode < head->numOfIntermediates - 1; whichNode++) {
             finalNode = finalNode->next;
         }
-        finalNode->next = initialiseNode(cols, joinedRels, rowIds);
+        finalNode->next = initialiseNode(cols, rows, joinedRels, rowIds);
     }
     head->numOfIntermediates += 1;
 }
 
-void refreshInter(nodeInter * node, myint_t cols, myint_t * joinedRels, myint_t ** rowIds) {
+void refreshInter(nodeInter * node, myint_t cols,  myint_t rows, myint_t * joinedRels, myint_t ** rowIds) {
+    free(node->data->joinedRels);
+    for(int i = 0; i < node->data->numOfCols; i++) {
+        free(node->data->rowIds[i]);
+    }
+    free(node->data->rowIds);
     node->data->joinedRels = joinedRels;
     node->data->numOfCols = cols;
     node->data->rowIds = rowIds;
+    node->data->numbOfRows = rows;
 }
 
-void deleteInternode(headInter * head, nodeInter * node) {
+void deleteInterNode(headInter * head, nodeInter * node) {
     nodeInter * temp = node->next;
     if(head->numOfIntermediates == 0) {
         printf("Unexpected delete on empty list\n");

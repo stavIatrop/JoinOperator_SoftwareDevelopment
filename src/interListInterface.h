@@ -3,14 +3,14 @@
 
 //Basic functions
 headInter * initialiseHead();
-void pushInter(headInter * head ,myint_t cols, myint_t * joinedRels, myint_t ** rowIds);
-void refreshInter(nodeInter * node, myint_t cols, myint_t * joinedRels, myint_t ** rowIds);
-void deleteInternode(headInter * head, nodeInter * node);
+void pushInter(headInter * head ,myint_t cols, myint_t rows, myint_t * joinedRels, myint_t ** rowIds);
+void refreshInter(nodeInter * node, myint_t cols, myint_t rows, myint_t * joinedRels, myint_t ** rowIds);
+void deleteInterNode(headInter * head, nodeInter * node);
 void freeInterList(headInter * head);
 
 //Helpers (intializers, frees)
-inter * initialiseInter(myint_t cols, myint_t * joinedRels, myint_t ** rowIds);
-nodeInter * initialiseNode(myint_t cols, myint_t * joinedRels, myint_t ** rowIds);
+inter * initialiseInter(myint_t cols, myint_t rows, myint_t * joinedRels, myint_t ** rowIds);
+nodeInter * initialiseNode(myint_t cols, myint_t rows, myint_t * joinedRels, myint_t ** rowIds);
 void freeNode(nodeInter * node);
 void freeNodeListRec(nodeInter * node);
 

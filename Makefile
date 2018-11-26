@@ -6,6 +6,7 @@ SOURCE_INPUT_UT = src/inputTesting.c src/inputManip.c src/resultListManip.c
 SOURCE_REORDERING_UT = src/viceTests.c src/functions.c
 SOURCE_INDEXING_UT = src/indexTesting.c src/indexManip.c src/hashing.c src/sideFunctions.c
 SOURCE_PROJECT_UT = src/projectUnitTest.c src/radixHashJoin.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
+SOURCE_QUERY_EXECUTE_UT = src/queryExecuteTesting.c src/interList.c
 
 NAME_OF_SEARCH_LIST_UT = searchListUnitTest
 NAME_OF_MAIN = main
@@ -13,6 +14,7 @@ NAME_OF_INPUT_UT = inputUt
 NAME_OF_REORDERING_UT = reorderingTest
 NAME_OF_INDEXING_UT = indexingUnitTest
 NAME_OF_PROJECT_UT = projectUnitTest
+NAME_OF_QUERY_EXECUTE_UT = queryExecuteUnitTest
 
 OBJECT_SEARCH_LIST_UT = $(SOURCE_SEARCH_LIST_UT:.c=.o)
 OBJECT_MAIN = $(SOURCE_MAIN:.c=.o)
@@ -20,11 +22,11 @@ OBJECT_INPUT_UT = $(SOURCE_INPUT_UT:.c=.o)
 OBJECT_REORDERING_UT = $(SOURCE_REORDERING_UT:.c=.o)
 OBJECT_INDEXING_UT = $(SOURCE_INDEXING_UT:.c=.o)
 OBJECT_PROJECT_UT = $(SOURCE_PROJECT_UT:.c=.o)
-
+OBJECT_QUERY_EXECUTE_UT = $(SOURCE_QUERY_EXECUTE_UT:.c=.o)
 
 VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes -v
 
-all: mainTarget inputUtTarget searchListUt reorderingUtTarget indexingUnitTest
+all: mainTarget queryExecuteUtTarget inputUtTarget searchListUt reorderingUtTarget indexingUnitTest
 	@echo  
 	@echo Compile finished
 
@@ -53,6 +55,12 @@ indexingUt: $(SOURCE_INDEXING_UT) $(NAME_OF_INDEXING_UT)
 	@echo Compiled Indexing Unit Test
 	@echo 
 
+queryExecuteUtTarget: $(SOURCE_QUERY_EXECUTE_UT) $(NAME_OF_QUERY_EXECUTE_UT)
+	$(CC) -g -O0 -Wall -o  $(NAME_OF_QUERY_EXECUTE_UT) $(SOURCE_QUERY_EXECUTE_UT) -lm -lcunit
+	@echo Compiled Indexing Unit Test
+	@echo 
+
+
 mainTarget: $(SOURCE_MAIN) $(NAME_OF_MAIN)
 	$(CC) -g -O0 -Wall -o  $(NAME_OF_MAIN) $(SOURCE_MAIN) -lm -lcunit
 	@echo Compiled Main
@@ -76,12 +84,18 @@ $(NAME_OF_REORDERING_UT): $(OBJECT_REORDERING_UT)
 $(NAME_OF_INDEXING_UT): $(OBJECT_INDEXING_UT)
 	$(CC) -g  -O0 $(OBJECT_INDEXING_UT) -o $@ -lm -lcunit
 
+$(NAME_OF_QUERY_EXECUTE_UT): $(OBJECT_QUERY_EXECUTE_UT)
+	$(CC) -g  -O0 $(OBJECT_QUERY_EXECUTE_UT) -o $@ -lm -lcunit
+
 .c.o:
 	$(CC) -c $< -o $@ -lm -lcunit
 
 
 runProjectUt: searchListUt
 	./$(NAME_OF_PROJECT_UT)
+
+runQueryExecuteUt:
+	./$(NAME_OF_QUERY_EXECUTE_UT)
 
 runSearchListUt: searchListUt
 	./$(NAME_OF_SEARCH_LIST_UT)
@@ -105,7 +119,7 @@ runValgrind:
 	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/r3_10000000_ordered -S testTables/r3_10000000_ordered -r 0 -s 0 -t binary -o testTables/outFile
 
 runValgrindUt:
-	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_PROJECT_UT)
+	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_QUERY_EXECUTE_UT)
 
 runHarness:
 	./harness small/small.init small/small.work small/small.result ./inputUt
