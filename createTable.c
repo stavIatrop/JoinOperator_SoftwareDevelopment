@@ -60,17 +60,18 @@ int main(int argc, char const *argv[])
                 free(buffer);
         }
         else {
-                int32_t * array = (int32_t *) calloc(rows * cols, sizeof(int32_t));
+                uint64_t * array = (uint64_t *) calloc(rows * cols, sizeof(uint64_t));
                 if(array == NULL) {
                         perror("Failed to allocate buffer");
                         return -1;
                 }
                 for(int whichInt = 0; whichInt < rows * cols; whichInt++) {
                         array[whichInt] = rand();	//RANDOM
+                        //printf("%d | %lu\n", whichInt, array[whichInt]);
                         //array[whichInt] = 7;		//SAME
 			//array[whichInt] = whichInt;	//ORDERED
                 }
-                fwrite(array, sizeof(int32_t), rows * cols, f);
+                fwrite(array, sizeof(uint64_t), rows * cols, f);
         }
         
         fclose(f);

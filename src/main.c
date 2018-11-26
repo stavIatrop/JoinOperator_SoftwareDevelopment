@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
         printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
         //Performing radixHashJoin
-        headResult * results = radixHashJoin(r, s, args->colR, args->colS);
+        headResult * results = radixHashJoin(r->content[args->colR], s->content[args->colS], r->rows, s->rows);
 
         printf(">>> Starting Writing...");
         begin = clock();

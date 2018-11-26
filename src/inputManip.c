@@ -124,13 +124,13 @@ table * readTable(char * filePath, int fileType) {
         }
         free(firstLine);
 
-        t->content = (int32_t **) malloc(t->columns * sizeof(int32_t *));
+        t->content = (uint64_t **) malloc(t->columns * sizeof(uint64_t *));
         if(t->content == NULL) {
                 perror("Failed to malloc columns");
                 return NULL;
         }
-        for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
-                t->content[whichCol] = (int32_t *) calloc(t->rows, sizeof(int32_t));
+        for(uint64_t whichCol = 0; whichCol < t->columns; whichCol++) {
+                t->content[whichCol] = (uint64_t *) calloc(t->rows, sizeof(uint64_t));
                 if(t->content[whichCol] == NULL) {
                         perror("Failed to malloc row of column");
                         return NULL;
@@ -177,7 +177,7 @@ int readAsciiTable(table * t, FILE * inputFile) {
 
 int readBinTable(table * t, FILE * inputFile) {
         for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
-                if(fread(t->content[whichCol], sizeof(int32_t), t->rows, inputFile) != t->rows) {
+                if(fread(t->content[whichCol], sizeof(uint64_t), t->rows, inputFile) != t->rows) {
                         perror("Failed to read binary line");
                         return -1;
                 }
@@ -198,15 +198,15 @@ int applyLine(table * t, int32_t whichCol, char * buffer) {
         return 0;
 }
 
-relation * extractRelation(table * t, int column) {
+relation * extractRelation(uint64_t * col, uint64_t size) {
         relation * r = (relation *) malloc(sizeof(relation));
 
-        r->size = t->rows;
-        r->tuples = (tuple *) malloc(t->rows * sizeof(tuple));
+        r->size = size;
+        r->tuples = (tuple *) malloc(size * sizeof(tuple));
 
-        for(int whichRow = 0; whichRow < t->rows; whichRow++) {
+        for(int whichRow = 0; whichRow < size; whichRow++) {
                 r->tuples[whichRow].payload = whichRow;
-                r->tuples[whichRow].key = t->content[column][whichRow];
+                r->tuples[whichRow].key = col[whichRow];
         }
 
         return r;
@@ -226,7 +226,7 @@ void printTable(table * t) {
         for(int i = 0; i < t->columns; i++) {
                 printf("Column %d: ", i);
                 for(int j = 0; j < t->rows; j++) {
-                       printf("%d \t", t->content[i][j]); 
+                       printf("%lu \t", t->content[i][j]); 
                 }
                 printf("\n");
         }

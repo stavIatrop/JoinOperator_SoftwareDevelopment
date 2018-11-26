@@ -12,7 +12,7 @@ typedef struct Table {
         uint32_t columns;
         uint32_t rows;
 
-        int32_t ** content;
+        uint64_t ** content;
 } table;
 
 typedef struct Arguments {
@@ -35,14 +35,14 @@ table * readTable(char * filePath, int fileType);
 int readAsciiTable(table * t, FILE * inputFile);
 int readBinTable(table * t, FILE * inputFile);
 int applyLine(table * t, int32_t whichCol, char * buffer);
-relation * extractRelation(table * t, int column);
+relation * extractRelation(uint64_t * col, uint64_t size);
 void printTable(table * t);
 void printRelation(relation * r);
 void freeTable(table * t);
 
 int writeList(headResult * head, char * outPath);
 
-headResult * radixHashJoin(table * rTable, table * sTable, int32_t colR, int32_t colS);
+headResult * radixHashJoin(uint64_t * rCol, uint64_t * sCol, uint64_t rSize, uint64_t sSize);
 
 
 #endif

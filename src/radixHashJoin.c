@@ -8,7 +8,7 @@
 #include "indexManip.h"
 #include "viceFunctions.h"
 
-headResult * radixHashJoin(table * rTable, table * sTable, int32_t colR, int32_t colS) {
+headResult * radixHashJoin(uint64_t * rCol, uint64_t * sCol, uint64_t rSize, uint64_t sSize) {
 
         //TO BE REMOVED
         /*relation * rRel = malloc(sizeof(relation));
@@ -39,8 +39,8 @@ headResult * radixHashJoin(table * rTable, table * sTable, int32_t colR, int32_t
                 //s->tuples[i].payload = i;
         }*/
 
-        relation * rRel = extractRelation(rTable, colR);
-        relation * sRel = extractRelation(sTable, colS);
+        relation * rRel = extractRelation(rCol, rSize);
+        relation * sRel = extractRelation(sCol, sSize);
         double radixTotalTime = 0;
 
         uint32_t h1 = FIRST_REORDERED;

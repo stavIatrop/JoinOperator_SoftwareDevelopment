@@ -31,9 +31,9 @@ int initAsciiTable() {
                 return -1;
         }
         free(firstLine);
-        t->content = (int32_t **) malloc(t->columns * sizeof(int32_t *));
+        t->content = (uint64_t **) malloc(t->columns * sizeof(uint64_t *));
         for(int i = 0; i < t->columns; i++) {
-                t->content[i] = (int32_t *) calloc(t->rows, sizeof(int32_t));
+                t->content[i] = (uint64_t *) calloc(t->rows, sizeof(uint64_t));
         }
         return 0;
 }
@@ -76,9 +76,9 @@ int initBinTable() {
         }
         free(firstLine);
 
-        t->content = (int32_t **) malloc(t->columns * sizeof(int32_t *));
+        t->content = (uint64_t **) malloc(t->columns * sizeof(uint64_t *));
         for(int i = 0; i < t->columns; i++) {
-                t->content[i] = (int32_t *) calloc(t->rows, sizeof(int32_t));
+                t->content[i] = (uint64_t *) calloc(t->rows, sizeof(uint64_t));
         }
 
         return 0;
@@ -99,11 +99,13 @@ void testBinTable() {
         int res = readBinTable(t, inputFile);
         CU_ASSERT(res == 0);
 
-        CU_ASSERT(t->content[0][0] == 1904377912);
-        CU_ASSERT(t->content[t->columns - 1][t->rows - 1] == 1613197574);
-        CU_ASSERT(t->content[0][2] == 1178377593);
-        CU_ASSERT(t->content[1][3] == 2117763694);
-        CU_ASSERT(t->content[2][8] == 1017926526);
+        CU_ASSERT(t->columns == 3);
+        CU_ASSERT(t->rows == 10);
+        CU_ASSERT(t->content[0][0] == 2000111155);
+        CU_ASSERT(t->content[t->columns - 1][t->rows - 1] == 1772079413);
+        CU_ASSERT(t->content[0][2] == 593061414);
+        CU_ASSERT(t->content[1][3] == 1445653042);
+        CU_ASSERT(t->content[2][8] == 1674798794);
 
 }
 
@@ -128,11 +130,11 @@ void testReadBin() {
         CU_ASSERT_PTR_NOT_NULL(t);
         CU_ASSERT(t->columns == 3);
         CU_ASSERT(t->rows == 10);
-        CU_ASSERT(t->content[0][0] == 1904377912);
-        CU_ASSERT(t->content[t->columns - 1][t->rows - 1] == 1613197574);
-        CU_ASSERT(t->content[0][2] == 1178377593);
-        CU_ASSERT(t->content[1][3] == 2117763694);
-        CU_ASSERT(t->content[2][8] == 1017926526);
+        CU_ASSERT(t->content[0][0] == 2000111155);
+        CU_ASSERT(t->content[t->columns - 1][t->rows - 1] == 1772079413);
+        CU_ASSERT(t->content[0][2] == 593061414);
+        CU_ASSERT(t->content[1][3] == 1445653042);
+        CU_ASSERT(t->content[2][8] == 1674798794);
 
         freeTable(t);
 }
@@ -140,7 +142,7 @@ void testReadBin() {
 //Test Extract Relation
 void testExtractRelation() {
         t = readTable("smallTestTables/file3_10ascii", ASCII_FILE);
-        relation * r = extractRelation(t, 1);
+        relation * r = extractRelation(t->content[1], t->rows);
 
         CU_ASSERT(r->size == 10);
 
