@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "basicStructs.h"
+#include "queryStructs.h"
 
 #define BINARY_FILE 1
 #define ASCII_FILE 2
@@ -42,7 +43,7 @@ void freeTable(table * t);
 
 int writeList(headResult * head, char * outPath);
 
-headResult * radixHashJoin(uint64_t * rCol, uint64_t * sCol, uint64_t rSize, uint64_t sSize);
+headResult * radixHashJoin(colRel * r, colRel * s);
 
 
 #endif
