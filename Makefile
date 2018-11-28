@@ -6,6 +6,7 @@ SOURCE_INPUT_UT = src/inputTesting.c src/inputManip.c src/resultListManip.c
 SOURCE_REORDERING_UT = src/viceTests.c src/functions.c
 SOURCE_INDEXING_UT = src/indexTesting.c src/indexManip.c src/hashing.c src/sideFunctions.c
 SOURCE_PROJECT_UT = src/projectUnitTest.c src/radixHashJoin.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c
+SOURCE_I_O_RECEIVER = src/I_O_Receiver.c src/I_O_structManip.c
 
 NAME_OF_SEARCH_LIST_UT = searchListUnitTest
 NAME_OF_MAIN = main
@@ -13,6 +14,7 @@ NAME_OF_INPUT_UT = inputUt
 NAME_OF_REORDERING_UT = reorderingTest
 NAME_OF_INDEXING_UT = indexingUnitTest
 NAME_OF_PROJECT_UT = projectUnitTest
+NAME_OF_I_O_RECEIVER = ioreceiver
 
 OBJECT_SEARCH_LIST_UT = $(SOURCE_SEARCH_LIST_UT:.c=.o)
 OBJECT_MAIN = $(SOURCE_MAIN:.c=.o)
@@ -20,11 +22,12 @@ OBJECT_INPUT_UT = $(SOURCE_INPUT_UT:.c=.o)
 OBJECT_REORDERING_UT = $(SOURCE_REORDERING_UT:.c=.o)
 OBJECT_INDEXING_UT = $(SOURCE_INDEXING_UT:.c=.o)
 OBJECT_PROJECT_UT = $(SOURCE_PROJECT_UT:.c=.o)
+OBJECT_I_O_RECEIVER = $(SOURCE_I_O_RECEIVER:.c=.o)
 
 
 VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes -v
 
-all: mainTarget projectUt inputUtTarget searchListUt reorderingUtTarget indexingUnitTest
+all: mainTarget projectUt inputUtTarget searchListUt reorderingUtTarget indexingUnitTest ioreceiverTarget
 	@echo  
 	@echo Compile finished
 
@@ -56,7 +59,12 @@ indexingUt: $(SOURCE_INDEXING_UT) $(NAME_OF_INDEXING_UT)
 mainTarget: $(SOURCE_MAIN) $(NAME_OF_MAIN)
 	$(CC) -g -O0 -Wall -o  $(NAME_OF_MAIN) $(SOURCE_MAIN) -lm -lcunit
 	@echo Compiled Main
-	@echo 
+	@echo
+
+ioreceiverTarget: $(SOURCE_I_O_RECEIVER) $(NAME_OF_I_O_RECEIVER)
+	$(CC) -g -O0 -Wall -o  $(NAME_OF_I_O_RECEIVER) $(SOURCE_I_O_RECEIVER) -lm
+	@echo Compiled I_O_Receiver
+	@echo
 
 $(NAME_OF_PROJECT_UT): $(OBJECT_PROJECT_UT)
 	$(CC) -g  -O0 $(OBJECT_PROJECT_UT) -o $@ -lm -lcunit
@@ -75,6 +83,9 @@ $(NAME_OF_REORDERING_UT): $(OBJECT_REORDERING_UT)
 
 $(NAME_OF_INDEXING_UT): $(OBJECT_INDEXING_UT)
 	$(CC) -g  -O0 $(OBJECT_INDEXING_UT) -o $@ -lm -lcunit
+
+$(NAME_OF_I_O_RECEIVER): $(OBJECT_I_O_RECEIVER)
+	$(CC) -g -O0 $(OBJECT_I_O_RECEIVER) -o $@ -lm 
 
 .c.o:
 	$(CC) -c $< -o $@ -lm -lcunit
@@ -108,7 +119,7 @@ runValgrindUt:
 	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_PROJECT_UT)
 
 runHarness:
-	./harness small/small.init small/small.work small/small.result ./inputUt
+	./harness small/small.init small/small.work small/small.result ./ioreceiver
 
 cacheMisses:
 	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
@@ -121,5 +132,6 @@ clean:
 	rm -f $(NAME_OF_REORDERING_UT)
 	rm -f $(NAME_OF_INDEXING_UT)
 	rm -f $(NAME_OF_PROJECT_UT)
+	rm -f $(NAME_OF_I_O_RECEIVER)
 	rm -f src/*.o
 

@@ -63,6 +63,7 @@ static ssize_t write_bytes(int fd, const void *buffer, size_t num_bytes)
 //---------------------------------------------------------------------------
 int main(int argc, char *argv[]) {
   // Check for the correct number of arguments
+  
   if (argc != 5) {
     usage();
     exit(EXIT_FAILURE);
@@ -126,9 +127,11 @@ int main(int argc, char *argv[]) {
     perror("fork");
     exit(EXIT_FAILURE);
   } else if (pid == 0) {
+
     dup2(stdin_pipe[0], STDIN_FILENO);
     close(stdin_pipe[0]);
     close(stdin_pipe[1]);
+    
     dup2(stdout_pipe[1], STDOUT_FILENO);
     close(stdout_pipe[0]);
     close(stdout_pipe[1]);
@@ -148,6 +151,7 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     char buffer[4096];
+    //cout << "Reading from init_file..." << endl;
     ssize_t bytes = read(init_file, buffer, sizeof(buffer));
     if (bytes < 0) {
       if (errno == EINTR) continue;
@@ -155,6 +159,10 @@ int main(int argc, char *argv[]) {
       exit(EXIT_FAILURE);
     }
     if (bytes == 0) break;
+    // for (int i = 0;  i < bytes; i++)
+    // 	cout << buffer[i];
+    // cout << endl;
+    // cout << "Writing to feed child process..." << endl;
     ssize_t written = write_bytes(stdin_pipe[1], buffer, bytes);
     if (written < 0) {
       perror("write");
@@ -164,6 +172,7 @@ int main(int argc, char *argv[]) {
 
   close(init_file);
 
+  cout << "Writing Done" << endl;
   // Signal the end of the initial phase
   ssize_t status_bytes = write_bytes(stdin_pipe[1], "Done\n", 5);
   if (status_bytes < 0) {
@@ -179,6 +188,7 @@ int main(int argc, char *argv[]) {
 #else
   // Wait for the ready signal
   char status_buffer[6];
+  cout << "Wait for the ready signal" << endl;
   status_bytes = read_bytes(stdout_pipe[0], status_buffer, sizeof(status_buffer));
   if (status_bytes < 0) {
     perror("read");
@@ -186,10 +196,11 @@ int main(int argc, char *argv[]) {
   }
 
   if (status_bytes != sizeof(status_buffer) || (status_buffer[0] != 'R' && status_buffer[0] != 'r') ||
-      status_buffer[5] != '\n') {
+      status_buffer[5] != '\n')  {
     cerr << "Test program did not return ready status" << endl;
     exit(EXIT_FAILURE);
   }
+  cout << status_buffer;
 #endif
 
   // Use select with non-blocking files to read and write from the child process, avoiding deadlocks
