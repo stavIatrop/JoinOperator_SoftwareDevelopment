@@ -156,7 +156,7 @@ void createResArrayTest() {
 
 void updateRowIdsTest() {
     headResult * headResLocal = initialiseResultHead();
-    int rows = 1000;
+    int rows = 100000;
     int cols = 3;
     myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
     for(int i = 0; i < rows; i++) {
@@ -297,6 +297,177 @@ void createInterSelfJoinTest() {
 
 }
 
+void updateSelfJoinTest() {
+    int rows = 1000;
+    int cols = 2;
+    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
+    for(int i = 0; i < rows; i++) {
+        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    }
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            rowIds[i][j] = i;
+        }
+    }
+
+    myint_t * joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
+    for(int i = 0; i < cols; i++) {
+        joinedRels[i] = i;
+    }
+
+    nodeInter * node = initialiseNode(cols, rows, joinedRels, rowIds);
+
+    myint_t * arr = (myint_t *) malloc((rows / 2) * sizeof(myint_t));
+    for(int i = 0; i < rows / 2; i++) {
+        arr[i] = i * 2;
+    }
+
+    updateInterSelfJoin(node, arr, rows / 2);
+
+    CU_ASSERT(node->data->numbOfRows == rows / 2);
+    CU_ASSERT(node->data->joinedRels[1] == 1);
+    CU_ASSERT(node->data->numOfCols == 2);
+    CU_ASSERT(node->data->rowIds[0][0] == 0);
+    CU_ASSERT(node->data->rowIds[0][1] == 0);
+    CU_ASSERT(node->data->rowIds[10][0] == 20);
+    CU_ASSERT(node->data->rowIds[10][1] == 20);
+    CU_ASSERT(node->data->rowIds[100][0] == 200);
+    CU_ASSERT(node->data->rowIds[100][0] == 200);
+    CU_ASSERT(node->data->rowIds[rows / 2 - 1][0] == rows - 2);
+    CU_ASSERT(node->data->rowIds[rows / 2 - 1][1] == rows - 2);
+
+    freeNode(node);
+    free(arr);
+}
+
+void joinTwoIntermediates() {
+
+    CU_ASSERT(headInt->numOfIntermediates == 0);
+
+    headResult * headResLocal = initialiseResultHead();
+    int rows = 100000;
+    int cols = 2;
+    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
+    for(int i = 0; i < rows; i++) {
+        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    }
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            rowIds[i][j] = i;
+        }
+    }
+
+    myint_t * joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
+    for(int i = 0; i < cols; i++) {
+        joinedRels[i] = i;
+    }
+
+    pushInter(headInt, cols, rows, joinedRels, rowIds);
+
+    rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
+    for(int i = 0; i < rows; i++) {
+        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    }
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            rowIds[i][j] = i;
+        }
+    }
+
+    joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
+    for(int i = 0; i < cols; i++) {
+        joinedRels[i] = i + cols;
+    }
+    
+    pushInter(headInt, cols, rows, joinedRels, rowIds);
+
+    for(int i = 0; i < rows / 2; i++) {
+        rowTuple temp;
+        temp.rowR = (int32_t) i * 2;
+        temp.rowS = (uint32_t) i * 2;
+
+        pushResult(headResLocal, &temp);
+    }
+
+    CU_ASSERT(headInt->numOfIntermediates == 2);
+
+    updateInterAndDelete(headInt, headInt->start, headInt->start->next, headResLocal);
+
+    CU_ASSERT(headInt->numOfIntermediates == 1);
+
+    CU_ASSERT(headInt->start->data->numOfCols == 4);
+    CU_ASSERT(headInt->start->data->numbOfRows == rows / 2);
+    CU_ASSERT(headInt->start->data->joinedRels[0] == 0);
+    CU_ASSERT(headInt->start->data->joinedRels[3] == 3);
+
+    CU_ASSERT(headInt->start->data->rowIds[0][0] == 0);
+    CU_ASSERT(headInt->start->data->rowIds[0][2] == 0);
+    CU_ASSERT(headInt->start->data->rowIds[0][3] == 0);
+    CU_ASSERT(headInt->start->data->rowIds[10][0] == 10 * 2);
+    CU_ASSERT(headInt->start->data->rowIds[10][3] == 10 * 2);
+    CU_ASSERT(headInt->start->data->rowIds[rows / 4][0] == rows /2);
+    CU_ASSERT(headInt->start->data->rowIds[rows / 4][2] == rows / 2);
+    CU_ASSERT(headInt->start->data->rowIds[rows / 2 - 1][1] == rows - 2);
+    CU_ASSERT(headInt->start->data->rowIds[rows / 2 - 1][2] == rows - 2);
+    CU_ASSERT(headInt->start->data->rowIds[rows / 2 - 1][3] == rows - 2);
+
+    CU_ASSERT_PTR_NULL(headInt->start->next);
+
+    freeInterList(headInt);
+    headInt = initialiseHead();
+    freeResultList(headResLocal);
+
+}
+
+void joinInterWithRelTest() {
+    headResult * headResLocal = initialiseResultHead();
+    int rows = 1000;
+    int cols = 3;
+    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
+    for(int i = 0; i < rows; i++) {
+        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    }
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            rowIds[i][j] = i;
+        }
+    }
+
+    myint_t * joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
+    for(int i = 0; i < cols; i++) {
+        joinedRels[i] = i;
+    }
+
+    nodeInter * node = initialiseNode(cols, rows, joinedRels, rowIds);
+
+    for(int i = 0; i < rows / 2; i++) {
+        rowTuple temp;
+        temp.rowR = (int32_t) i * 2;
+        temp.rowS = (uint32_t) i * 2;
+
+        pushResult(headResLocal, &temp);
+    }
+
+    updateInterFromRes(node, headResLocal, 5);
+
+    CU_ASSERT(node->data->numOfCols == cols + 1);
+    CU_ASSERT(node->data->numbOfRows == rows / 2);
+    CU_ASSERT(node->data->joinedRels[2] == 2);
+    CU_ASSERT(node->data->joinedRels[3] == 5);
+
+    CU_ASSERT(node->data->rowIds[0][0] == 0);
+    CU_ASSERT(node->data->rowIds[0][3] == 0);
+    CU_ASSERT(node->data->rowIds[10][1] == 20);
+    CU_ASSERT(node->data->rowIds[10][3] == 20);
+    CU_ASSERT(node->data->rowIds[rows / 4][2] == rows / 2);
+    CU_ASSERT(node->data->rowIds[rows / 4][3] == rows / 2);
+    CU_ASSERT(node->data->rowIds[rows / 2 - 1][0] == rows - 2);
+    CU_ASSERT(node->data->rowIds[rows / 2 - 1][3] == rows - 2);
+
+    freeNode(node);
+    freeResultList(headResLocal);
+}
+
 int main(void) {
 
 	CU_pSuite pSuite1 = NULL;
@@ -335,7 +506,10 @@ int main(void) {
    if ((NULL == CU_add_test(pSuite2, "Test Create Results Array", createResArrayTest)) ||
        (NULL == CU_add_test(pSuite2, "Test Update Intermediate with Results List", updateRowIdsTest)) ||
        (NULL == CU_add_test(pSuite2, "Test Update 2 Intermediates with Results List", joinRowIdsTest)) ||
-       (NULL == CU_add_test(pSuite2, "Test Self Join No Intermediate", createInterSelfJoinTest)))
+       (NULL == CU_add_test(pSuite2, "Test Self Join No Intermediate", createInterSelfJoinTest)) ||
+       (NULL == CU_add_test(pSuite2, "Test Self Join With Intermediate", updateSelfJoinTest)) ||
+       (NULL == CU_add_test(pSuite2, "Test Join Of Two Intermediates", joinTwoIntermediates)) ||
+       (NULL == CU_add_test(pSuite2, "Test Join Of Intermediate with Relationship", joinInterWithRelTest)))
    {
       CU_cleanup_registry();
       return CU_get_error();

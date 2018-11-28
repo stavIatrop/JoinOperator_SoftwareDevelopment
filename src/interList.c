@@ -248,7 +248,7 @@ void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * no
     myint_t ** newRowIds = joinRowIds(node1, node2, headRes, numbOfResults);
 
     //Update Inter1
-    updateInter(node1, node1->data->numOfCols + node2->data->numOfCols - 1, numbOfResults, joinedRels, newRowIds);
+    updateInter(node1, node1->data->numOfCols + node2->data->numOfCols, numbOfResults, joinedRels, newRowIds);
 
     //Delete Inter2
     deleteInterNode(headInt, node2);
