@@ -15,4 +15,5 @@ searchListUnitTest
 create
 indexingUnitTest
 projectUnitTest
+queryExecuteUnitTest
 

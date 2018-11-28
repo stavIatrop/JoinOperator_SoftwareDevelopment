@@ -71,10 +71,10 @@ void testPushInter() {
     CU_ASSERT_PTR_NULL(head->start->next->next);
 }
 
-void testRefreshInter() {
+void testUpdatehInter() {
     myint_t ** rowIds = create_2DArray(3, 20);
     myint_t * rels = create_1DArray(3, 3);
-    refreshInter(head->start, 3, 20, rels, rowIds);
+    updateInter(head->start, 3, 20, rels, rowIds);
     CU_ASSERT(head->numOfIntermediates == 2);
     CU_ASSERT(head->start->data->rowIds[0][0] == 1);
     CU_ASSERT(head->start->data->joinedRels[0] == 3);
@@ -125,7 +125,7 @@ int main(void) {
 
    /* add the tests to the suite */
    if ((NULL == CU_add_test(pSuite1, "Test Pushing", testPushInter)) ||
-       (NULL == CU_add_test(pSuite1, "Test Refreshing", testRefreshInter)) ||
+       (NULL == CU_add_test(pSuite1, "Test Updating", testUpdatehInter)) ||
        (NULL == CU_add_test(pSuite1, "Test Deleting", testDeleteNode)))
    {
       CU_cleanup_registry();
