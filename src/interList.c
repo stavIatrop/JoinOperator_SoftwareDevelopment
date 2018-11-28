@@ -5,6 +5,7 @@
 
 #include "basicStructs.h"
 #include "queryStructs.h"
+#include "resultListInterface.h"
 
 inter * initialiseInter(myint_t cols, myint_t rows, myint_t * joinedRels, myint_t ** rowIds) {
     inter * retInter = (inter *) malloc(sizeof(inter));
@@ -32,10 +33,9 @@ headInter * initialiseHead() {
 }
 
 void freeNode(nodeInter * node) {
-    for(int whichCol = 0; whichCol < node->data->numOfCols; whichCol++) {
-       free(node->data->rowIds[whichCol]);
+    for(int whichRow = 0; whichRow < node->data->numbOfRows; whichRow++) {
+       free(node->data->rowIds[whichRow]);
     }
-
     free(node->data->rowIds);
     free(node->data->joinedRels);
     free(node->data);
@@ -48,8 +48,9 @@ void freeNodeListRec(nodeInter * node) {
     }
     freeNode(node);
 }
+
 void freeInterList(headInter * head) {
-    if(head != NULL) {
+    if(head->start != NULL) {
         freeNodeListRec(head->start);
     }
     free(head);
@@ -72,7 +73,7 @@ void pushInter(headInter * head ,myint_t cols, myint_t rows, myint_t * joinedRel
 
 void updateInter(nodeInter * node, myint_t cols,  myint_t rows, myint_t * joinedRels, myint_t ** rowIds) {
     free(node->data->joinedRels);
-    for(int i = 0; i < node->data->numOfCols; i++) {
+    for(int i = 0; i < node->data->numbOfRows; i++) {
         free(node->data->rowIds[i]);
     }
     free(node->data->rowIds);
@@ -106,21 +107,6 @@ void deleteInterNode(headInter * head, nodeInter * node) {
         }
     }
     head->numOfIntermediates -= 1;
-}
-
-//Finding the size of the results
-myint_t countSizeOfList(headResult * head) {
-    if(head->numbOfNodes == 0) {
-        return 0;
-    }
-
-    myint_t numbOfResults = 0;
-    resultNode * currentNode = head->firstNode;
-    for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
-        numbOfResults += currentNode->size;
-        currentNode = currentNode->nextNode;
-    }
-    return numbOfResults;
 }
 
 myint_t ** createResultArray(headResult * head, myint_t * size) {
@@ -209,7 +195,7 @@ void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t added
     updateInter(intNode, intNode->data->numOfCols + 1, numbOfResults, joinedRels, newRowIds);
 }
 
-myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t results, myint_t commonRel) {
+myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t results) {
     if(results == 0) {
         return NULL;
     }
@@ -217,7 +203,7 @@ myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes
     //Memory Allocations
     myint_t ** retArr = (myint_t **) malloc(results * sizeof(myint_t *));
     for(myint_t i = 0; i < results; i++) {
-        retArr[i] = (myint_t *) malloc((node1->data->numOfCols + node2->data->numOfCols - 1) * sizeof(myint_t));
+        retArr[i] = (myint_t *) malloc((node1->data->numOfCols + node2->data->numOfCols) * sizeof(myint_t));
     }
 
     resultNode * currentNode = headRes->firstNode;    
@@ -229,14 +215,9 @@ myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes
                 retArr[counter][whichCol] = node1->data->rowIds[currentNode->tuples[whichRes].rowR][whichCol];
             }
 
-            //Add the rowIds of the second Intermediate (avoid adding the common col)
-            for(int whichCol = node1->data->numOfCols; whichCol < node1->data->numOfCols + node2->data->numOfCols - 1; whichCol++) {
-                if(node2->data->joinedRels[whichCol - node1->data->numOfCols] != commonRel) {
-                    retArr[counter][whichCol] = node2->data->rowIds[currentNode->tuples[whichRes].rowS][whichCol - node1->data->numOfCols];
-                }
-                else {
-                    whichCol -= 1;
-                }
+            //Add the rowIds of the second Intermediate
+            for(int whichCol = node1->data->numOfCols; whichCol < node1->data->numOfCols + node2->data->numOfCols; whichCol++) {
+                retArr[counter][whichCol] = node2->data->rowIds[currentNode->tuples[whichRes].rowS][whichCol - node1->data->numOfCols];
             }
 
             counter += 1;
@@ -247,30 +228,24 @@ myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes
 }
 
 //CASE: Both relationships belong to an intermediate (Inter1 will be updated, Inter2 will be deleted)
-void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t commonRel) {
+void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * node2, headResult * headRes) {
     //New rows
     myint_t numbOfResults = countSizeOfList(headRes);
 
-    myint_t * joinedRels = (myint_t *) malloc((node1->data->numOfCols + node2->data->numOfCols - 1) * sizeof(myint_t));
+    myint_t * joinedRels = (myint_t *) malloc((node1->data->numOfCols + node2->data->numOfCols) * sizeof(myint_t));
 
     //Add joinedRels of node1 in new joinedRels
     for(int whichRel = 0; whichRel < node1->data->numOfCols; whichRel++) {
         joinedRels[whichRel] = node1->data->joinedRels[whichRel];
     }
 
-    //Add joinedRels of node2 in new joinedRels (avoid adding common rel)
-    for(int whichRel = node1->data->numOfCols; whichRel < node1->data->numOfCols + node2->data->numOfCols - 1; whichRel++) {
-        if(node2->data->joinedRels[whichRel - node1->data->numOfCols] != commonRel) {
-            joinedRels[whichRel] = node2->data->joinedRels[whichRel - node1->data->numOfCols];
-        }
-        else {
-            whichRel -= 1;
-        }
+    //Add joinedRels of node2 in new joinedRels
+    for(int whichRel = node1->data->numOfCols; whichRel < node1->data->numOfCols + node2->data->numOfCols; whichRel++) {
+        joinedRels[whichRel] = node2->data->joinedRels[whichRel - node1->data->numOfCols];
     }
 
-
     //Create new rowIds
-    myint_t ** newRowIds = joinRowIds(node1, node2, headRes, numbOfResults, commonRel);
+    myint_t ** newRowIds = joinRowIds(node1, node2, headRes, numbOfResults);
 
     //Update Inter1
     updateInter(node1, node1->data->numOfCols + node2->data->numOfCols - 1, numbOfResults, joinedRels, newRowIds);

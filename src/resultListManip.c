@@ -3,7 +3,7 @@
 
 #include "basicStructs.h"
 #include "resultListInterface.h"
-
+#include "queryStructs.h"
 
 headResult * initialiseResultHead() {
         headResult * newHead = (headResult *) malloc(sizeof(headResult));
@@ -82,4 +82,19 @@ int checkResults(headResult * head) {
                 currNode = currNode->nextNode;
         }
         return 0;
+}
+
+//Finding the size of the results
+myint_t countSizeOfList(headResult * head) {
+    if(head->numbOfNodes == 0) {
+        return 0;
+    }
+
+    myint_t numbOfResults = 0;
+    resultNode * currentNode = head->firstNode;
+    for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+        numbOfResults += currentNode->size;
+        currentNode = currentNode->nextNode;
+    }
+    return numbOfResults;
 }

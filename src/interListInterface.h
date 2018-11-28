@@ -6,7 +6,7 @@
 //Join results Intermediate manipulation
 void createInterFromRes(headInter * headInt, headResult * headRes, myint_t rel1, myint_t rel2);
 void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t addedRel);
-void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t commonRel);
+void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * node2, headResult * headRes);
 void updateInterSelfJoin(nodeInter * node, myint_t * joinRows, myint_t numbOfRows);
 void createInterSelfJoin(headInter * head, myint_t rel, myint_t * rows, myint_t numbOfRows);
 
@@ -24,10 +24,9 @@ nodeInter * initialiseNode(myint_t cols, myint_t rows, myint_t * joinedRels, myi
 void freeNode(nodeInter * node);
 void freeNodeListRec(nodeInter * node);
 
-myint_t countSizeOfList(headResult * head);
 myint_t ** createResultArray(headResult * head, myint_t * size);
 myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t results);
-myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t results, myint_t commonRel);
+myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t results);
 
 
 
