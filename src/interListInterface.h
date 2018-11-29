@@ -29,6 +29,4 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
 myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t results);
 
 
-
-
 #endif

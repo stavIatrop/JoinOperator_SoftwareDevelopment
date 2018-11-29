@@ -10,6 +10,7 @@
 #include "interListInterface.h"
 #include "basicStructs.h"
 #include "resultListInterface.h"
+#include "checksumInterface.h"
 
 #define TUPLE_NUMB 1000000
 
@@ -468,12 +469,73 @@ void joinInterWithRelTest() {
     freeResultList(headResLocal);
 }
 
+
+
+//Test perform checksum
+int initChecksum() {
+
+    headInt = initialiseHead();
+
+    return 0;
+}
+
+int freeChecksum() {
+    freeInterList(headInt);
+    return 0;
+}
+
+
+void checksumTest() {
+    int rows = 100000;
+    int cols = 3;
+    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
+    for(int i = 0; i < rows; i++) {
+        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    }
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            rowIds[i][j] = i;
+        }
+    }
+
+    myint_t * joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
+    for(int i = 0; i < cols; i++) {
+        joinedRels[i] = i;
+    }
+
+    pushInter(headInt, cols, rows, joinedRels, rowIds);
+
+    colRel * sums = (colRel *) malloc(cols * sizeof(colRel));
+    for(int i = 0; i < cols; i++) {
+        sums[i].rel = cols - i - 1;
+        sums[i].col = (myint_t *) malloc(2 * rows * sizeof(myint_t));
+        for(int j = 0; j < 2 * rows; j++) {
+            sums[i].col[j] = i + 1;
+        }
+        sums[i].rows = 2 * rows;
+    }
+
+
+    checksum * csum = performChecksums(sums, cols, headInt);
+
+    CU_ASSERT(csum->numbOfChecksums == 3);
+    CU_ASSERT(csum->checksums[0] == rows);
+    CU_ASSERT(csum->checksums[1] == 2 * rows);
+    CU_ASSERT(csum->checksums[2] == 3 * rows);
+
+    for(int i = 0; i < cols; i++) {
+        free(sums[i].col);
+    }
+    free(sums);
+    free(csum->checksums);
+    free(csum);
+}
+
 int main(void) {
 
 	CU_pSuite pSuite1 = NULL;
 	CU_pSuite pSuite2 = NULL;
-
-
+	CU_pSuite pSuite3 = NULL;
 
 	//Initialize the CUnit test registry
    if (CUE_SUCCESS != CU_initialize_registry())
@@ -515,7 +577,19 @@ int main(void) {
       return CU_get_error();
    }
 
-   
+   /* add a suite to the registry */
+   pSuite3 = CU_add_suite("Test Checksum", initChecksum, freeChecksum);
+   if (NULL == pSuite3) {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   /* add the tests to the suite */
+   if ((NULL == CU_add_test(pSuite3, "Test Checksum return values", checksumTest)))
+   {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
 
    CU_basic_set_mode(CU_BRM_VERBOSE);
    CU_basic_run_tests();
