@@ -1,10 +1,59 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <jointPerformer.h>
+#include "jointPerformer.h"
+#include "interListInterface.h"
+#include "inputInterface.h"
+
+void workerF(filter *pred, headInter *hq)
+{
+	colRel *r = &(pred->participant);
+        myint_t *col = r->col;
+	char op = pred->op;
+        myint_t rows = r->rows, cur = 0, i, value = pred->value;
+        myint_t *temp = malloc(rows*sizeof(myint_t));
+	nodeInter *node = findNode(hq,r->rel);
+
+	if (node)
+        {
+                inter * data = node->data;
+                myint_t j, limit=data->numbOfRows, cols = data->numOfCols, next;
+                for (i=0; i<cols; i++) if (data->joinedRels[i]==r->rel) break;
+                myint_t *rowIds = data->rowIds[i];
+                i=0;
+                while(i < limit)
+                {
+        	        j = rowIds[i];
+        	        next = findNextRowId(rowIds,i,rows);
+
+        	        if (ApplyFilter(col[j],op,value)>0) for ( ; i<next; i++)
+        	        {
+        	                temp[cur++]=i;
+  	        	}
+
+                }
+		updateInterSelfJoin(node,temp,cur);
+        }
+        else
+        {
+                for (i=0; i<rows; i++)
+                {
+                        if (ApplyFilter(col[i],op,value)>0) temp[cur++]=i;
+                }
+		temp = realloc((void *) temp, cur * sizeof(myint_t));
+		createInterSelfJoin(hq,r->rel,temp,cur);
+        }
+}
+
+char ApplyFilter(myint_t value, char op, myint_t target)
+{
+	if (op==LESS) return value < target ? 1 : 0;
+	if (op==GREATER) return value > target ? 1 : 0;
+	return value == target ? 1 : 0;
+}
 
 void workerJ(join *pred, headInter * hq)
 {
-	bool self = 0;
+	char self = 0;
 	colRel *r1 = &(pred->participant1), *r2 = &(pred->participant2);
 	myint_t rel1 = r1->rel, rel2=r2->rel;
 	if (rel1 == rel2) self = 1;
@@ -42,7 +91,11 @@ void workerJ(join *pred, headInter * hq)
 			myint_t newRel;
 			res = performRHJ(hq,r1,r2,&newRel);
 			if (used==0) createInterFromRes(hq,res,rel1,rel2);
-			else if (used==1) updateInterFromRes(hq,res,newRel);
+			else if (used==1)
+			{
+				if (rel1==newRel) updateInterFromRes(n2,res,newRel);
+				else updateInterFromRes(n1,res,newRel);
+			}
 			else updateInterAndDelete(hq,n1,n2,res);
 		}
 	}
@@ -80,18 +133,18 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 	}
 
 	inter *data = node->data;
-	myint_t j, cur=0, rows = data->numberOfRows;
+	myint_t j, cur=0, rows = data->numbOfRows, cols = data->numOfCols;
 	t = malloc(rows*sizeof(tuple));
-	for (i=0;i< numOfCols; i++) if (data->joinedRels[i]==r1->rel) break;
-	myint_t rowIds = data->rowIds[i];
+	for (i=0;i< cols; i++) if (data->joinedRels[i]==r->rel) break;
+	myint_t *rowIds = data->rowIds[i];
 	i=0;
-        while(i < limit)
+        while(i < rows)
         {
-                j = trueValids[i];
+                j = rowIds[i];
                 t[cur].key = col[j];
 		t[cur].payload = j;
 		cur++;
-                i = findNextRowId(trueValids,i,limit);
+                next = findNextRowId(rowIds,i,rows);
         }
 	rel->size = cur;
 	t = realloc((void *) t, cur * sizeof(tuple));
@@ -103,8 +156,8 @@ headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel)
 	relation *relation1 = forgeRelationsheep(hi,r1);
 	relation *relation2 = forgeRelationsheep(hi,r2);
 	char new1=0, new2=0;
-	if (n1==NULL) new1=1;
-	if (n2==NULL) new2=1;
+	if (findNode(hi,r1->rel)==NULL) new1=1;
+	if (findNode(hi,r2->rel)==NULL) new2=1;
 	if (new1==1 && new2==0) *newRel = r1->rel;
 	if (new1==0 && new2==1) *newRel = r2->rel;
 	return radixHashJoin(relation1,relation2);
@@ -117,11 +170,11 @@ myint_t *performSameNodeJoin(nodeInter *node, join *pred, myint_t *survivors)
         myint_t *col1 = r1->col;
         myint_t *col2 = r2->col;
 	inter * data = node->data;
-        myint_t rows = data->numbOfRows, cur=0, i, j1, j2, next1, next2;
+        myint_t rows = data->numbOfRows, cur=0, i, j1, j2, next1, next2, cols = data->numOfCols;
         myint_t *temp = malloc(rows*sizeof(myint_t));
-        for (i=0; i<numOfCols; i++) if (data->joinedRels[i]==r1->rel) break;
+        for (i=0; i< cols; i++) if (data->joinedRels[i]==r1->rel) break;
 	myint_t *rowIds1 = data->rowIds[i];
-	for (i=0; i<numOfCols; i++) if (data->joinedRels[i]==r2->rel) break;
+	for (i=0; i< cols; i++) if (data->joinedRels[i]==r2->rel) break;
         myint_t *rowIds2 = data->rowIds[i];
         i=0;
         while(i < rows)
@@ -137,7 +190,7 @@ myint_t *performSameNodeJoin(nodeInter *node, join *pred, myint_t *survivors)
 			temp[cur++]=i;
 		}
         }
-	*survivor = cur;
+	*survivors = cur;
         temp = realloc((void *) temp, cur * sizeof(myint_t));
         return temp;
 }
@@ -147,13 +200,15 @@ myint_t *performSelfJoin(nodeInter *valids, join *pred, myint_t *survivors)
 	colRel *r1 = &(pred->participant1);
 	myint_t *col1 = r1->col;
 	myint_t *col2 = pred->participant2.col;
+	myint_t rows = r1->rows, cur = 0;
+        myint_t *temp = malloc(rows*sizeof(myint_t));
+
 	if (valids)
 	{
 		inter * data = valids->data;
-		myint_t rows = r1->rows, cur=0, i, j, limit = valids->data->numbOfRows;
-		myint_t *temp = malloc(rows*sizeof(myint_t));
-		for (i=0;i< numOfCols; i++) if (data->joinedRels[i]==r1->rel) break;
-		myint_t trueValids = data->rowIds[i];
+		myint_t i, j, limit=data->numbOfRows, cols = data->numOfCols;
+		for (i=0;i< cols; i++) if (data->joinedRels[i]==r1->rel) break;
+		myint_t *trueValids = data->rowIds[i];
 		i=0;
 		while(i < limit)
 		{
@@ -164,14 +219,12 @@ myint_t *performSelfJoin(nodeInter *valids, join *pred, myint_t *survivors)
 	}
 	else
 	{
-		myint_t rows = r1->rows, cur = 0;
-                myint_t *temp = malloc(rows*sizeof(myint_t));
                 for (myint_t i=0; i<rows; i++)
                 {
                         if (col1[i]==col2[i]) temp[cur++]=i;
                 }
 	}
-	*survivor = cur;
+	*survivors = cur;
         temp = realloc((void *) temp, cur * sizeof(myint_t));
         return temp;
 }
@@ -197,7 +250,7 @@ myint_t *performSelfJoin(nodeInter *valids, join *pred, myint_t *survivors)
 	return flag1 + flag2;
 }*/
 
-nodeInter *findNode(headinter *hi, myint_t rel)
+nodeInter *findNode(headInter *hi, myint_t rel)
 {
         nodeInter *node = hi->start;
         inter *interp;
@@ -205,9 +258,9 @@ nodeInter *findNode(headinter *hi, myint_t rel)
         while (node!=NULL)
         {
                 interp = node->data;
-                for (i=0; i < inter->numOfCols; i++)
+                for (i=0; i < interp->numOfCols; i++)
                 {
-                        if (node->joinedRels[i] == rel) return node;
+                        if (interp->joinedRels[i] == rel) return node;
                 }
                 node = node->next;
         }
