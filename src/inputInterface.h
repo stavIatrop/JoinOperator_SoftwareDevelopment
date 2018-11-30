@@ -43,7 +43,7 @@ void freeTable(table * t);
 
 int writeList(headResult * head, char * outPath);
 
-headResult * radixHashJoin(colRel * r, colRel * s);
+headResult * radixHashJoin(relation * rRel, relation * sRel);
 
 
 #endif
