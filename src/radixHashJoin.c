@@ -7,9 +7,8 @@
 #include "inputInterface.h"
 #include "indexManip.h"
 #include "viceFunctions.h"
-#include "queryStructs.h"
 
-headResult * radixHashJoin(colRel * r, colRel * s) {
+headResult * radixHashJoin(relation * rRel, relation * sRel) {
 
         //TO BE REMOVED
         /*relation * rRel = malloc(sizeof(relation));
@@ -40,8 +39,6 @@ headResult * radixHashJoin(colRel * r, colRel * s) {
                 //s->tuples[i].payload = i;
         }*/
 
-        relation * rRel = extractRelation(r->col, r->rows);
-        relation * sRel = extractRelation(s->col, s->rows);
         double radixTotalTime = 0;
 
         uint32_t h1 = FIRST_REORDERED;
