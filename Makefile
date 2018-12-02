@@ -27,7 +27,7 @@ OBJECT_I_O_RECEIVER = $(SOURCE_I_O_RECEIVER:.c=.o)
 
 VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes -v
 
-all: mainTarget projectUt inputUtTarget searchListUt reorderingUtTarget indexingUnitTest ioreceiverTarget
+all: mainTarget projectUt inputUtTarget searchListUt reorderingUtTarget indexingUnitTest ioreceiverTarget harnessTarget
 	@echo  
 	@echo Compile finished
 
@@ -66,9 +66,14 @@ ioreceiverTarget: $(SOURCE_I_O_RECEIVER) $(NAME_OF_I_O_RECEIVER)
 	@echo Compiled I_O_Receiver
 	@echo
 
+harnessTarget:
+	./compile.sh
+	@echo Compiled harness
+	@echo
+
 $(NAME_OF_PROJECT_UT): $(OBJECT_PROJECT_UT)
 	$(CC) -g  -O0 $(OBJECT_PROJECT_UT) -o $@ -lm -lcunit
-	
+
 $(NAME_OF_SEARCH_LIST_UT): $(OBJECT_SEARCH_LIST_UT)
 	$(CC) -g  -O0 $(OBJECT_SEARCH_LIST_UT) -o $@ -lm -lcunit
 
@@ -119,7 +124,7 @@ runValgrindUt:
 	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_PROJECT_UT)
 
 runHarness:
-	./harness small/small.init small/small.work small/small.result ./ioreceiver
+	./build/release/harness small/small.init small/small.work small/small.result ./ioreceiver
 
 cacheMisses:
 	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
@@ -133,5 +138,6 @@ clean:
 	rm -f $(NAME_OF_INDEXING_UT)
 	rm -f $(NAME_OF_PROJECT_UT)
 	rm -f $(NAME_OF_I_O_RECEIVER)
+	rm -r /home/stav/Desktop/Project/ioannidisproject/build
 	rm -f src/*.o
 

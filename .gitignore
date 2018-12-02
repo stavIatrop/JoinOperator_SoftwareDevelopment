@@ -15,4 +15,7 @@ searchListUnitTest
 create
 indexingUnitTest
 projectUnitTest
+ioreceiver
+build/
+stdoutFile
 

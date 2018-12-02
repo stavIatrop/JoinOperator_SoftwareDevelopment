@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
   }
 
 
-#if 1
+#if 0
   // Wait for 1 second
   this_thread::sleep_for(1s);
 
@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
   }
   cout << status_buffer;
 #endif
-
+  
   // Use select with non-blocking files to read and write from the child process, avoiding deadlocks
   if (set_nonblocking(stdout_pipe[0]) == -1) {
     perror("fcntl");

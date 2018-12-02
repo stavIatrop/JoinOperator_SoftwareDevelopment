@@ -24,9 +24,10 @@ void AddInputNode(Input * , char *);
 void FreeInput(Input *);
 
 relationsheepArray InitializeRelSheepArray(myint_t numRels);
-void FillRelArray(relationsheepArray * , Input * );
-int FillRel(relationsheep * , FILE * );
+void FillRelArray(relationsheepArray * , Input *);
+int FillRel(relationsheep * , FILE *);
 void FreeRelArray(relationsheepArray );
+void PrintRelArray(relationsheepArray *, FILE *);
 
 
 #endif

@@ -18,23 +18,25 @@ Input * InitializeInput() {
 void AddInputNode(Input * input, char *file) {
 
 
+	InputNode * newNode = (InputNode *) malloc(sizeof(InputNode));
+	newNode->filename = (char *) malloc( (strlen(file) + 1) * sizeof(char));
+	strcpy(newNode->filename, file);
+	strcat(newNode->filename, "\0");
+	newNode->next = NULL;
+
+	input->numNodes = input->numNodes + 1;
+
 	if( input->head == NULL) {
 
-		input->head = (InputNode *) malloc(sizeof(InputNode));
-		input->head->filename = (char *) malloc(sizeof(file) * sizeof(char));
-		strcpy(input->head->filename, file);
-		input->head->next = NULL;
+		input->head = newNode;
 		input->tail = input->head;
-		input->numNodes = input->numNodes + 1;
+
 		return;
 	}
 
-	input->tail->next = (InputNode *) malloc(sizeof(InputNode));
-	input->tail = input->tail->next;
-	input->tail->filename = (char *) malloc(sizeof(file) * sizeof(char));
-	strcpy(input->tail->filename, file);
-	input->tail->next = NULL;
-	input->numNodes = input->numNodes + 1;
+    input->tail->next = newNode;
+    input->tail = input->tail->next;
+
 	return;
 }
 
@@ -64,11 +66,12 @@ void FillRelArray(relationsheepArray * relArray, Input * input) {
 	InputNode * temp;
 	temp = input->head;
 
-	for (int i = 0; i < input->numNodes; ++i) {
+	for (int i = 0; i < input->numNodes; i++) {
 		
 		FILE * inputFile  = fopen(temp->filename, "rb");
+		
 		if(inputFile == NULL) {
-            perror("Failed to open file\n");
+            perror("Failed to open file2\n");
             return;
         }
 
@@ -104,6 +107,29 @@ int FillRel(relationsheep * rel, FILE * inputFile) {
 
 }
 
+void PrintRelArray(relationsheepArray * relArray, FILE * fp) {
+
+
+	for(int i = 0; i < relArray->numOfRels; i++) {
+
+		for(int j = 0; j < relArray->rels[i].cols; j++ ) {
+
+			for(int k = 0; k < relArray->rels[i].rows; k++) {
+
+				char * s = malloc(10 * sizeof(char));
+				sprintf(s, "%ld", relArray->rels[i].pointToCols[j][k]);
+				fprintf(fp, "%s|", s );
+				fflush(fp);
+				free(s);
+			}
+			fprintf(fp, "\n");
+			fflush(fp);
+
+		}
+	}
+	return;
+
+}
 
 void FreeRelArray(relationsheepArray relArray) {
 
