@@ -23,6 +23,7 @@ typedef struct RelationsheepArray {
 
 typedef struct Inter {
         myint_t numOfCols;
+        myint_t numbOfRows;
         myint_t **rowIds;
         myint_t *joinedRels;
 } inter;
