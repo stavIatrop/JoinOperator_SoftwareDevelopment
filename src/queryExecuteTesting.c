@@ -65,8 +65,8 @@ void testPushInter() {
 
     CU_ASSERT(head->numOfIntermediates == 1);
     CU_ASSERT(head->start->data->rowIds[0][0] == 1);
-    CU_ASSERT(head->start->data->rowIds[10][0] == 1);
-    CU_ASSERT(head->start->data->rowIds[5][2] == 1);
+    CU_ASSERT(head->start->data->rowIds[0][10] == 1);
+    CU_ASSERT(head->start->data->rowIds[2][5] == 1);
     CU_ASSERT(head->start->data->joinedRels[0] == 1);
     CU_ASSERT(head->start->data->numOfCols == 3);
     CU_ASSERT_PTR_NULL(head->start->next);
@@ -82,7 +82,7 @@ void testPushInter() {
     CU_ASSERT_PTR_NULL(head->start->next->next);
 }
 
-void testUpdatehInter() {
+void testUpdateInter() {
     myint_t ** rowIds = create_2DArray(3, 20);
     myint_t * rels = create_1DArray(3, 3);
     updateInter(head->start, 3, 20, rels, rowIds);
@@ -147,13 +147,13 @@ void createResArrayTest() {
 
     CU_ASSERT(size == TUPLE_NUMB);
     CU_ASSERT(arr[0][0] == 0);
-    CU_ASSERT(arr[0][1] == 0);
-    CU_ASSERT(arr[10000][0] == 10000);
-    CU_ASSERT(arr[10000][1] == 10000);
-    CU_ASSERT(arr[TUPLE_NUMB - 1][0] == TUPLE_NUMB - 1);
-    CU_ASSERT(arr[TUPLE_NUMB - 1][1] == TUPLE_NUMB - 1);
+    CU_ASSERT(arr[1][0] == 0);
+    CU_ASSERT(arr[0][10000] == 10000);
+    CU_ASSERT(arr[1][10000] == 10000);
+    CU_ASSERT(arr[0][TUPLE_NUMB - 1] == TUPLE_NUMB - 1);
+    CU_ASSERT(arr[1][TUPLE_NUMB - 1] == TUPLE_NUMB - 1);
 
-    for(myint_t i = 0; i < TUPLE_NUMB; i++) {
+    for(myint_t i = 0; i < 2; i++) {
         free(arr[i]);
     }
     free(arr);
@@ -163,13 +163,13 @@ void updateRowIdsTest() {
     headResult * headResLocal = initialiseResultHead();
     int rows = 100000;
     int cols = 3;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    myint_t ** rowIds = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        rowIds[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
+            rowIds[j][i] = i;
         }
     }
 
@@ -195,16 +195,16 @@ void updateRowIdsTest() {
     arr = updateRowIds(intNode, headResLocal, rows / 2);
 
     CU_ASSERT(arr[0][0] == 0);
-    CU_ASSERT(arr[0][1] == 0);
-    CU_ASSERT(arr[0][2] == 0);
-    CU_ASSERT(arr[0][3] == 0);
-    CU_ASSERT(arr[rows / 4][0] == rows / 2);
-    CU_ASSERT(arr[rows / 4][3] == rows / 2);
-    CU_ASSERT(arr[rows / 2 - 1][1] == rows - 2);
-    CU_ASSERT(arr[rows / 2 - 1][2] == rows - 2);
-    CU_ASSERT(arr[rows / 2 - 1][3] == rows - 2);
+    CU_ASSERT(arr[1][0] == 0);
+    CU_ASSERT(arr[2][0] == 0);
+    CU_ASSERT(arr[3][0] == 0);
+    CU_ASSERT(arr[0][rows / 4] == rows / 2);
+    CU_ASSERT(arr[3][rows / 4] == rows / 2);
+    CU_ASSERT(arr[1][rows / 2 - 1] == rows - 2);
+    CU_ASSERT(arr[2][rows / 2 - 1] == rows - 2);
+    CU_ASSERT(arr[3][rows / 2 - 1] == rows - 2);
 
-    for(int i = 0; i < rows / 2; i++) {
+    for(int i = 0; i < cols + 1; i++) {
         free(arr[i]);
     }
     free(arr);
@@ -216,13 +216,13 @@ void joinRowIdsTest() {
     headResult * headResLocal = initialiseResultHead();
     int rows = 1000;
     int cols = 2;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    myint_t ** rowIds = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        rowIds[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
+            rowIds[j][i] = i;
         }
     }
 
@@ -233,13 +233,13 @@ void joinRowIdsTest() {
 
     nodeInter * node1 = initialiseNode(cols, rows, joinedRels, rowIds);
 
-    rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    rowIds = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        rowIds[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
+            rowIds[j][i] = i;
         }
     }
 
@@ -261,17 +261,17 @@ void joinRowIdsTest() {
     myint_t ** arr = joinRowIds(node1, node2, headResLocal, rows / 2);
 
     CU_ASSERT(arr[0][0] == 0);
-    CU_ASSERT(arr[0][2] == 0);
-    CU_ASSERT(arr[0][3] == 0);
-    CU_ASSERT(arr[10][0] == 10 * 2);
-    CU_ASSERT(arr[10][3] == 10 * 2);
-    CU_ASSERT(arr[rows / 4][0] == rows /2);
-    CU_ASSERT(arr[rows / 4][2] == rows / 2);
-    CU_ASSERT(arr[rows / 2 - 1][1] == rows - 2);
-    CU_ASSERT(arr[rows / 2 - 1][2] == rows - 2);
-    CU_ASSERT(arr[rows / 2 - 1][3] == rows - 2);
+    CU_ASSERT(arr[2][0] == 0);
+    CU_ASSERT(arr[3][0] == 0);
+    CU_ASSERT(arr[0][10] == 10 * 2);
+    CU_ASSERT(arr[3][10] == 10 * 2);
+    CU_ASSERT(arr[0][rows / 4] == rows /2);
+    CU_ASSERT(arr[2][rows / 4] == rows / 2);
+    CU_ASSERT(arr[1][rows / 2 - 1] == rows - 2);
+    CU_ASSERT(arr[2][rows / 2 - 1] == rows - 2);
+    CU_ASSERT(arr[3][rows / 2 - 1] == rows - 2);
 
-    for(int i = 0; i < rows / 2; i++) {
+    for(int i = 0; i < 2 * cols; i++) {
         free(arr[i]);
     }
     free(arr);
@@ -293,8 +293,8 @@ void createInterSelfJoinTest() {
     CU_ASSERT(headInt->start->data->numbOfRows == rows);
     CU_ASSERT(headInt->start->data->numOfCols == 1);
     CU_ASSERT(headInt->start->data->rowIds[0][0] == 0);
-    CU_ASSERT(headInt->start->data->rowIds[rows / 2][0] == rows / 2);
-    CU_ASSERT(headInt->start->data->rowIds[rows - 1][0] == rows - 1);
+    CU_ASSERT(headInt->start->data->rowIds[0][rows / 2] == rows / 2);
+    CU_ASSERT(headInt->start->data->rowIds[0][rows - 1] == rows - 1);
 
     freeInterList(headInt);
     free(arr);
@@ -305,13 +305,13 @@ void createInterSelfJoinTest() {
 void updateSelfJoinTest() {
     int rows = 1000;
     int cols = 2;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    myint_t ** rowIds = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        rowIds[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
+            rowIds[j][i] = i;
         }
     }
 
@@ -333,13 +333,13 @@ void updateSelfJoinTest() {
     CU_ASSERT(node->data->joinedRels[1] == 1);
     CU_ASSERT(node->data->numOfCols == 2);
     CU_ASSERT(node->data->rowIds[0][0] == 0);
-    CU_ASSERT(node->data->rowIds[0][1] == 0);
-    CU_ASSERT(node->data->rowIds[10][0] == 20);
-    CU_ASSERT(node->data->rowIds[10][1] == 20);
-    CU_ASSERT(node->data->rowIds[100][0] == 200);
-    CU_ASSERT(node->data->rowIds[100][0] == 200);
-    CU_ASSERT(node->data->rowIds[rows / 2 - 1][0] == rows - 2);
-    CU_ASSERT(node->data->rowIds[rows / 2 - 1][1] == rows - 2);
+    CU_ASSERT(node->data->rowIds[1][0] == 0);
+    CU_ASSERT(node->data->rowIds[0][10] == 20);
+    CU_ASSERT(node->data->rowIds[1][10] == 20);
+    CU_ASSERT(node->data->rowIds[0][100] == 200);
+    CU_ASSERT(node->data->rowIds[0][100] == 200);
+    CU_ASSERT(node->data->rowIds[0][rows / 2 - 1] == rows - 2);
+    CU_ASSERT(node->data->rowIds[1][rows / 2 - 1] == rows - 2);
 
     freeNode(node);
     free(arr);
@@ -352,13 +352,13 @@ void joinTwoIntermediates() {
     headResult * headResLocal = initialiseResultHead();
     int rows = 100000;
     int cols = 2;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    myint_t ** rowIds = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        rowIds[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
+            rowIds[j][i] = i;
         }
     }
 
@@ -369,13 +369,13 @@ void joinTwoIntermediates() {
 
     pushInter(headInt, cols, rows, joinedRels, rowIds);
 
-    rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    rowIds = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        rowIds[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
+            rowIds[j][i] = i;
         }
     }
 
@@ -406,15 +406,15 @@ void joinTwoIntermediates() {
     CU_ASSERT(headInt->start->data->joinedRels[3] == 3);
 
     CU_ASSERT(headInt->start->data->rowIds[0][0] == 0);
-    CU_ASSERT(headInt->start->data->rowIds[0][2] == 0);
-    CU_ASSERT(headInt->start->data->rowIds[0][3] == 0);
-    CU_ASSERT(headInt->start->data->rowIds[10][0] == 10 * 2);
-    CU_ASSERT(headInt->start->data->rowIds[10][3] == 10 * 2);
-    CU_ASSERT(headInt->start->data->rowIds[rows / 4][0] == rows /2);
-    CU_ASSERT(headInt->start->data->rowIds[rows / 4][2] == rows / 2);
-    CU_ASSERT(headInt->start->data->rowIds[rows / 2 - 1][1] == rows - 2);
-    CU_ASSERT(headInt->start->data->rowIds[rows / 2 - 1][2] == rows - 2);
-    CU_ASSERT(headInt->start->data->rowIds[rows / 2 - 1][3] == rows - 2);
+    CU_ASSERT(headInt->start->data->rowIds[2][0] == 0);
+    CU_ASSERT(headInt->start->data->rowIds[3][0] == 0);
+    CU_ASSERT(headInt->start->data->rowIds[0][10] == 10 * 2);
+    CU_ASSERT(headInt->start->data->rowIds[3][10] == 10 * 2);
+    CU_ASSERT(headInt->start->data->rowIds[0][rows / 4] == rows /2);
+    CU_ASSERT(headInt->start->data->rowIds[2][rows / 4] == rows / 2);
+    CU_ASSERT(headInt->start->data->rowIds[1][rows / 2 - 1] == rows - 2);
+    CU_ASSERT(headInt->start->data->rowIds[2][rows / 2 - 1] == rows - 2);
+    CU_ASSERT(headInt->start->data->rowIds[3][rows / 2 - 1] == rows - 2);
 
     CU_ASSERT_PTR_NULL(headInt->start->next);
 
@@ -428,13 +428,13 @@ void joinInterWithRelTest() {
     headResult * headResLocal = initialiseResultHead();
     int rows = 1000;
     int cols = 3;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    myint_t ** rowIds = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        rowIds[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
+            rowIds[j][i] = i;
         }
     }
 
@@ -461,13 +461,13 @@ void joinInterWithRelTest() {
     CU_ASSERT(node->data->joinedRels[3] == 5);
 
     CU_ASSERT(node->data->rowIds[0][0] == 0);
-    CU_ASSERT(node->data->rowIds[0][3] == 0);
-    CU_ASSERT(node->data->rowIds[10][1] == 20);
-    CU_ASSERT(node->data->rowIds[10][3] == 20);
-    CU_ASSERT(node->data->rowIds[rows / 4][2] == rows / 2);
-    CU_ASSERT(node->data->rowIds[rows / 4][3] == rows / 2);
-    CU_ASSERT(node->data->rowIds[rows / 2 - 1][0] == rows - 2);
-    CU_ASSERT(node->data->rowIds[rows / 2 - 1][3] == rows - 2);
+    CU_ASSERT(node->data->rowIds[3][0] == 0);
+    CU_ASSERT(node->data->rowIds[1][10] == 20);
+    CU_ASSERT(node->data->rowIds[3][100] == 200);
+    CU_ASSERT(node->data->rowIds[2][rows / 4] == rows / 2);
+    CU_ASSERT(node->data->rowIds[3][rows / 4] == rows / 2);
+    CU_ASSERT(node->data->rowIds[0][rows / 2 - 1] == rows - 2);
+    CU_ASSERT(node->data->rowIds[3][rows / 2 - 1] == rows - 2);
 
     freeNode(node);
     freeResultList(headResLocal);
@@ -492,13 +492,13 @@ int freeChecksum() {
 void checksumTest() {
     int rows = 100000;
     int cols = 3;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    myint_t ** rowIds = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        rowIds[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
+            rowIds[j][i] = i;
         }
     }
 
@@ -708,7 +708,7 @@ int main(void) {
 
    /* add the tests to the suite */
    if ((NULL == CU_add_test(pSuite1, "Test Pushing", testPushInter)) ||
-       (NULL == CU_add_test(pSuite1, "Test Updating", testUpdatehInter)) ||
+       (NULL == CU_add_test(pSuite1, "Test Updating", testUpdateInter)) ||
        (NULL == CU_add_test(pSuite1, "Test Deleting", testDeleteNode)))
    {
       CU_cleanup_registry();
