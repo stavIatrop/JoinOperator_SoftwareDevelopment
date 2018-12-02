@@ -548,144 +548,144 @@ int freeArray()
 	return 0;
 }
 
-void testNextRowId()
-{
-        CU_ASSERT(findNextRowId(arr1D,0,20)==5);
-        CU_ASSERT(findNextRowId(arr1D,5,20)==6);
-        CU_ASSERT(findNextRowId(arr1D,6,20)==20);
-}
+// void testNextRowId()
+// {
+//         CU_ASSERT(findNextRowId(arr1D,0,20)==5);
+//         CU_ASSERT(findNextRowId(arr1D,5,20)==6);
+//         CU_ASSERT(findNextRowId(arr1D,6,20)==20);
+// }
 
-int smarterInit()
-{
-    initList();
-    int rows = 1000;
-    int cols = 2;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
-    }
-    for(int i = 0; i < rows; i++) {
-        for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
-        }
-    }
+// int smarterInit()
+// {
+//     initList();
+//     int rows = 1000;
+//     int cols = 2;
+//     myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
+//     for(int i = 0; i < rows; i++) {
+//         rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+//     }
+//     for(int i = 0; i < rows; i++) {
+//         for(int j = 0; j < cols; j++) {
+//             rowIds[i][j] = i;
+//         }
+//     }
 
-    myint_t * joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
-    for(int i = 0; i < cols; i++) {
-        joinedRels[i] = i;
-    }
+//     myint_t * joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
+//     for(int i = 0; i < cols; i++) {
+//         joinedRels[i] = i;
+//     }
 
-    pushInter(headInt, cols, rows, joinedRels, rowIds);
-    pushInter(headInt, 0, 0, NULL, NULL);
+//     pushInter(headInt, cols, rows, joinedRels, rowIds);
+//     pushInter(headInt, 0, 0, NULL, NULL);
 
-	myint_t rows2 = 2000;
-        col = malloc(rows2*sizeof(myint_t));
-        for (int i=0; i<rows2; i++)
-        {
-                col[i]=i;
-        }
-        cr = malloc(sizeof(colRel));
-        cr -> rel = 5;
-        cr -> rows = rows2;
-        cr->col = col;
-	return 0;
-}
+// 	myint_t rows2 = 2000;
+//         col = malloc(rows2*sizeof(myint_t));
+//         for (int i=0; i<rows2; i++)
+//         {
+//                 col[i]=i;
+//         }
+//         cr = malloc(sizeof(colRel));
+//         cr -> rel = 5;
+//         cr -> rows = rows2;
+//         cr->col = col;
+// 	return 0;
+// }
 
-int smarterFree()
-{
-	freeList();
-	free(cr);
-        free(col);
-	return 0;
-}
+// int smarterFree()
+// {
+// 	freeList();
+// 	free(cr);
+//         free(col);
+// 	return 0;
+// }
 
-void testRelationsheepForging()
-{
-	myint_t rows2 = 2000, rows = 1000, cols = 2;
+// void testRelationsheepForging()
+// {
+// 	myint_t rows2 = 2000, rows = 1000, cols = 2;
 
-	rel = forgeRelationsheep(headInt, cr);
+// 	rel = forgeRelationsheep(headInt, cr);
 
-	CU_ASSERT(rel->size==rows2);
-	printf("Size is %d\n", rel->size);
-	for (int i=0; i<rows2; i++)
-	{
-		CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
-	}
+// 	CU_ASSERT(rel->size==rows2);
+// 	printf("Size is %d\n", rel->size);
+// 	for (int i=0; i<rows2; i++)
+// 	{
+// 		CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
+// 	}
 
-	/*cr -> rel = 1;
-	free(rel->tuples);
-	free(rel);
-	rel = forgeRelationsheep(headInt, cr);
+// 	/*cr -> rel = 1;
+// 	free(rel->tuples);
+// 	free(rel);
+// 	rel = forgeRelationsheep(headInt, cr);
 
-        CU_ASSERT(rel->size==rows);
-        printf("Size is %d\n", rel->size);
-        for (int i=0; i<rows; i++)
-        {
-                CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
-        }
+//         CU_ASSERT(rel->size==rows);
+//         printf("Size is %d\n", rel->size);
+//         for (int i=0; i<rows; i++)
+//         {
+//                 CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
+//         }
 
-	for (int i=0; i<rows; i++) rowIds[i]= rowIds[i] * 2;
-	free(rel->tuples);
-        free(rel);
-        rel = forgeRelationsheep(headInt, cr);
+// 	for (int i=0; i<rows; i++) rowIds[i]= rowIds[i] * 2;
+// 	free(rel->tuples);
+//         free(rel);
+//         rel = forgeRelationsheep(headInt, cr);
 
-        CU_ASSERT(rel->size==rows);
-        printf("Size is %d\n", rel->size);
-        for (int i=0; i<rows; i++)
-        {
-                CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
-        }*/
+//         CU_ASSERT(rel->size==rows);
+//         printf("Size is %d\n", rel->size);
+//         for (int i=0; i<rows; i++)
+//         {
+//                 CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
+//         }*/
 
-	free(rel->tuples);
-	free(rel);
-}
+// 	free(rel->tuples);
+// 	free(rel);
+// }
 
-void testFilter()
-{
-    int rows = 1000;
-    int cols = 2;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
-    }
-    for(int i = 0; i < rows; i++) {
-        for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
-        }
-    }
+// void testFilter()
+// {
+//     int rows = 1000;
+//     int cols = 2;
+//     myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
+//     for(int i = 0; i < rows; i++) {
+//         rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+//     }
+//     for(int i = 0; i < rows; i++) {
+//         for(int j = 0; j < cols; j++) {
+//             rowIds[i][j] = i;
+//         }
+//     }
 
-    myint_t * joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
-    for(int i = 0; i < cols; i++) {
-        joinedRels[i] = i;
-    }
+//     myint_t * joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
+//     for(int i = 0; i < cols; i++) {
+//         joinedRels[i] = i;
+//     }
 
-    nodeInter * node = initialiseNode(cols, rows, joinedRels, rowIds);
+//     nodeInter * node = initialiseNode(cols, rows, joinedRels, rowIds);
 
-    pushInter(headInt, cols, rows, joinedRels, rowIds);
-    pushInter(headInt, 0, 0, NULL, NULL);
+//     pushInter(headInt, cols, rows, joinedRels, rowIds);
+//     pushInter(headInt, 0, 0, NULL, NULL);
 
-	myint_t rows2 = 2000;
-        myint_t *col = malloc(rows2*sizeof(myint_t));
-        for (int i=0; i<rows2; i++)
-        {
-                col[i]=i;
-        }
-        colRel *cr = malloc(sizeof(colRel));
-        cr -> rel = 5;
-        cr -> rows = rows2;
-        cr->col = col;
+// 	myint_t rows2 = 2000;
+//         myint_t *col = malloc(rows2*sizeof(myint_t));
+//         for (int i=0; i<rows2; i++)
+//         {
+//                 col[i]=i;
+//         }
+//         colRel *cr = malloc(sizeof(colRel));
+//         cr -> rel = 5;
+//         cr -> rows = rows2;
+//         cr->col = col;
 
-	filter filt;
-	filt.participant = *cr;
-	filt.op = 1;
-	filt.value = 1000;
-	workerF(&filt, headInt);
+// 	filter filt;
+// 	filt.participant = *cr;
+// 	filt.op = 1;
+// 	filt.value = 1000;
+// 	workerF(&filt, headInt);
 
-	CU_ASSERT(headInt->numOfIntermediates==3);
-	CU_ASSERT(findNode(headInt,cr->rel)->data->numOfCols==1);
-	CU_ASSERT(findNode(headInt,cr->rel)->data->numbOfRows==filt.value);
-	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[0][i]==i);
-}
+// 	CU_ASSERT(headInt->numOfIntermediates==3);
+// 	CU_ASSERT(findNode(headInt,cr->rel)->data->numOfCols==1);
+// 	CU_ASSERT(findNode(headInt,cr->rel)->data->numbOfRows==filt.value);
+// 	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[0][i]==i);
+// }
 
 int main(void) {
 
@@ -749,27 +749,27 @@ int main(void) {
       return CU_get_error();
    }
 
-  	pSuite4 = CU_add_suite("Test Next Row Id", smarterInit, smarterFree);
-        if (NULL == pSuite4) {
-                CU_cleanup_registry();
-                return CU_get_error();
-        }
-        if (NULL == CU_add_test(pSuite4, "Test it", testNextRowId))
-        {
-                CU_cleanup_registry();
-                return CU_get_error();
-        }
+  	// pSuite4 = CU_add_suite("Test Next Row Id", smarterInit, smarterFree);
+    //     if (NULL == pSuite4) {
+    //             CU_cleanup_registry();
+    //             return CU_get_error();
+    //     }
+    //     if (NULL == CU_add_test(pSuite4, "Test it", testNextRowId))
+    //     {
+    //             CU_cleanup_registry();
+    //             return CU_get_error();
+    //     }
 
-	pSuite5 = CU_add_suite("Test Forging Operations", initIntermediatesResults, freeIntermedieatesResults);
-        if (NULL == pSuite5) {
-                CU_cleanup_registry();
-                return CU_get_error();
-        }
-        if (NULL == CU_add_test(pSuite5, "Test 1", testRelationsheepForging))
-        {
-                CU_cleanup_registry();
-                return CU_get_error();
-        }
+	// pSuite5 = CU_add_suite("Test Forging Operations", initIntermediatesResults, freeIntermedieatesResults);
+    //     if (NULL == pSuite5) {
+    //             CU_cleanup_registry();
+    //             return CU_get_error();
+    //     }
+    //     if (NULL == CU_add_test(pSuite5, "Test 1", testRelationsheepForging))
+    //     {
+    //             CU_cleanup_registry();
+    //             return CU_get_error();
+    //     }
 
 
 
