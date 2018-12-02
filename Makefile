@@ -26,7 +26,7 @@ OBJECT_QUERY_EXECUTE_UT = $(SOURCE_QUERY_EXECUTE_UT:.c=.o)
 
 VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes -v
 
-all: mainTarget queryExecuteUtTarget inputUtTarget searchListUt reorderingUtTarget indexingUnitTest
+all: queryExecuteUtTarget inputUtTarget searchListUt reorderingUtTarget indexingUnitTest
 	@echo  
 	@echo Compile finished
 
