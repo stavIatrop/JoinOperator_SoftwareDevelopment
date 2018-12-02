@@ -692,8 +692,8 @@ int main(void) {
 	CU_pSuite pSuite1 = NULL;
 	CU_pSuite pSuite2 = NULL;
 	CU_pSuite pSuite3 = NULL;
-	CU_pSuite pSuite4 = NULL;
-	CU_pSuite pSuite5 = NULL;
+	//CU_pSuite pSuite4 = NULL;
+	//CU_pSuite pSuite5 = NULL;
 
 	//Initialize the CUnit test registry
    if (CUE_SUCCESS != CU_initialize_registry())
