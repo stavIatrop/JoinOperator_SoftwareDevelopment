@@ -15,6 +15,8 @@ Input * InitializeInput() {
 	return input;
 }
 
+
+
 void AddInputNode(Input * input, char *file) {
 
 
@@ -39,6 +41,29 @@ void AddInputNode(Input * input, char *file) {
 
 	return;
 }
+
+void ConstructInput(Input * input, char * inputStr) {
+
+	int end = 0, start = 0;
+    int i;
+    for(i = 0; i < strlen(inputStr); i++) {
+
+            if( inputStr[i] == '\n') {
+                start = end;
+                end = i + 1;
+
+                char * filename = (char *) malloc((i - start + 1) * sizeof(char));
+                strncpy(filename, inputStr + start, i - start);
+
+                
+                AddInputNode(input,filename);
+                
+                free(filename);
+            }
+    }
+    return;
+}
+
 
 void FreeInput(Input * input){
 

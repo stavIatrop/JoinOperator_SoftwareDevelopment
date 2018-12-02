@@ -21,6 +21,7 @@ typedef struct InputList {
 
 Input * InitializeInput();
 void AddInputNode(Input * , char *);
+void ConstructInput(Input * , char * );
 void FreeInput(Input *);
 
 relationsheepArray InitializeRelSheepArray(myint_t numRels);
