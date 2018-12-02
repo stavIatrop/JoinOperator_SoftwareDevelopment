@@ -115,7 +115,7 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 {
 	nodeInter *node = findNode(hi,r->rel);
 	relation *rel = malloc(sizeof(relation));
-        tuple *t = rel->tuples;
+        tuple *t;
 	myint_t *col = r->col, i;
 	if (node==NULL)
         {
@@ -127,6 +127,7 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
         		t[i].key = col[i];
         	        t[i].payload = i;
         	}
+		rel->tuples = t;
 		return rel;
 	}
 
@@ -135,17 +136,20 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 	t = malloc(rows*sizeof(tuple));
 	for (i=0;i< cols; i++) if (data->joinedRels[i]==r->rel) break;
 	myint_t *rowIds = data->rowIds[i];
+	printf("Should be 1: %ld\n",i);
 	i=0;
         while(i < rows)
         {
+		printf("i is %ld and rowIds is %ld\n",i, rowIds[i]);
                 j = rowIds[i];
                 t[cur].key = col[j];
 		t[cur].payload = j;
 		cur++;
                 i = findNextRowId(rowIds,i,rows);
         }
+	printf("This i should be 1000: %ld\nThis cur should be 1000: %ld\n",i,cur);
 	rel->size = cur;
-	t = realloc((void *) t, cur * sizeof(tuple));
+	rel->tuples = realloc((void *) t, cur * sizeof(tuple));
 	return rel;
 }
 
