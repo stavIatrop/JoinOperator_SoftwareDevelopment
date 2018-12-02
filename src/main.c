@@ -15,7 +15,7 @@
 int main(int argc, char *argv[])
 {
         //Reading Arguments
-        arguments * args = readArguments(argc, argv);
+        /*arguments * args = readArguments(argc, argv);
         if(args == NULL) {
                 perror("Wrong arguments");
                 return -1;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         freeResultList(results);
         freeTable(r);
         freeTable(s);
-        free(args);
+        free(args);*/
 
 
         return 0;

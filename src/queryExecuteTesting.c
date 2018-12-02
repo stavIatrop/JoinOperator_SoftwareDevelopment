@@ -11,12 +11,14 @@
 #include "basicStructs.h"
 #include "resultListInterface.h"
 #include "checksumInterface.h"
+#include "jointPerformer.h"
 
 #define TUPLE_NUMB 1000000
 
 headInter * head = NULL;
 headResult * headRes = NULL;
 headInter * headInt = NULL;
+myint_t *arr1D;
 
 //Test intermediate list accessing, adding, deleting
 int initList() {
@@ -531,11 +533,32 @@ void checksumTest() {
     free(csum);
 }
 
+int initArray()
+{
+        arr1D = create_1DArray(20,3);
+        arr1D[5]=7;
+	return 0;
+}
+
+int freeArray()
+{
+        free(arr1D);
+	return 0;
+}
+
+void testNextRowId()
+{
+        CU_ASSERT(findNextRowId(arr1D,0,20)==5);
+        CU_ASSERT(findNextRowId(arr1D,5,20)==6);
+        CU_ASSERT(findNextRowId(arr1D,6,20)==20);
+}
+
 int main(void) {
 
 	CU_pSuite pSuite1 = NULL;
 	CU_pSuite pSuite2 = NULL;
 	CU_pSuite pSuite3 = NULL;
+	CU_pSuite pSuite4 = NULL;
 
 	//Initialize the CUnit test registry
    if (CUE_SUCCESS != CU_initialize_registry())
@@ -590,6 +613,18 @@ int main(void) {
       CU_cleanup_registry();
       return CU_get_error();
    }
+
+  	pSuite4 = CU_add_suite("Test Next Row Id", initArray, freeArray);
+        if (NULL == pSuite4) {
+                CU_cleanup_registry();
+                return CU_get_error();
+        }
+        if (NULL == CU_add_test(pSuite4, "Test it", testNextRowId))
+        {
+                CU_cleanup_registry();
+                return CU_get_error();
+        }
+
 
    CU_basic_set_mode(CU_BRM_VERBOSE);
    CU_basic_run_tests();

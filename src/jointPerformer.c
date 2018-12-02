@@ -16,20 +16,18 @@ void workerF(filter *pred, headInter *hq)
 	if (node)
         {
                 inter * data = node->data;
-                myint_t j, limit=data->numbOfRows, cols = data->numOfCols, next;
+                myint_t limit=data->numbOfRows, next, cols = data->numOfCols;
                 for (i=0; i<cols; i++) if (data->joinedRels[i]==r->rel) break;
                 myint_t *rowIds = data->rowIds[i];
                 i=0;
                 while(i < limit)
                 {
-        	        j = rowIds[i];
-        	        next = findNextRowId(rowIds,i,rows);
-
-        	        if (ApplyFilter(col[j],op,value)>0) for ( ; i<next; i++)
+			next = findNextRowId(rowIds,i,rows);
+        	        if (ApplyFilter(col[rowIds[i]],op,value)>0) for ( ; i<next; i++)
         	        {
         	                temp[cur++]=i;
   	        	}
-
+			else i = next;
                 }
 		updateInterSelfJoin(node,temp,cur);
         }
@@ -144,7 +142,7 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
                 t[cur].key = col[j];
 		t[cur].payload = j;
 		cur++;
-                next = findNextRowId(rowIds,i,rows);
+                i = findNextRowId(rowIds,i,rows);
         }
 	rel->size = cur;
 	t = realloc((void *) t, cur * sizeof(tuple));
@@ -170,7 +168,7 @@ myint_t *performSameNodeJoin(nodeInter *node, join *pred, myint_t *survivors)
         myint_t *col1 = r1->col;
         myint_t *col2 = r2->col;
 	inter * data = node->data;
-        myint_t rows = data->numbOfRows, cur=0, i, j1, j2, next1, next2, cols = data->numOfCols;
+        myint_t rows = data->numbOfRows, cur=0, i, next1, next2, cols = data->numOfCols;
         myint_t *temp = malloc(rows*sizeof(myint_t));
         for (i=0; i< cols; i++) if (data->joinedRels[i]==r1->rel) break;
 	myint_t *rowIds1 = data->rowIds[i];
@@ -179,16 +177,15 @@ myint_t *performSameNodeJoin(nodeInter *node, join *pred, myint_t *survivors)
         i=0;
         while(i < rows)
         {
-                j1 = rowIds1[i];
-		j2 = rowIds2[i];
 		next1 = findNextRowId(rowIds1,i,rows);
-		next2 = findNextRowId(rowIds2,i,rows);
-		if (next1>next2) next1 = next2;
+                next2 = findNextRowId(rowIds2,i,rows);
+                if (next2<next1) next1 = next2;
 
-		if (col1[j1]==col2[j2]) for ( ; i<next1; i++)
-		{
-			temp[cur++]=i;
-		}
+		if (col1[rowIds1[i]]==col2[rowIds2[i]]) for (; i<next1; i++)
+                {
+                        temp[cur++]=i;
+                }
+		else i = next1;
         }
 	*survivors = cur;
         temp = realloc((void *) temp, cur * sizeof(myint_t));
@@ -206,15 +203,16 @@ myint_t *performSelfJoin(nodeInter *valids, join *pred, myint_t *survivors)
 	if (valids)
 	{
 		inter * data = valids->data;
-		myint_t i, j, limit=data->numbOfRows, cols = data->numOfCols;
+		myint_t i, j, limit=data->numbOfRows, cols = data->numOfCols, next;
 		for (i=0;i< cols; i++) if (data->joinedRels[i]==r1->rel) break;
 		myint_t *trueValids = data->rowIds[i];
 		i=0;
 		while(i < limit)
 		{
+			next = findNextRowId(trueValids,i,limit);
 			j = trueValids[i];
-			if (col1[j]==col2[j]) temp[cur++]=j;
-			i = findNextRowId(trueValids,i,limit);
+			if (col1[j]==col2[j]) for (; i<next; i++) temp[cur++]=i;
+			else i = next;
 		}
 	}
 	else
