@@ -135,7 +135,7 @@ int main(void) {
 
                     //Perform joins
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
-                        fprintf(stderr, "Inters: %d\n", headInt->numOfIntermediates);
+                        //fprintf(stderr, "Inters: %d\n", headInt->numOfIntermediates);
                         workerJ(&(newQuery->joins[whichJoin]), headInt);
                     }
 
