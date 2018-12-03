@@ -693,7 +693,7 @@ int main(void) {
 
    /* add the tests to the suite */
    if ((NULL == CU_add_test(pSuite1, "Test Pushing", testPushInter)) ||
-       (NULL == CU_add_test(pSuite1, "Test Updating", testUpdatehInter)) ||
+       (NULL == CU_add_test(pSuite1, "Test Updating", testUpdateInter)) ||
        (NULL == CU_add_test(pSuite1, "Test Deleting", testDeleteNode)))
    {
       CU_cleanup_registry();

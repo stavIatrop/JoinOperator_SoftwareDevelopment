@@ -17,7 +17,7 @@ void workerF(filter *pred, headInter *hq)
         {
                 inter * data = node->data;
                 myint_t limit=data->numOfCols, next, rows = data->numbOfRows;
-                for (i=0; i<cols; i++) if (data->joinedRels[i]==r->rel) break;
+                for (i=0; i<data->numbOfRows; i++) if (data->joinedRels[i]==r->rel) break;
                 myint_t *rowIds = data->rowIds[i];
                 i=0;
                 while(i < limit)
