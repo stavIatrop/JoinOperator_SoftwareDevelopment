@@ -20,3 +20,4 @@ build/
 stdoutFile
 queryExecuteUnitTest
 src/test1
+valgrindOut

@@ -135,7 +135,11 @@ int main(void) {
 
                     //Perform joins
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
+<<<<<<< HEAD
                         //fprintf(stderr, "Inters: %ld\n", headInt->numOfIntermediates);
+=======
+                        //fprintf(stderr, "Inters: %d\n", headInt->numOfIntermediates);
+>>>>>>> ffcb3e0a8526c299290dc2b397f3af35affc26cb
                         workerJ(&(newQuery->joins[whichJoin]), headInt);
                     }
 
@@ -150,7 +154,11 @@ int main(void) {
                     writePipe(cs);
 
                     //Perform checksums
+<<<<<<< HEAD
                     //fprintf(stderr, "FINISHED ONE: Inters: %ld | Rows = %ld\n", headInt->numOfIntermediates, headInt->start->data->numbOfRows);
+=======
+                    fprintf(stderr, "FINISHED ONE: Inters: %ld | Rows = %ld\n", headInt->numOfIntermediates, headInt->start->data->numbOfRows);
+>>>>>>> ffcb3e0a8526c299290dc2b397f3af35affc26cb
                     //fprintf(stderr, "%ld | %ld\n", headInt->start->data->rowIds[0][0], headInt->start->data->rowIds[1][0]);
 
                     //perror("aaaaaaaaaa\n");

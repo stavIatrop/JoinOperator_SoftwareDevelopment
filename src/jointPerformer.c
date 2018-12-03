@@ -38,7 +38,6 @@ void workerF(filter *pred, headInter *hq)
                 for (i=0; i<rows; i++)
                 {
                         if (ApplyFilter(col[i],op,value)>0) {
-				if(op == EQUAL) fprintf(stderr, "OP = %d | i = %ld | value = %ld | rows = %ld | col[i] = %ld\n", op, i, value, rows, col[i]);
 				temp[cur++]=i;
 			}
                 }
@@ -97,9 +96,7 @@ void workerJ(join *pred, headInter * hq)
 			headResult *res;
 			myint_t newRel;
 			char switched;
-			//fprintf(stderr, "BBB\n");
 			res = performRHJ(hq,r1,r2,&newRel, &switched);
-			fprintf(stderr, "AAAAA\n");
 			if (used==0) createInterFromRes(hq,res,rel1,rel2);
 			else if (used==1)
 			{
@@ -110,7 +107,6 @@ void workerJ(join *pred, headInter * hq)
 			freeResultList(res);
 		}
 	}
-	//fprintf(stderr, "KALOPISIS\n");
 	return;
 }
 
@@ -151,28 +147,17 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 	t = malloc(rows*sizeof(tuple));
 	for (i=0;i< cols; i++) if (data->joinedRels[i]==r->rel) break;
 	myint_t *rowIds = data->rowIds[i];
-	//fprintf(stderr, "Should be 1: %ld\n",i);
 	i=0;
         while(i < rows)
         {
-		//printf("i is %ld and rowIds is %ld\n",i, rowIds[i]);
                 next = findNextRowId(rowIds,i,rows);
-		//fprintf(stderr, "Rows = %ld\n", rows);
-		//fprintf(stderr, "i = %ld | next = %ld\n", i, next);
 		for ( ; i < next; i++)
 		{
-			//fprintf(stderr, "j  = %ld | i = %ld\n", j, i);
 			j = rowIds[i];
-			//fprintf(stderr, "j  = %ld | i = %ld\n", rowIds[i+1], i);
-			
-			myint_t a = col[j];
-			//fprintf(stderr, "55555555555555555\n");
                 	t[cur].key = col[j];
-			//fprintf(stderr, "66666666666666666\n");
         	        t[cur++].payload = i;
 		}
         }
-	//fprintf(stderr, "This cur should be 1000: %ld\n",i,cur);
 	rel->size = cur;
 	rel->tuples = realloc((void *) t, cur * sizeof(tuple));
 	return rel;
@@ -181,13 +166,10 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, char *switched)
 {
 	relation *relation1 = forgeRelationsheep(hi,r1);
-			//fprintf(stderr, "CCCC\n");
 
 	relation *relation2 = forgeRelationsheep(hi,r2);
-	
-	headResult *res;
 
-	//fprintf(stderr, "AAAAA\n");
+	headResult *res;
 
 	res = radixHashJoin(relation1,relation2, switched);
 
@@ -196,10 +178,6 @@ headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, c
 	if (findNode(hi,r2->rel)==NULL) new2=1;
 	if (new1==1 && new2==0) *newRel = r1->rel;
 	if (new1==0 && new2==1) *newRel = r2->rel;
-
-
-
-	//fprintf(stderr, "SIZE = %ld\n", res->numbOfNodes);
 
 	return res;
 }
@@ -269,27 +247,6 @@ myint_t *performSelfJoin(nodeInter *valids, join *pred, myint_t *survivors)
         temp = realloc((void *) temp, cur * sizeof(myint_t));
         return temp;
 }
-
-/*char inInterList(headinter *hi, myint_t rel1, myint_t rel2)
-{
-	char flag1 = 0, flag2 = 0;
-	nodeInter *node = hi->start;
-	inter *interp;
-	myint_t i;
-	while (node!=NULL)
-	{
-		interp = node->data;
-		for (i=0; i < inter->numOfCols; i++)
-		{
-			if (node->joinedRels[i] == rel1) flag1=1;
-			if (node->joinedRels[i] == rel2) flag2=1;
-			if (flag1 && flag2) break;
-		}
-		if (flag1 && flag2) return 2;
-		node = node->next;
-	}
-	return flag1 + flag2;
-}*/
 
 nodeInter *findNode(headInter *hi, myint_t rel)
 {

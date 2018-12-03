@@ -78,7 +78,7 @@ int writeList(struct HeadResult * head, char * outPath) {
                 }
         }
 
-        if(fprintf(outputFile, "%u\n", totalSize) < 0) {
+        if(fprintf(outputFile, "%ld\n", totalSize) < 0) {
                 perror("Failed to write number of results");
                 return -1;
         }
@@ -234,9 +234,9 @@ void printTable(table * t) {
 }
 
 void printRelation(relation * r) {
-        printf("  <<< Printing relation of size %d >>>\n", r->size);
+        printf("  <<< Printing relation of size %ld >>>\n", r->size);
         for(int i = 0; i < r->size; i++) {
-                printf("(%d, %d)\n", r->tuples[i].payload, r->tuples[i].key);
+                printf("(%ld, %ld)\n", r->tuples[i].payload, r->tuples[i].key);
         }
         printf("\n");
 }

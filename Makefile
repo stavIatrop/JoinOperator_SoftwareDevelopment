@@ -142,6 +142,9 @@ runValgrindUt:
 runHarness:
 	./harness small/small.init small/small.work small/small.result ./ioreceiver
 
+runValgrindHarness:
+	valgrind $(VALGRIND_FLAGS) --log-file="valgrindOut" ./harness small/small.init small/small.work small/small.result ./ioreceiver
+
 cacheMisses:
 	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
 
