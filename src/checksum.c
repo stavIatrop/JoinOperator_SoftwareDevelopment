@@ -34,7 +34,7 @@ myint_t calcChecksum(myint_t ** intValues, myint_t intRows, int32_t intCol,  myi
     myint_t sum = 0;
 
     for(int whichRow = 0; whichRow < intRows; whichRow++) {
-        sum += relValues[intValues[whichRow][intCol]];
+        sum += relValues[intValues[intCol][whichRow]];
     }
 
     return sum;

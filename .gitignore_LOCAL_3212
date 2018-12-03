@@ -15,8 +15,6 @@ searchListUnitTest
 create
 indexingUnitTest
 projectUnitTest
-ioreceiver
-build/
-stdoutFile
 queryExecuteUnitTest
 src/test1
+
