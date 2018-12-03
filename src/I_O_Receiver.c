@@ -153,7 +153,7 @@ int main(void) {
 
 
                     //Perform checksums
-                    fprintf(stderr, "FINISHED ONE: Inters: %d | Rows = %ld\n", headInt->numOfIntermediates, headInt->start->data->numbOfRows);
+                    fprintf(stderr, "FINISHED ONE: Inters: %ld | Rows = %ld\n", headInt->numOfIntermediates, headInt->start->data->numbOfRows);
                     //fprintf(stderr, "%ld | %ld\n", headInt->start->data->rowIds[0][0], headInt->start->data->rowIds[1][0]);
 
                     //perror("aaaaaaaaaa\n");

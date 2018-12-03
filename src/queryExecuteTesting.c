@@ -181,7 +181,7 @@ void updateRowIdsTest() {
 
     
 
-    myint_t ** arr = updateRowIds(intNode, headResLocal, 0, 0);
+    //myint_t ** arr = updateRowIds(intNode, headResLocal, 0, 0);
     //CU_ASSERT_PTR_NULL(arr[0]);
 
     for(int i = 0; i < rows / 2; i++) {
@@ -192,7 +192,7 @@ void updateRowIdsTest() {
         pushResult(headResLocal, &temp);
     }
 
-    arr = updateRowIds(intNode, headResLocal, rows / 2, 0);
+    myint_t ** arr = updateRowIds(intNode, headResLocal, rows / 2, 0);
 
     CU_ASSERT(arr[0][0] == 0);
     CU_ASSERT(arr[1][0] == 0);
@@ -399,7 +399,6 @@ void joinTwoIntermediates() {
     updateInterAndDelete(headInt, headInt->start, headInt->start->next, headResLocal, 0);
 
     CU_ASSERT(headInt->numOfIntermediates == 1);
-
     CU_ASSERT(headInt->start->data->numOfCols == 4);
     CU_ASSERT(headInt->start->data->numbOfRows == rows / 2);
     CU_ASSERT(headInt->start->data->joinedRels[0] == 0);
