@@ -611,7 +611,7 @@ void testRelationsheepForging()
 		CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
 	}
 
-	cr -> rel = 1;
+	/*cr -> rel = 1;
 	free(rel->tuples);
 	free(rel);
 	rel = forgeRelationsheep(headInt, cr);
@@ -645,7 +645,7 @@ void testRelationsheepForging()
         {
                 CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
 		if (i%2==1) CU_ASSERT(rel->tuples[i].key==rel->tuples[i-1].key);
-        }
+        }*/
 
 	free(rel->tuples);
 	free(rel);

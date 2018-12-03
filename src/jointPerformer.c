@@ -99,7 +99,7 @@ void workerJ(join *pred, headInter * hq)
 			char switched;
 			//fprintf(stderr, "BBB\n");
 			res = performRHJ(hq,r1,r2,&newRel, &switched);
-			//fprintf(stderr, "AAAAA\n");
+			fprintf(stderr, "AAAAA\n");
 			if (used==0) createInterFromRes(hq,res,rel1,rel2);
 			else if (used==1)
 			{

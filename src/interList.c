@@ -196,8 +196,9 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
 void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t addedRel, char switched) {
     //New rows
     myint_t numbOfResults = countSizeOfList(headRes);
-    if(headRes->firstNode->size == 1) fprintf(stderr, "RESULTS: %ld | %ld\n", headRes->firstNode->tuples[0].rowR,  headRes->firstNode->tuples[0].rowS);
+    //if(headRes->firstNode->size == 1) fprintf(stderr, "RESULTS: %ld | %ld\n", headRes->firstNode->tuples[0].rowR,  headRes->firstNode->tuples[0].rowS);
     //Add new rel in joinedRels
+        fprintf(stderr, "ABCD\n");
     myint_t * joinedRels = (myint_t *) malloc((intNode->data->numOfCols + 1) * sizeof(myint_t));
     for(int whichRel = 0; whichRel < intNode->data->numOfCols; whichRel++) {
         joinedRels[whichRel] = intNode->data->joinedRels[whichRel];
