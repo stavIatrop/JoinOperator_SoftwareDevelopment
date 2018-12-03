@@ -15,8 +15,12 @@ searchListUnitTest
 create
 indexingUnitTest
 projectUnitTest
+<<<<<<< HEAD
+queryExecuteUnitTest
+src/test1
+=======
 ioreceiver
 build/
 stdoutFile
-queryExecuteUnitTest
-src/test1
+>>>>>>> I/O_Branch
+
