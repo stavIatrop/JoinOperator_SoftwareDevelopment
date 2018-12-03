@@ -99,7 +99,7 @@ $(NAME_OF_INDEXING_UT): $(OBJECT_INDEXING_UT)
 	$(CC) -g  -O0 $(OBJECT_INDEXING_UT) -o $@ -lm -lcunit
 
 $(NAME_OF_QUERY_EXECUTE_UT): $(OBJECT_QUERY_EXECUTE_UT)
-	$(CC) -g  -O0 $(OBJECT_QUERY_EXECUTE_UT) -o $@ -lm -lcunit.c.o:
+	$(CC) -g  -O0 $(OBJECT_QUERY_EXECUTE_UT) -o $@ -lm -lcunit
 
 $(NAME_OF_I_O_RECEIVER): $(OBJECT_I_O_RECEIVER)
 	$(CC) -g -O0 $(OBJECT_I_O_RECEIVER) -o $@ -lm 
