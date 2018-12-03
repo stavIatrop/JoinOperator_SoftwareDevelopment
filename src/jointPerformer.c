@@ -16,13 +16,13 @@ void workerF(filter *pred, headInter *hq)
 	if (node)
         {
                 inter * data = node->data;
-                myint_t limit=data->numbOfRows, next, cols = data->numOfCols;
+                myint_t limit=data->numOfCols, next, rows = data->numbOfRows;
                 for (i=0; i<cols; i++) if (data->joinedRels[i]==r->rel) break;
                 myint_t *rowIds = data->rowIds[i];
                 i=0;
                 while(i < limit)
                 {
-			next = findNextRowId(rowIds,i,rows);
+			next = findNextRowId(rowIds,i,limit);
         	        if (ApplyFilter(col[rowIds[i]],op,value)>0) for ( ; i<next; i++)
         	        {
         	                temp[cur++]=i;
@@ -132,22 +132,24 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 	}
 
 	inter *data = node->data;
-	myint_t j, cur=0, rows = data->numbOfRows, cols = data->numOfCols;
+	myint_t j, cur=0, rows = data->numbOfRows, cols = data->numOfCols, next;
 	t = malloc(rows*sizeof(tuple));
 	for (i=0;i< cols; i++) if (data->joinedRels[i]==r->rel) break;
 	myint_t *rowIds = data->rowIds[i];
-	printf("Should be 1: %ld\n",i);
+	//printf("Should be 1: %ld\n",i);
 	i=0;
         while(i < rows)
         {
-		printf("i is %ld and rowIds is %ld\n",i, rowIds[i]);
-                j = rowIds[i];
-                t[cur].key = col[j];
-		t[cur].payload = j;
-		cur++;
-                i = findNextRowId(rowIds,i,rows);
+		//printf("i is %ld and rowIds is %ld\n",i, rowIds[i]);
+                next = findNextRowId(rowIds,i,rows);
+		for ( ; i < next; i++)
+		{
+			j = rowIds[i];
+                	t[cur].key = col[j];
+        	        t[cur++].payload = j;
+		}
         }
-	printf("This i should be 1000: %ld\nThis cur should be 1000: %ld\n",i,cur);
+	//printf("This i should be 1000: %ld\nThis cur should be 1000: %ld\n",i,cur);
 	rel->size = cur;
 	rel->tuples = realloc((void *) t, cur * sizeof(tuple));
 	return rel;
@@ -162,7 +164,9 @@ headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel)
 	if (findNode(hi,r2->rel)==NULL) new2=1;
 	if (new1==1 && new2==0) *newRel = r1->rel;
 	if (new1==0 && new2==1) *newRel = r2->rel;
-	return radixHashJoin(relation1,relation2);
+
+	if (new1==0) return radixHashJoin(relation1,relation2);
+	else return radixHashJoin(relation2,relation1);
 }
 
 myint_t *performSameNodeJoin(nodeInter *node, join *pred, myint_t *survivors)

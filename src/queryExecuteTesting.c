@@ -624,7 +624,8 @@ void testRelationsheepForging()
                 CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
         }
 
-	for (int i=0; i<rows; i++) rowIds[i]= rowIds[i] * 2;
+	nodeInter *node = findNode(headInt,1);
+	for (int i=0; i<rows; i++) node->data->rowIds[1][i] = node->data->rowIds[1][i] * 2;
 	free(rel->tuples);
         free(rel);
         rel = forgeRelationsheep(headInt, cr);
@@ -634,6 +635,20 @@ void testRelationsheepForging()
         for (int i=0; i<rows; i++)
         {
                 CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
+        }
+
+	for (int i=0; i<rows; i++) if (i%2==1) node->data->rowIds[1][i] = i - 1;
+				   else node->data->rowIds[1][i] = i;
+        free(rel->tuples);
+        free(rel);
+        rel = forgeRelationsheep(headInt, cr);
+
+        CU_ASSERT(rel->size==rows);
+        printf("Size is %d\n", rel->size);
+        for (int i=0; i<rows; i++)
+        {
+                CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
+		if (i%2==1) CU_ASSERT(rel->tuples[i].key==rel->tuples[i-1].key);
         }*/
 
 	free(rel->tuples);
@@ -642,49 +657,18 @@ void testRelationsheepForging()
 
 void testFilter()
 {
-    int rows = 1000;
-    int cols = 2;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
-    }
-    for(int i = 0; i < rows; i++) {
-        for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
-        }
-    }
-
-    myint_t * joinedRels = (myint_t *) malloc(cols * sizeof(myint_t));
-    for(int i = 0; i < cols; i++) {
-        joinedRels[i] = i;
-    }
-
-    nodeInter * node = initialiseNode(cols, rows, joinedRels, rowIds);
-
-    pushInter(headInt, cols, rows, joinedRels, rowIds);
-    pushInter(headInt, 0, 0, NULL, NULL);
-
-	myint_t rows2 = 2000;
-        myint_t *col = malloc(rows2*sizeof(myint_t));
-        for (int i=0; i<rows2; i++)
-        {
-                col[i]=i;
-        }
-        colRel *cr = malloc(sizeof(colRel));
-        cr -> rel = 5;
-        cr -> rows = rows2;
-        cr->col = col;
+	myint_t rows2 = 2000, rows=1000, cols=2;
 
 	filter filt;
 	filt.participant = *cr;
 	filt.op = 1;
 	filt.value = 1000;
 	workerF(&filt, headInt);
-
+	printf("Made it here\n");
 	CU_ASSERT(headInt->numOfIntermediates==3);
 	CU_ASSERT(findNode(headInt,cr->rel)->data->numOfCols==1);
 	CU_ASSERT(findNode(headInt,cr->rel)->data->numbOfRows==filt.value);
-	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[0][i]==i);
+	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[i][0]==i);  //edw thelei allagh vre
 }
 
 int main(void) {
@@ -694,6 +678,7 @@ int main(void) {
 	CU_pSuite pSuite3 = NULL;
 	CU_pSuite pSuite4 = NULL;
 	CU_pSuite pSuite5 = NULL;
+	CU_pSuite pSuite6 = NULL;
 
 	//Initialize the CUnit test registry
    if (CUE_SUCCESS != CU_initialize_registry())
@@ -749,7 +734,7 @@ int main(void) {
       return CU_get_error();
    }
 
-  	pSuite4 = CU_add_suite("Test Next Row Id", smarterInit, smarterFree);
+  	pSuite4 = CU_add_suite("Test Next Row Id", initArray, freeArray);
         if (NULL == pSuite4) {
                 CU_cleanup_registry();
                 return CU_get_error();
@@ -760,7 +745,7 @@ int main(void) {
                 return CU_get_error();
         }
 
-	pSuite5 = CU_add_suite("Test Forging Operations", initIntermediatesResults, freeIntermedieatesResults);
+	pSuite5 = CU_add_suite("Test Forging Operations", smarterInit, smarterFree);
         if (NULL == pSuite5) {
                 CU_cleanup_registry();
                 return CU_get_error();
@@ -770,6 +755,18 @@ int main(void) {
                 CU_cleanup_registry();
                 return CU_get_error();
         }
+
+	pSuite6 = CU_add_suite("Test Filtering", smarterInit, smarterFree);
+        if (NULL == pSuite6) {
+                CU_cleanup_registry();
+                return CU_get_error();
+        }
+        if (NULL == CU_add_test(pSuite6, "Test 1", testFilter))
+        {
+                CU_cleanup_registry();
+                return CU_get_error();
+        }
+
 
 
 
