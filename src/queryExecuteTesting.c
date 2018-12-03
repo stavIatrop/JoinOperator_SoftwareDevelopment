@@ -33,7 +33,7 @@ int freeList() {
     freeInterList(head);
 
     return 0;
-} 
+}
 
 myint_t ** create_2DArray(int cols, int rows) {
     myint_t ** arr = (myint_t **) malloc(cols * sizeof(myint_t *));
@@ -601,7 +601,7 @@ int smarterFree()
 
 void testRelationsheepForging()
 {
-	myint_t rows2 = 2000, rows = 1000, cols = 2;
+	myint_t rows2 = 2000, rows = 1000;
 
 	rel = forgeRelationsheep(headInt, cr);
 
@@ -611,7 +611,7 @@ void testRelationsheepForging()
 		CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
 	}
 
-	/*cr -> rel = 1;
+	cr -> rel = 1;
 	free(rel->tuples);
 	free(rel);
 	rel = forgeRelationsheep(headInt, cr);
@@ -631,11 +631,14 @@ void testRelationsheepForging()
         CU_ASSERT(rel->size==rows);
         for (int i=0; i<rows; i++)
         {
-                CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
+                CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload*2);
         }
 
-	for (int i=0; i<rows; i++) if (i%2==1) node->data->rowIds[1][i] = i - 1;
-				   else node->data->rowIds[1][i] = i;
+	for (int i=0; i<rows; i++)
+	{
+		if (i%2==1) node->data->rowIds[1][i] = i - 1;
+		else node->data->rowIds[1][i] = i;
+	}
         free(rel->tuples);
         free(rel);
         rel = forgeRelationsheep(headInt, cr);
@@ -643,9 +646,9 @@ void testRelationsheepForging()
         CU_ASSERT(rel->size==rows);
         for (int i=0; i<rows; i++)
         {
-                CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
-		if (i%2==1) CU_ASSERT(rel->tuples[i].key==rel->tuples[i-1].key);
-        }*/
+		if (i%2==1) {CU_ASSERT(rel->tuples[i].key==rel->tuples[i-1].key)}
+		else {CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload)}
+        }
 
 	free(rel->tuples);
 	free(rel);
@@ -653,8 +656,6 @@ void testRelationsheepForging()
 
 void testFilter()
 {
-	myint_t rows2 = 2000, rows=1000, cols=2;
-
 	filter filt;
 	filt.participant = *cr;
 	filt.op = 1;
@@ -663,8 +664,7 @@ void testFilter()
 	CU_ASSERT(headInt->numOfIntermediates==3);
 	CU_ASSERT(findNode(headInt,cr->rel)->data->numOfCols==1);
 	CU_ASSERT(findNode(headInt,cr->rel)->data->numbOfRows==filt.value);
-	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[0][i]==i);  //edw thelei allagh vre
-
+	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[0][i]==i);
 }
 
 int main(void) {
