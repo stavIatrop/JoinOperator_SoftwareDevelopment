@@ -61,6 +61,7 @@ typedef struct Query {
         myint_t numOfFilters;
         myint_t numOfJoins;
         myint_t numOfSums;
+        myint_t numOfRels;
         filter *filters;
         join *joins;
         colRel *sums;

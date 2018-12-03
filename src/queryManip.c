@@ -7,12 +7,18 @@
 int SubStrOccur(char * str, char * subStr) {
 
 	int count = 0;
-	const char *tmp = str;
+	//fprintf(stderr, "%s\n", str );
+	char *tmp = str;
 	while((tmp = strstr(tmp, subStr))) {
    	
    		count++;
    		tmp++;
 	}
+	// char * debug = malloc(20);
+ //    sprintf(debug, "%d", count);
+ //    fprintf(stderr, "%s\n", debug );
+   
+ //    free(debug);
 	return count;
 }
 
@@ -28,6 +34,7 @@ void fillJoinInfo(query * newQuery, char * tempStr, myint_t counterJoins, relati
 			start = end;
 			end = i + 1;
 			char * part = (char *) malloc((i - start + 1) * sizeof(char));
+			memset(part, '\0', i - start + 1 );
 			strncpy(part, tempStr + start, i - start);
             strcat(part, "\0");
 			
@@ -49,6 +56,7 @@ void fillJoinInfo(query * newQuery, char * tempStr, myint_t counterJoins, relati
 			start = end;
 			end = i + 1;
 			char * part = (char *) malloc((i - start + 1) * sizeof(char));
+			memset(part, '\0', i - start + 1 );
 			strncpy(part, tempStr + start, i - start);
             strcat(part, "\0");
             myint_t indexRel = newQuery->joins[counterJoins].participant1.rel;
@@ -63,6 +71,7 @@ void fillJoinInfo(query * newQuery, char * tempStr, myint_t counterJoins, relati
 	start = end;
 	end = i + 1;
 	char * part = (char *) malloc((i - start + 1) * sizeof(char));
+	memset(part, '\0', i - start + 1 );
 	strncpy(part, tempStr + start, i - start);
     strcat(part, "\0");
 
@@ -83,6 +92,7 @@ void fillFilterInfo(query * newQuery, char * tempStr, myint_t counterFilters, re
 			start = end;
 			end = i + 1;
 			char * part = (char *) malloc((i - start + 1) * sizeof(char));
+			memset(part, '\0', i - start + 1 );
 			strncpy(part, tempStr + start, i - start);
             strcat(part, "\0");
 			
@@ -97,9 +107,11 @@ void fillFilterInfo(query * newQuery, char * tempStr, myint_t counterFilters, re
 
 		} else if( tempStr[i] == '=' || tempStr[i] == '>' || tempStr[i] == '<') {	//column of filter participant
 
+
 			start = end;
 			end = i + 1;
 			char * part = (char *) malloc((i - start + 1) * sizeof(char));
+			memset(part, '\0', i - start + 1 );
 			strncpy(part, tempStr + start, i - start);
             strcat(part, "\0");
             myint_t indexRel = newQuery->filters[counterFilters].participant.rel;
@@ -112,14 +124,16 @@ void fillFilterInfo(query * newQuery, char * tempStr, myint_t counterFilters, re
             	newQuery->filters[counterFilters].op = GREATER;
             else
             	newQuery->filters[counterFilters].op = LESS;
-
+           
 		}
 		i++;
 	}
 
 	//value
+	start = end;
 	end = i + 1;
 	char * part = (char *) malloc((i - start + 1) * sizeof(char));
+	memset(part, '\0', i - start + 1 );
 	strncpy(part, tempStr + start, i - start);
     strcat(part, "\0");
 
@@ -129,12 +143,13 @@ void fillFilterInfo(query * newQuery, char * tempStr, myint_t counterFilters, re
 
 }
 
-query * ConstructQuery(FILE * fp, char * queryStr, myint_t rels, myint_t joins, myint_t sums, myint_t filters, relationsheepArray relArray) {
+query * ConstructQuery( FILE * fp, char * queryStr, myint_t rels, myint_t joins, myint_t sums, myint_t filters, relationsheepArray relArray) {
 
 	query * newQuery = (query *) malloc(sizeof(query));
 	newQuery->numOfFilters = filters;
 	newQuery->numOfJoins = joins;
 	newQuery->numOfSums = sums;
+	newQuery->numOfRels = rels;
 	newQuery->rels = (myint_t *) malloc(rels * sizeof(myint_t));
 	newQuery->filters = (filter *) malloc(filters * sizeof(filter));
 	newQuery->joins = (join *) malloc(joins * sizeof(join));
@@ -144,15 +159,15 @@ query * ConstructQuery(FILE * fp, char * queryStr, myint_t rels, myint_t joins, 
 	myint_t counterRels = 0, counterSums = 0, counterFilters = 0, counterJoins = 0;
 	while (queryStr[i] != '\0') {
 
-		// fprintf(fp, "%s\n", "tempStr" );
-  //       fflush(fp);
-		if( slice == 0) {
+
+	 	if( slice == 0) {
 
 
 			if( queryStr[i] != ' ') {
 				
 				if( queryStr[i] != '|')  {
 					i++;
+					
 					continue;
 				}
 				else
@@ -165,24 +180,15 @@ query * ConstructQuery(FILE * fp, char * queryStr, myint_t rels, myint_t joins, 
 			memset(tempStr, '\0', i - start + 1);
             strncpy(tempStr, queryStr + start, i - start);
             strcat(tempStr, "\0");
-      //       fprintf(fp, "%s\n", tempStr );
-      //   	fflush(fp);
-      //   	char * debug = malloc(20);
-    		// sprintf(debug, "%ld", counterRels);
-    		// fprintf(fp, "%s\n", debug );
-    		// fflush(fp);
-    		// free(debug);
+
             newQuery->rels[counterRels] = atoi(tempStr);
-      //       debug = malloc(20);
-    		// sprintf(debug, "%ld", newQuery->rels[counterRels]);
-    		// fprintf(fp, "%s\n", debug );
-    		// fflush(fp);
-    		// free(debug);
+
 
             free(tempStr);
             counterRels++;
 
-		} else if (slice == 1) {
+		} 
+        else if (slice == 1) {
 			
 			if(queryStr[i] == '&' || queryStr[i] == '|'){		//predicate str
 				
@@ -192,15 +198,17 @@ query * ConstructQuery(FILE * fp, char * queryStr, myint_t rels, myint_t joins, 
 				start = end;
 				end = i + 1;
 				char * tempStr = (char *) malloc((i - start + 1) * sizeof(char));
+				memset(tempStr, '\0', i - start + 1);
 	            strncpy(tempStr, queryStr + start, i - start);
 	            strcat(tempStr, "\0");
 
 	            if ( strstr(tempStr, "=") != NULL ) {
 
 	            	if (SubStrOccur(tempStr, ".") == 1){ 			//filter predicate
-
+	            		
 	            		fillFilterInfo(newQuery, tempStr, counterFilters, relArray);
 	            		free(tempStr);
+	            		
                 		counterFilters++;
 
 	            	} else if( SubStrOccur(tempStr, ".") == 2 ) {	//join predicate
@@ -235,8 +243,8 @@ query * ConstructQuery(FILE * fp, char * queryStr, myint_t rels, myint_t joins, 
 	            	return NULL;
 	            } 
 			}
-
-		} else if (slice == 2){
+	 	}
+	 	else if (slice == 2){
 
 			if( queryStr[i] == ' ') {			//col participant
 				
@@ -248,20 +256,11 @@ query * ConstructQuery(FILE * fp, char * queryStr, myint_t rels, myint_t joins, 
 	            strcat(tempStr, "\0");
 
 	            myint_t indexRel = newQuery->sums[counterSums].rel;
-          //   	fprintf(fp, "%s\n", "HEY SPACE" );
-        		// fflush(fp);
-        		// char * debug = malloc(20);
-        		// sprintf(debug, "%ld", newQuery->rels[indexRel]);
-        		// fprintf(fp, "%s\n", debug );
-        		// fflush(fp);
-        		// free(debug);
+          
             	newQuery->sums[counterSums].col = relArray.rels[ newQuery->rels[indexRel] ].pointToCols[atoi(tempStr)];
           
-          //    	fprintf(fp, "%s\n", "HEY SPACE1" );
-        		// fflush(fp);
 	            newQuery->sums[counterSums].rows = relArray.rels[ newQuery->rels[indexRel] ].rows;
-	         //    fprintf(fp, "%s\n", "HEY SPACE2" );
-        		// fflush(fp);
+	
 	            free(tempStr);
 				counterSums++;
 
@@ -284,21 +283,22 @@ query * ConstructQuery(FILE * fp, char * queryStr, myint_t rels, myint_t joins, 
 			perror("Wrong query input format");
 			return NULL;
 		}
-
-		i++;
+		
+	 	i++;
 	}
 
-	//last col participant
+	// //last col participant
 	start = end;
 	end = i + 1;
 	char * tempStr = (char *) malloc((i - start + 1) * sizeof(char));
+	memset(tempStr, '\0', i - start + 1);
     strncpy(tempStr, queryStr + start, i - start);
     strcat(tempStr, "\0");
 
     myint_t indexRel = newQuery->sums[counterSums].rel;
 	newQuery->sums[counterSums].col = relArray.rels[ newQuery->rels[indexRel] ].pointToCols[atoi(tempStr)];
- 
-    newQuery->sums[counterSums].rel = atoi(tempStr);
+ 	newQuery->sums[counterSums].rows = relArray.rels[ newQuery->rels[indexRel] ].rows;
+    
     free(tempStr);
 	counterSums++;
 

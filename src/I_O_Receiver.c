@@ -45,13 +45,14 @@ int main(void) {
     
     fprintf(stdoutFile, "Writing Ready...\n");
     fflush(stdoutFile);
-    write(STDOUT_FILENO, "Ready\n", strlen("Ready\n")); //Send signal to harness in order to start sending queries 
+    write(STDOUT_FILENO, "Ready\n\0", strlen("Ready\n\0")); //Send signal to harness in order to start sending queries 
     
     fprintf(stdoutFile, "Ready\n");
     fflush(stdoutFile);
 
-
+    
     while(1) {
+
 
         inputStr = readFromPipe("F");
         
@@ -64,8 +65,6 @@ int main(void) {
         myint_t slice = 0;
         for(i = 0; i < strlen(inputStr); i++) {
 
-                // fprintf(stdoutFile, "/.........\n");
-                // fflush(stdoutFile);
                 if (inputStr[i] == ' ') {
                 
                     if ( slice == 0)
@@ -87,8 +86,12 @@ int main(void) {
                         perror("Wrong Input Format1");
                         return -1;
                     }
-                    else if ( slice == 1)
-                        joins++;
+                    else if ( slice == 1){
+                        if(inputStr[(i + 2) ] == '.' || inputStr[(i + 3)] == '.')
+                            joins++;
+                        else
+                            filters++;
+                    }
                     else {
                         perror("Wrong Input Format2");
                         return -1;
@@ -119,39 +122,132 @@ int main(void) {
                     strncpy(queryStr, inputStr + start, i - start);
                     strcat(queryStr, "\0");
 
-                    fprintf(stdoutFile, "QueryBEF:%s\n", queryStr);
-                    fflush(stdoutFile);
-                    query * newQuery = ConstructQuery(stdoutFile, queryStr, rels, joins, sums, filters, relArray);
-                   
-                    //cheksum * cSum = ValFunction(query, ...);
                     
-                    free(newQuery->rels);
-                    free(newQuery->filters);
-                    free(newQuery->joins);
-                   
-                    free(newQuery->sums);
-                    free(newQuery);                   
-                    fprintf(stdoutFile, "QueryAFTER:%s\n", queryStr);
-                    fflush(stdoutFile);
+                    query * newQuery = ConstructQuery(stdoutFile, queryStr, rels, joins, sums, filters, relArray);
+
+                    //cheksum * cSum = ValFunction(query, ...);
+
+                    // char * debug = malloc(20);
+                    // sprintf(debug, "%ld", newQuery->numOfJoins );
+                    // fprintf(stdoutFile, "%s\n---------\n", debug );
+                    // fflush(stdoutFile);
+                    // free(debug);
+
+                    // debug = malloc(20);
+                    // sprintf(debug, "%ld", newQuery->numOfFilters );
+                    // fprintf(stdoutFile, "%s\n---------\n", debug );
+                    // fflush(stdoutFile);
+                    // free(debug);
+
+                    // debug = malloc(20);
+                    // sprintf(debug, "%ld", newQuery->numOfSums );
+                    // fprintf(stdoutFile, "%s\n---------\n", debug );
+                    // fflush(stdoutFile);
+                    // free(debug);
+
+                    // fprintf(stdoutFile, "@@@@@@@@@\n");
+                    // fflush(stdoutFile);
+                    
+                    
+                    // for(int g = 0; g < newQuery->numOfRels; g++ ) {
+                    //     char * debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->rels[g]);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    // }
+
+
+                    // fprintf(stdoutFile, "joins\n" );
+                    // fflush(stdoutFile);
+
+                    // for(int g = 0; g < newQuery->numOfJoins; g++ ) {
+                    //     char * debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->joins[g].participant1.rel);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    //     debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->joins[g].participant1.rows);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    //     debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->joins[g].participant2.rel);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    //     debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->joins[g].participant2.rows);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    // }
+
+                    // fprintf(stdoutFile, "filters\n" );
+                    // fflush(stdoutFile);
+
+                    // for(int g = 0; g < newQuery->numOfFilters; g++ ) {
+                    //     char * debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->filters[g].participant.rel);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    //     debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->filters[g].participant.rows);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    //     debug = malloc(20);
+                    //     sprintf(debug, "%d", newQuery->filters[g].op);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    //     debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->filters[g].value);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    // }
+
+                    // fprintf(stdoutFile, "sums\n" );
+                    // fflush(stdoutFile);
+
+                    // for(int g = 0; g < newQuery->numOfSums; g++ ) {
+                    //     char * debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->sums[g].rel);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                    //     debug = malloc(20);
+                    //     sprintf(debug, "%ld", newQuery->sums[g].rows);
+                    //     fprintf(stdoutFile, "%s\n", debug );
+                    //     fflush(stdoutFile);
+                    //     free(debug);
+                        
+                    // }
+
+
+                    // fprintf(stdoutFile, "-------------\n" );
+                    // fflush(stdoutFile);
+
+                    FreeQuery(newQuery);
+                    // fprintf(stdoutFile, "QueryAFTER:%s\n", queryStr);                   
+                    // fflush(stdoutFile);
                     
                     free(queryStr);
                     
-                    rels = 1, joins = 0, sums = 1, filters = 0, slice = 0;
+                    rels = 1;
+                    joins = 0;
+                    sums = 1;
+                    filters = 0;
+                    slice = 0;
                 }
         }
-        
 
+    free(inputStr);
+        
     }
-    
-
-        
-    fprintf(stdoutFile, "%s\n", inputStr);
-    fflush(stdoutFile);
-
-
-
-	
-
     
 
     if( fclose(stdoutFile) ) {
