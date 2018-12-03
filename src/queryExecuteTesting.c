@@ -179,11 +179,6 @@ void updateRowIdsTest() {
     }
     nodeInter * intNode = initialiseNode(cols, rows, joinedRels, rowIds);
 
-    
-
-    //myint_t ** arr = updateRowIds(intNode, headResLocal, 0, 0);
-    //CU_ASSERT_PTR_NULL(arr[0]);
-
     for(int i = 0; i < rows / 2; i++) {
         rowTuple temp;
         temp.rowR = (myint_t) i * 2;

@@ -110,10 +110,6 @@ void deleteInterNode(headInter * head, nodeInter * node) {
 }
 
 myint_t ** createResultArray(headResult * head, myint_t * size) {
-    //if(head->numbOfNodes == 0) {
-    //    *size = 0;
-    //    return NULL;
-    //}
 
     myint_t numbOfResults = countSizeOfList(head);
     *size = numbOfResults;
@@ -151,9 +147,6 @@ void createInterFromRes(headInter * headInt, headResult * headRes, myint_t rel1,
 }
 
 myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t results, char switched) {
-    //if(results == 0) {
-    //    return NULL;
-    //}
 
     //Memory Allocations
     myint_t ** retArr = (myint_t **) malloc((intNode->data->numOfCols + 1) * sizeof(myint_t *));
@@ -196,7 +189,7 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
 void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t addedRel, char switched) {
     //New rows
     myint_t numbOfResults = countSizeOfList(headRes);
-    //if(headRes->firstNode->size == 1) fprintf(stderr, "RESULTS: %ld | %ld\n", headRes->firstNode->tuples[0].rowR,  headRes->firstNode->tuples[0].rowS);
+
     //Add new rel in joinedRels
         fprintf(stderr, "ABCD\n");
     myint_t * joinedRels = (myint_t *) malloc((intNode->data->numOfCols + 1) * sizeof(myint_t));
@@ -213,10 +206,7 @@ void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t added
 }
 
 myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t results, char switched) {
-    //if(results == 0) {
-    //    return NULL;
-    //}
-
+    
     //Memory Allocations
     myint_t ** retArr = (myint_t **) malloc((node1->data->numOfCols + node2->data->numOfCols) * sizeof(myint_t *));
     for(myint_t i = 0; i < node1->data->numOfCols + node2->data->numOfCols; i++) {
