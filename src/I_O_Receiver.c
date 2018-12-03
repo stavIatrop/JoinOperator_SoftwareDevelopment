@@ -138,9 +138,11 @@ int main(void) {
 
                         //fprintf(stderr, "Inters: %ld\n", headInt->numOfIntermediates);
 
-                        //fprintf(stderr, "Inters: %d\n", headInt->numOfIntermediates);
+                        //fprintf(stderr, "Inters1: %ld\n", headInt->numOfIntermediates);
 
                         workerJ(&(newQuery->joins[whichJoin]), headInt);
+                        //fprintf(stderr, "Inters2: %ld\n", headInt->numOfIntermediates);
+
                     }
 
                     //Perform checksums

@@ -7,6 +7,7 @@
 
 void workerF(filter *pred, headInter *hq)
 {
+	fprintf(stderr, "%ld\n", pred->participant.rows);
 	colRel *r = &(pred->participant);
         myint_t *col = r->col;
 	char op = pred->op;
@@ -41,6 +42,7 @@ void workerF(filter *pred, headInter *hq)
 				temp[cur++]=i;
 			}
                 }
+		//fprintf(stderr, "sizeF is %ld\n", rows);
 		temp = realloc((void *) temp, cur * sizeof(myint_t));
 		createInterSelfJoin(hq,r->rel,temp,cur);
 		free(temp);
@@ -139,6 +141,7 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
         	        t[i].payload = i;
         	}
 		rel->tuples = t;
+		//fprintf(stderr, "size2 is %ld\n", rows);
 		return rel;
 	}
 
@@ -159,6 +162,7 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 		}
         }
 	rel->size = cur;
+	//fprintf(stderr, "size is %ld\n", cur);
 	rel->tuples = realloc((void *) t, cur * sizeof(tuple));
 	return rel;
 }

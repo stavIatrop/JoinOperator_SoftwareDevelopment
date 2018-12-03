@@ -191,7 +191,6 @@ void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t added
     myint_t numbOfResults = countSizeOfList(headRes);
 
     //Add new rel in joinedRels
-        fprintf(stderr, "ABCD\n");
     myint_t * joinedRels = (myint_t *) malloc((intNode->data->numOfCols + 1) * sizeof(myint_t));
     for(int whichRel = 0; whichRel < intNode->data->numOfCols; whichRel++) {
         joinedRels[whichRel] = intNode->data->joinedRels[whichRel];
@@ -206,7 +205,7 @@ void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t added
 }
 
 myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t results, char switched) {
-    
+
     //Memory Allocations
     myint_t ** retArr = (myint_t **) malloc((node1->data->numOfCols + node2->data->numOfCols) * sizeof(myint_t *));
     for(myint_t i = 0; i < node1->data->numOfCols + node2->data->numOfCols; i++) {
@@ -317,6 +316,8 @@ void createInterSelfJoin(headInter * head, myint_t rel, myint_t * rows, myint_t 
 
     for(myint_t whichRow = 0; whichRow < numbOfRows; whichRow++) {
         newRowIds[0][whichRow] = rows[whichRow];
+        //if(newRowIds[0][whichRow] > 1000000) fprintf(stderr, "FILTER ERROR\n");
+
     }
 
     myint_t * joinedRels = (myint_t *) malloc(sizeof(myint_t));

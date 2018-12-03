@@ -22,6 +22,7 @@ checksum * performChecksums(colRel * sums, int numbOfSums, headInter * headInt) 
         for(int whichRel = 0; whichRel < headInt->start->data->numOfCols; whichRel++) {
             if(sums[whichSum].rel == headInt->start->data->joinedRels[whichRel]) {
                 retChecksum->checksums[whichSum] = calcChecksum(headInt->start->data->rowIds, headInt->start->data->numbOfRows, whichRel, sums[whichSum].col);
+                //fprintf(stderr, "DONE\n");
                 break;
             }
         }
@@ -34,8 +35,12 @@ myint_t calcChecksum(myint_t ** intValues, myint_t intRows, myint_t intCol,  myi
     myint_t sum = 0;
 
     for(int whichRow = 0; whichRow < intRows; whichRow++) {
+        //fprintf(stderr, "aaaa\n");
+        //if (whichRow < intRows) fprintf(stderr, "IntValues: %ld\n", intValues[intCol][whichRow+1]); 
+        //fprintf(stderr, "Row = %ld | %ld | %ld\n", whichRow, intRows, intCol);
         sum += relValues[intValues[intCol][whichRow]];
     }
+
 
     return sum;
 }
