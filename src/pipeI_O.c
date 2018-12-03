@@ -5,6 +5,8 @@
 #include <errno.h>
 
 #include "pipeI_O.h"
+#include "queryStructs.h"
+#include "checksumInterface.h"
 
 char * readFromPipe(const char * stopWord) {
 
@@ -68,4 +70,79 @@ char * readFromPipe(const char * stopWord) {
         
 	}
 	return inputStr;
+}
+
+int numDigits(myint_t n) {
+
+  int counter = 0;
+  
+  while(n != 0) {
+
+    n = n / 10;
+    counter++;
+  }
+  return counter;
+}
+
+void writePipe(checksum * cs) {
+
+    char ** CSStrings = (char **) malloc(cs->numbOfChecksums * sizeof(char *));
+    int csLength = 0;
+
+    for(int i = 0; i < cs->numbOfChecksums; i++) {
+
+        if (cs->checksums[i] == 0) {
+
+            CSStrings[i] = (char *) malloc((strlen("NULL ") + 1) * sizeof(char));
+            memset(CSStrings[i], '\0', strlen("NULL ") + 1);
+            strcpy(CSStrings[i], "NULL ");
+            strcat(CSStrings[i], "\0");
+            csLength += strlen("NULL ");
+
+        } else { 
+
+            int digits = numDigits(cs->checksums[i]) + 1;       //plus 1 for space character
+            CSStrings[i] = (char *) malloc((digits + 1) * sizeof(char));
+            memset(CSStrings[i], '\0', (digits + 1));
+            sprintf(CSStrings[i], "%ld ", cs->checksums[i]);
+            strcat(CSStrings[i], "\0");
+            csLength += digits;
+        }
+        if( i == cs->numbOfChecksums - 1 ) {
+            CSStrings[i][strlen(CSStrings[i]) - 1] = '\n';
+        }
+        
+    }
+
+    char * messageInABottle = (char *) malloc( (csLength + 1) * sizeof(char));
+    memset(messageInABottle, '\0', csLength + 1);
+
+    for(int i = 0; i < cs->numbOfChecksums; i++) {
+
+        strcat(messageInABottle, CSStrings[i]);
+        free(CSStrings[i]);
+    }
+    free(CSStrings);
+    strcat(messageInABottle, "\0");
+
+    int bSent = 0;
+    int bWritten;
+    while( (bWritten = write(STDOUT_FILENO, messageInABottle + bSent, strlen(messageInABottle) - bSent)) > 0 ) {
+
+
+      if(bWritten < 0) {
+        perror("Write");
+        exit(EXIT_FAILURE);
+      }
+      bSent += bWritten;
+      
+      if(bSent == strlen(messageInABottle))
+        break;
+    }
+
+
+    return;
+
+    
+
 }

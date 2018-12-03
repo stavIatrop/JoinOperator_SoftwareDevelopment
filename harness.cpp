@@ -280,7 +280,7 @@ int main(int argc, char *argv[]) {
     for (unsigned i = 0; i != result_batches[batch].size() && failure_cnt < MAX_FAILED_QUERIES; ++i) {
       string val;
 
-      // result >> val;
+      //result >> val;
       getline(result, val);
       if (!result) {
         cerr << "Incomplete batch output for batch " << batch << endl;
@@ -293,10 +293,10 @@ int main(int argc, char *argv[]) {
                   << ", actual: " << val << endl;
         ++failure_cnt;
       }
-      /*if (matched)
+      if (matched)
       {
-          cout << endl << val << endl <<  endl << result_batches[batch][i];
-      }*/
+          cout << endl << val << endl <<  endl << result_batches[batch][i] << endl;
+      }
       ++query_no;
     }
   }
