@@ -12,7 +12,6 @@ relation *forgeRelationsheep(headInter *,colRel *);
 headResult *performRHJ(headInter *, colRel *, colRel *, myint_t *,char *switched);
 myint_t *performSameNodeJoin(nodeInter *, join *, myint_t *);
 myint_t *performSelfJoin(nodeInter *, join *, myint_t *);
-//char inInterList(headinter *, myint_t, myint_t);
 nodeInter *findNode(headInter *, myint_t);
 
 #endif
