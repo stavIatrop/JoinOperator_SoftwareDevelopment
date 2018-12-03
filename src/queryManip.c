@@ -14,11 +14,7 @@ int SubStrOccur(char * str, char * subStr) {
    		count++;
    		tmp++;
 	}
-	// char * debug = malloc(20);
- //    sprintf(debug, "%d", count);
- //    fprintf(stderr, "%s\n", debug );
-   
- //    free(debug);
+	
 	return count;
 }
 
@@ -311,7 +307,6 @@ void FreeQuery(query * newQuery) {
 	 free(newQuery->rels);
    	 free(newQuery->filters);
    	 free(newQuery->joins);
-   
      free(newQuery->sums);
      free(newQuery);
      return;

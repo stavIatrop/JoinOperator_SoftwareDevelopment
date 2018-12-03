@@ -22,6 +22,7 @@ void AddInputNode(Input * input, char *file) {
 
 	InputNode * newNode = (InputNode *) malloc(sizeof(InputNode));
 	newNode->filename = (char *) malloc( (strlen(file) + 1) * sizeof(char));
+	memset(newNode->filename, '\0', strlen(file) + 1 );
 	strcpy(newNode->filename, file);
 	strcat(newNode->filename, "\0");
 	newNode->next = NULL;
@@ -53,6 +54,7 @@ void ConstructInput(Input * input, char * inputStr) {
                 end = i + 1;
 
                 char * filename = (char *) malloc((i - start + 1) * sizeof(char));
+                memset(filename, '\0', i - start + 1);
                 strncpy(filename, inputStr + start, i - start);
 
                 
@@ -99,7 +101,7 @@ void FillRelArray(relationsheepArray * relArray, Input * input) {
             perror("Failed to open file2\n");
             return;
         }
-
+       
 		FillRel(&(relArray->rels[i]), inputFile );
 		temp = temp->next;
 		fclose(inputFile);
@@ -118,7 +120,7 @@ int FillRel(relationsheep * rel, FILE * inputFile) {
         perror("Failed to read binary metadata");
         return -1;
     }
-
+    
     rel->pointToCols = (myint_t **) malloc(rel->cols * sizeof(myint_t *));
     for(int i = 0; i < rel->cols; i++) {
 
