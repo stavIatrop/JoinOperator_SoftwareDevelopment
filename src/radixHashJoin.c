@@ -8,7 +8,7 @@
 #include "indexManip.h"
 #include "viceFunctions.h"
 
-headResult * radixHashJoin(relation * rRel, relation * sRel) {
+headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 
         //TO BE REMOVED
         /*relation * rRel = malloc(sizeof(relation));
@@ -18,10 +18,10 @@ headResult * radixHashJoin(relation * rRel, relation * sRel) {
 	rRel->size=size1;
         sRel->tuples = malloc(size2 * sizeof(tuple));
 	sRel->size=size2;
-	uint32_t random;
+	myint_t random;
 
 	srand(time(NULL));
-        for (uint32_t i=0; i<size1; i++)
+        for (myint_t i=0; i<size1; i++)
         {
                 random = rand();
                 rRel->tuples[i].key = random;
@@ -30,7 +30,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel) {
                 //r->tuples[i].payload = 837376;
         }
 
-        for (uint32_t i=0; i<size2; i++)
+        for (myint_t i=0; i<size2; i++)
         {
                 random = rand();
                 sRel->tuples[i].key = random;
@@ -41,13 +41,14 @@ headResult * radixHashJoin(relation * rRel, relation * sRel) {
 
         double radixTotalTime = 0;
 
-        uint32_t h1 = FIRST_REORDERED;
-        printf(">>> Starting Reordering...");
+        myint_t h1 = FIRST_REORDERED;
+        //printf(">>> Starting Reordering...");
         clock_t begin = clock();
         reorderedR * RoR;
         reorderedR * RoS;
 	double rIdenticality = IdenticalityTest(rRel);
 	double sIdenticality = IdenticalityTest(sRel);
+                
 
 	if (abs(rRel->size - sRel->size) < 100000 || abs(rRel->size - sRel->size) > 10000000)
 	{
@@ -55,11 +56,13 @@ headResult * radixHashJoin(relation * rRel, relation * sRel) {
 		{
 			RoR = reorderRelation(rRel, &h1);
 			RoS = reorderRelation(sRel, &h1);
+                        *switched = 0;
 		}
 		else
 		{
 			RoR = reorderRelation(sRel, &h1);
         	        RoS = reorderRelation(rRel, &h1);
+                        *switched = 1;
 		}
 	}
 	else
@@ -68,35 +71,38 @@ headResult * radixHashJoin(relation * rRel, relation * sRel) {
                 {
                         RoR = reorderRelation(rRel, &h1);
                         RoS = reorderRelation(sRel, &h1);
+                        *switched = 0;
                 }
                 else
                 {
                         RoR = reorderRelation(sRel, &h1);
                         RoS = reorderRelation(rRel, &h1);
+                        *switched = 1;
                 }
 
 	}
+
         clock_t end = clock();
         radixTotalTime += (double)(end - begin) / CLOCKS_PER_SEC;
-        printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
+        //printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
         //Indexing
-        printf(">>> Starting Indexing...  ");
+        //printf(">>> Starting Indexing...  ");
         begin = clock();
         indexArray * indArr = indexing(RoR, h1);
         end = clock();
         radixTotalTime += (double)(end - begin) / CLOCKS_PER_SEC;
-        printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
+        //printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
         //Searching
-        printf(">>> Starting Searching... ");
+        //printf(">>> Starting Searching... ");
         begin = clock();
         headResult * results = search(indArr, RoS);
         end = clock();
         radixTotalTime += (double)(end - begin) / CLOCKS_PER_SEC;
-        printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
+        //printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
-        printf(">>> Radix Hash Join completed in %f seconds.\n", radixTotalTime);
+        //printf(">>> Radix Hash Join completed in %f seconds.\n", radixTotalTime);
 
         free(rRel->tuples);
         free(sRel->tuples);

@@ -10,7 +10,7 @@
 
 checksum * performChecksums(colRel * sums, int numbOfSums, headInter * headInt) {
     if(headInt->numOfIntermediates != 1) {
-        printf("CASE: Multiple Intermediates at the end NOT IMPELEMENTED\n");
+        perror("CASE: Multiple Intermediates at the end NOT IMPELEMENTED\n");
     }
     checksum * retChecksum = (checksum *) malloc(sizeof(checksum));
 
@@ -30,7 +30,7 @@ checksum * performChecksums(colRel * sums, int numbOfSums, headInter * headInt) 
     return retChecksum;
 }
 
-myint_t calcChecksum(myint_t ** intValues, myint_t intRows, int32_t intCol,  myint_t * relValues) {
+myint_t calcChecksum(myint_t ** intValues, myint_t intRows, myint_t intCol,  myint_t * relValues) {
     myint_t sum = 0;
 
     for(int whichRow = 0; whichRow < intRows; whichRow++) {

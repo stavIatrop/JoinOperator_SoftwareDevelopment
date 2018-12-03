@@ -8,7 +8,6 @@
 #define GREATER 2
 #define EQUAL 3
 
-typedef uint64_t myint_t;
 
 typedef struct Relationsheep {
         myint_t rows;

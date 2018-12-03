@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <time.h>
 
-int digitsOfInt(uint32_t integer)
+int digitsOfInt(myint_t integer)
 {
         int count = 1;
         while((integer = integer/10) > 0)
@@ -20,8 +20,8 @@ int main(int argc, char const *argv[])
                 return -1;
         }
 
-        uint32_t cols = atoi(argv[1]);
-        uint32_t rows = atoi(argv[2]);
+        myint_t cols = atoi(argv[1]);
+        myint_t rows = atoi(argv[2]);
         int digits, numb;
         srand(time(NULL));
         char * buffer;

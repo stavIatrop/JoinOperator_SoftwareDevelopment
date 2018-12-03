@@ -3,7 +3,7 @@
 
 #include "basicStructs.h"
 
-relationIndex initializeIndex(int , relation * , int , relationIndex * , uint32_t );
+relationIndex initializeIndex(int , relation * , int , relationIndex * , myint_t );
 indexArray * initializeIndexArray(int );
 void freeIndexArray(indexArray * idxArray);
 

@@ -8,7 +8,9 @@
 #include "queryStructs.h"
 #include "pipeI_O.h"
 #include "queryManip.h"
-
+#include "checksumInterface.h"
+#include "jointPerformer.h"
+#include "interListInterface.h"
 
 int main(void) {
 
@@ -124,6 +126,32 @@ int main(void) {
 
                     
                     query * newQuery = ConstructQuery(stdoutFile, queryStr, rels, joins, sums, filters, relArray);
+
+                    headInter * headInt = initialiseHead();
+                    //Perform filters
+                    for(myint_t whichFilter = 0; whichFilter < newQuery->numOfFilters; whichFilter++) {
+                        workerF(&(newQuery->filters[whichFilter]), headInt);
+                    }
+
+                    //Perform joins
+                    for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
+                        //fprintf(stderr, "Inters: %d\n", headInt->numOfIntermediates);
+                        workerJ(&(newQuery->joins[whichJoin]), headInt);
+                    }
+
+                    //Perform checksums
+                    checksum * cs = performChecksums(newQuery->sums, newQuery->numOfSums, headInt);
+                    for(int whichCs = 0; whichCs < cs->numbOfChecksums; whichCs++) {
+                        fprintf(stderr, "CS = %ld\n", cs->checksums[whichCs]);
+                    }
+
+                    //Perform checksums
+                    fprintf(stderr, "FINISHED ONE: Inters: %d | Rows = %ld\n", headInt->numOfIntermediates, headInt->start->data->numbOfRows);
+                    fprintf(stderr, "%ld | %ld\n", headInt->start->data->rowIds[0][0], headInt->start->data->rowIds[1][0]);
+
+                    //perror("aaaaaaaaaa\n");
+                    //Perform joins
+
 
                     //cheksum * cSum = ValFunction(query, ...);
 

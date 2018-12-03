@@ -69,7 +69,7 @@ int writeList(struct HeadResult * head, char * outPath) {
                 return -1;
         }
 
-        uint32_t totalSize = 0;
+        myint_t totalSize = 0;
         if(head->numbOfNodes != 0) {
                 resultNode * temp = head->firstNode;
                 for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
@@ -157,7 +157,7 @@ table * readTable(char * filePath, int fileType) {
 int readAsciiTable(table * t, FILE * inputFile) {
         char * tempLine = NULL;
         size_t len;
-        for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
+        for(myint_t whichCol = 0; whichCol < t->columns; whichCol++) {
                 len = 0;
                 tempLine = NULL;
 
@@ -176,7 +176,7 @@ int readAsciiTable(table * t, FILE * inputFile) {
 }
 
 int readBinTable(table * t, FILE * inputFile) {
-        for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
+        for(myint_t whichCol = 0; whichCol < t->columns; whichCol++) {
                 if(fread(t->content[whichCol], sizeof(uint64_t), t->rows, inputFile) != t->rows) {
                         perror("Failed to read binary line");
                         return -1;
@@ -185,9 +185,9 @@ int readBinTable(table * t, FILE * inputFile) {
         return 0;
 }
 
-int applyLine(table * t, int32_t whichCol, char * buffer) {
+int applyLine(table * t, myint_t whichCol, char * buffer) {
         char * tok = strtok(buffer, "|\n");
-        for(int32_t whichLine = 0; whichLine < t->rows; whichLine++) {
+        for(myint_t whichLine = 0; whichLine < t->rows; whichLine++) {
                 if(tok == NULL) {
                         perror("Strtok failed");
                         return -1;

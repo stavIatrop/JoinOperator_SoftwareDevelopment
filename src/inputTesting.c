@@ -163,7 +163,7 @@ void testExtractRelation() {
 //Test Write Output
 int initOutput() {
         list = initialiseResultHead();
-        for(int32_t i = 0; i < OUTPUT_SIZE; i++) {
+        for(myint_t i = 0; i < OUTPUT_SIZE; i++) {
                 rowTuple temp;
                 temp.rowR = i;
                 temp.rowS = i;

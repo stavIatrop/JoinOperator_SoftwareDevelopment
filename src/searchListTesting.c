@@ -18,8 +18,8 @@
 #define PSUMSIZE 3
 #define TUPLE_NUMB 10000000
 
-uint32_t * chain = NULL;
-uint32_t * buckets = NULL;
+myint_t * chain = NULL;
+myint_t * buckets = NULL;
 
 relationIndex oneIndex;
 
@@ -58,21 +58,21 @@ int freeRelations() {
         return 0;
 }
 void testZeroResults() {
-        for (uint32_t i=0; i<sizeR; i++)
+        for (myint_t i=0; i<sizeR; i++)
         {
                 //random = rand();
                 rRel->tuples[i].key = 5;
                 rRel->tuples[i].payload = i;
         }
 
-        for (uint32_t i=0; i<sizeS; i++)
+        for (myint_t i=0; i<sizeS; i++)
         {
                 //random = rand();
                 sRel->tuples[i].key = 6;
                 sRel->tuples[i].payload = i;
         }
 
-        uint32_t h1 = FIRST_REORDERED;
+        myint_t h1 = FIRST_REORDERED;
         RoR = reorderRelation(rRel, &h1);
         RoS = reorderRelation(sRel, &h1);
 
@@ -93,21 +93,21 @@ void testZeroResults() {
 }
 
 void testOrderedResults() {
-        for (uint32_t i=0; i<sizeR; i++)
+        for (myint_t i=0; i<sizeR; i++)
         {
                 //random = rand();
                 rRel->tuples[i].key = i;
                 rRel->tuples[i].payload = i;
         }
 
-        for (uint32_t i=0; i<sizeS; i++)
+        for (myint_t i=0; i<sizeS; i++)
         {
                 //random = rand();
                 sRel->tuples[i].key = i;
                 sRel->tuples[i].payload = i;
         }
 
-        uint32_t h1 = FIRST_REORDERED;
+        myint_t h1 = FIRST_REORDERED;
         RoR = reorderRelation(rRel, &h1);
         RoS = reorderRelation(sRel, &h1);
 
@@ -138,21 +138,21 @@ void testOrderedResults() {
 }
 
 void testInversedOrderedResults() {
-        for (uint32_t i=0; i<sizeR; i++)
+        for (myint_t i=0; i<sizeR; i++)
         {
                 //random = rand();
                 rRel->tuples[i].key = i;
                 rRel->tuples[i].payload = i;
         }
 
-        for (uint32_t i=0; i<sizeS; i++)
+        for (myint_t i=0; i<sizeS; i++)
         {
                 //random = rand();
                 sRel->tuples[i].key = sizeR - i;
                 sRel->tuples[i].payload = i;
         }
 
-        uint32_t h1 = FIRST_REORDERED;
+        myint_t h1 = FIRST_REORDERED;
         RoR = reorderRelation(rRel, &h1);
         RoS = reorderRelation(sRel, &h1);
 
@@ -185,8 +185,8 @@ int createList(void) {
 
         for(int i = 0; i < TUPLE_NUMB; i++) {
                 rowTuple temp;
-                temp.rowR = (int32_t) i;
-                temp.rowS = (uint32_t) i;
+                temp.rowR = (myint_t) i;
+                temp.rowS = (myint_t) i;
 
                 pushResult(list, &temp);
         }

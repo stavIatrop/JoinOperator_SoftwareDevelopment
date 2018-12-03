@@ -7,10 +7,10 @@
 
 typedef struct Checksum {
     myint_t * checksums;
-    int32_t numbOfChecksums;
+    myint_t numbOfChecksums;
 } checksum;
 
 checksum * performChecksums(colRel * sums, int numbOfSums, headInter * headInt);
-myint_t calcChecksum(myint_t ** intValues, myint_t intRows, int32_t intCol,  myint_t * relValues);
+myint_t calcChecksum(myint_t ** intValues, myint_t intRows, myint_t intCol,  myint_t * relValues);
 
 #endif

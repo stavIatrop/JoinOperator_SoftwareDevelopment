@@ -5,7 +5,7 @@
 #include "basicStructs.h"
 #include "viceFunctions.h"
 
-void CheckR(relation *r, uint32_t hash1)
+void CheckR(relation *r, myint_t hash1)
 {
 	if (r->size==0)
 	{
@@ -13,8 +13,8 @@ void CheckR(relation *r, uint32_t hash1)
 		return;
 	}
 	printf("Checking R, assuming the hash function is key %% length.\n");
-	uint32_t size = r->size, current=0, value;
-	for (uint32_t i=0; i<size; i++)
+	myint_t size = r->size, current=0, value;
+	for (myint_t i=0; i<size; i++)
 	{
 		value = r->tuples[i].key % hash1;
 		if (value < current)
@@ -29,18 +29,18 @@ void CheckR(relation *r, uint32_t hash1)
 
 int main(int argc, char const *argv[])
 {
-	uint32_t hash1=FIRST_REORDERED, size = 10000000;
+	myint_t hash1=FIRST_REORDERED, size = 10000000;
 	relation *r;
 	r = malloc(sizeof(relation));
 	r->tuples = malloc(size * sizeof(tuple));
 	r->size=size;
-	uint32_t random;
+	myint_t random;
 	srand(time(NULL));
 	reorderedR *R;
 
 
 	printf("\n\n------------Test 1: %d random keys:------------\n\n",size);
-	for (uint32_t i=0; i<size; i++)
+	for (myint_t i=0; i<size; i++)
 	{
 		random = rand();
 		r->tuples[i].key = random;
@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
 
 
 	printf("\n\n------------Test 2: keys are 0 - %d (reversed):------------\n\n",size-1);
-        for (uint32_t i=0; i<size; i++)
+        for (myint_t i=0; i<size; i++)
         {
                 //if (i%100 == 0) r.tuples[i].key = 526;
                 r->tuples[i].key = size -1 -i;
@@ -69,7 +69,7 @@ int main(int argc, char const *argv[])
 
         printf("\n\n------------Test 3: %d identical keys:------------\n\n",size);
 	random = rand();
-        for (uint32_t i=0; i<size; i++)
+        for (myint_t i=0; i<size; i++)
         {
                 r->tuples[i].key = random;
                 r->tuples[i].payload = 837376;
@@ -82,7 +82,7 @@ int main(int argc, char const *argv[])
 
 
         printf("\n\n------------Test 4: %d keys with 1%% of them being identical:------------\n\n",size);
-        for (uint32_t i=0; i<size; i++)
+        for (myint_t i=0; i<size; i++)
         {
                 random = rand();
                 if (i%100 == 0) r->tuples[i].key = 526;
@@ -97,7 +97,7 @@ int main(int argc, char const *argv[])
 
 
         printf("\n\n------------Test 5: %d keys with 10%% of them being identical:------------\n\n",size);
-        for (uint32_t i=0; i<size; i++)
+        for (myint_t i=0; i<size; i++)
         {
                 random = rand();
                 if (i%10 == 0) r->tuples[i].key = 526;
@@ -122,7 +122,7 @@ int main(int argc, char const *argv[])
 
 
         printf("\n\n------------Test 7: %d keys with 2 groups of 10%% and 20%% of them being identical within each group:------------\n\n",size);
-        for (uint32_t i=0; i<size; i++)
+        for (myint_t i=0; i<size; i++)
         {
                 random = rand();
                 if (i%10 == 0) r->tuples[i].key = 526;
@@ -138,7 +138,7 @@ int main(int argc, char const *argv[])
 
 
 	printf("\n\n------------Test 8: %d keys that only have values [0-9]:------------\n\n",size);
-        for (uint32_t i=0; i<size; i++)
+        for (myint_t i=0; i<size; i++)
         {
                 random = rand();
                 r->tuples[i].key = random % 10;
@@ -152,7 +152,7 @@ int main(int argc, char const *argv[])
 
 
 	printf("\n\n------------Test 9: Random keys with 10%% having the same last 11 bits:------------\n\n");
-        for (uint32_t i=0; i<size; i++)
+        for (myint_t i=0; i<size; i++)
         {
                 random = rand();
                 if (i%10==0) r->tuples[i].key = random << 11;
@@ -167,7 +167,7 @@ int main(int argc, char const *argv[])
 
 
 	printf("\n\n------------Test 10: %d keys with some of them sneakily being in the same bucket:------------\n\n",size);
-        for (uint32_t i=0; i<size; i++)
+        for (myint_t i=0; i<size; i++)
         {
                 random = rand();
                 r->tuples[i].key = random;

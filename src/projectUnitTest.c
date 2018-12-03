@@ -33,8 +33,8 @@ table * t = NULL;
 headResult * list_a;
 relation *r1,*r2,*r3;
 
-uint32_t * chain_a = NULL;
-uint32_t * buckets_a = NULL;
+myint_t * chain_a = NULL;
+myint_t * buckets_a = NULL;
 
 relationIndex * oneIndex_a;
 
@@ -43,8 +43,8 @@ indexArray * indexA_a = NULL;
 relationIndex * newIndex = NULL;
 tuple * startOfBucket = NULL;
 
-uint32_t * chain = NULL;
-uint32_t * buckets = NULL;
+myint_t * chain = NULL;
+myint_t * buckets = NULL;
 
 relationIndex oneIndex;
 
@@ -72,9 +72,9 @@ int initAsciiTable() {
                 return -1;
         }
         free(firstLine);
-        t->content = (int32_t **) malloc(t->columns * sizeof(int32_t *));
+        t->content = (myint_t **) malloc(t->columns * sizeof(myint_t *));
         for(int i = 0; i < t->columns; i++) {
-                t->content[i] = (int32_t *) calloc(t->rows, sizeof(int32_t));
+                t->content[i] = (myint_t *) calloc(t->rows, sizeof(myint_t));
         }
         return 0;
 }
@@ -117,9 +117,9 @@ int initBinTable() {
         }
         free(firstLine);
 
-        t->content = (int32_t **) malloc(t->columns * sizeof(int32_t *));
+        t->content = (myint_t **) malloc(t->columns * sizeof(myint_t *));
         for(int i = 0; i < t->columns; i++) {
-                t->content[i] = (int32_t *) calloc(t->rows, sizeof(int32_t));
+                t->content[i] = (myint_t *) calloc(t->rows, sizeof(myint_t));
         }
 
         return 0;
@@ -202,7 +202,7 @@ void testExtractRelation() {
 //Test Write Output
 int initOutput() {
         list_a = initialiseResultHead();
-        for(int32_t i = 0; i < OUTPUT_SIZE; i++) {
+        for(myint_t i = 0; i < OUTPUT_SIZE; i++) {
                 rowTuple temp;
                 temp.rowR = i;
                 temp.rowS = i;
@@ -273,7 +273,7 @@ int initIdentical()
 	r3 = malloc(sizeof(relation));
 	r3->tuples = malloc(10000000 * sizeof(tuple));
 	r3->size = 10000000;
-	for (uint32_t i=0; i<10000000; i++)
+	for (myint_t i=0; i<10000000; i++)
 	{
 		if (i%10==0) r3->tuples[i].key=0;
 		else r3->tuples[i].key=i;
@@ -389,7 +389,7 @@ void testStartOfBucket() {
 
 void testBuildSubIndex() {
 
-	uint32_t sizeAll = 10, eachSize = 3, key = 10, sizeIndexedSofar = 3;
+	myint_t sizeAll = 10, eachSize = 3, key = 10, sizeIndexedSofar = 3;
 	sizeAll -= eachSize;
 	buildSubIndex(&newIndex, HASH1_A, HASH2_A, sizeAll, eachSize, sizeIndexedSofar, startOfBucket, key);
 	
@@ -484,8 +484,8 @@ void testBuildIndex(){
 
 int InitializeStructs() {
 
-	chain_a = (uint32_t *) malloc(8 * sizeof(uint32_t));
-	buckets_a = (uint32_t *) malloc(5 * sizeof(uint32_t));
+	chain_a = (myint_t *) malloc(8 * sizeof(myint_t));
+	buckets_a = (myint_t *) malloc(5 * sizeof(myint_t));
 
 	int i;
 	for(i = 0; i < 8; i++)
@@ -521,7 +521,7 @@ void testUpdateChain() {
 
 void testHashing() {
 
-	uint32_t value = 9;
+	myint_t value = 9;
 	value = hashing(value, HASH1_A, HASH2_A);
 	CU_ASSERT(value == 1);
 	value = 81;
@@ -573,21 +573,21 @@ int freeRelations() {
         return 0;
 }
 void testZeroResults() {
-        for (uint32_t i=0; i<sizeR; i++)
+        for (myint_t i=0; i<sizeR; i++)
         {
                 //random = rand();
                 rRel->tuples[i].key = 5;
                 rRel->tuples[i].payload = i;
         }
 
-        for (uint32_t i=0; i<sizeS; i++)
+        for (myint_t i=0; i<sizeS; i++)
         {
                 //random = rand();
                 sRel->tuples[i].key = 6;
                 sRel->tuples[i].payload = i;
         }
 
-        uint32_t h1 = FIRST_REORDERED;
+        myint_t h1 = FIRST_REORDERED;
         RoR = reorderRelation(rRel, &h1);
         RoS = reorderRelation(sRel, &h1);
 
@@ -608,21 +608,21 @@ void testZeroResults() {
 }
 
 void testOrderedResults() {
-        for (uint32_t i=0; i<sizeR; i++)
+        for (myint_t i=0; i<sizeR; i++)
         {
                 //random = rand();
                 rRel->tuples[i].key = i;
                 rRel->tuples[i].payload = i;
         }
 
-        for (uint32_t i=0; i<sizeS; i++)
+        for (myint_t i=0; i<sizeS; i++)
         {
                 //random = rand();
                 sRel->tuples[i].key = i;
                 sRel->tuples[i].payload = i;
         }
 
-        uint32_t h1 = FIRST_REORDERED;
+        myint_t h1 = FIRST_REORDERED;
         RoR = reorderRelation(rRel, &h1);
         RoS = reorderRelation(sRel, &h1);
 
@@ -653,21 +653,21 @@ void testOrderedResults() {
 }
 
 void testInversedOrderedResults() {
-        for (uint32_t i=0; i<sizeR; i++)
+        for (myint_t i=0; i<sizeR; i++)
         {
                 //random = rand();
                 rRel->tuples[i].key = i;
                 rRel->tuples[i].payload = i;
         }
 
-        for (uint32_t i=0; i<sizeS; i++)
+        for (myint_t i=0; i<sizeS; i++)
         {
                 //random = rand();
                 sRel->tuples[i].key = sizeR - i;
                 sRel->tuples[i].payload = i;
         }
 
-        uint32_t h1 = FIRST_REORDERED;
+        myint_t h1 = FIRST_REORDERED;
         RoR = reorderRelation(rRel, &h1);
         RoS = reorderRelation(sRel, &h1);
 
@@ -700,8 +700,8 @@ int createList(void) {
 
         for(int i = 0; i < TUPLE_NUMB; i++) {
                 rowTuple temp;
-                temp.rowR = (int32_t) i;
-                temp.rowS = (uint32_t) i;
+                temp.rowR = (myint_t) i;
+                temp.rowS = (myint_t) i;
 
                 pushResult(list, &temp);
         }

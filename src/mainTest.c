@@ -19,7 +19,7 @@ relation *r, *s;
 reorderedR *R, *S;
 headResult * list;
 indexArray * indexA;
-uint32_t hash1=0, size = 10000000, size2 = 2000000;
+myint_t hash1=0, size = 10000000, size2 = 2000000;
 
 
 // !! WHOLE FILE DEPRECATED, does not work !!
@@ -34,17 +34,17 @@ int initialiseStructs(void) {
 	r->size=size;
         s->size=size2;
 
-        //uint32_t random;
+        //myint_t random;
 	//srand(time(NULL));
 
-	for (uint32_t i=0; i<size; i++)
+	for (myint_t i=0; i<size; i++)
         {
                 //random = rand();
                 r->tuples[i].key = i;
                 r->tuples[i].payload = i;
         }
 
-        for (uint32_t i=0; i<size2; i++)
+        for (myint_t i=0; i<size2; i++)
         {
                 //random = rand();
                 s->tuples[i].key = i;
@@ -117,7 +117,7 @@ int main(void) {
 
 /*int main(int argc, char const *argv[])
 {
-        uint32_t hash1=0, size = 10000000, size2 = 20000000;
+        myint_t hash1=0, size = 10000000, size2 = 20000000;
 	relation *r, *s;
         r = (relation *) malloc(sizeof(relation));
         s = (relation *) malloc(sizeof(relation));
@@ -126,11 +126,11 @@ int main(void) {
         s->tuples = malloc(size2 * sizeof(tuple));
 	r->size=size;
         s->size=size2;
-	uint32_t random;
+	myint_t random;
 	srand(time(NULL));
 	reorderedR *R, *S;
 
-	for (uint32_t i=0; i<size; i++)
+	for (myint_t i=0; i<size; i++)
         {
                 random = rand();
                 r->tuples[i].key = i;
@@ -140,7 +140,7 @@ int main(void) {
         R = reorderRelation(r,&hash1);
         printf("Exited reordering function\n");
 
-        for (uint32_t i=0; i<size2; i++)
+        for (myint_t i=0; i<size2; i++)
         {
                 random = rand();
                 s->tuples[i].key = i;

@@ -26,7 +26,7 @@ int initIdentical()
 	r3 = malloc(sizeof(relation));
 	r3->tuples = malloc(10000000 * sizeof(tuple));
 	r3->size = 10000000;
-	for (uint32_t i=0; i<10000000; i++)
+	for (myint_t i=0; i<10000000; i++)
 	{
 		if (i%10==0) r3->tuples[i].key=0;
 		else r3->tuples[i].key=i;

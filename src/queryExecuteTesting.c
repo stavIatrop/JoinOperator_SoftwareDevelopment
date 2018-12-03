@@ -36,13 +36,13 @@ int freeList() {
 } 
 
 myint_t ** create_2DArray(int cols, int rows) {
-    myint_t ** arr = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        arr[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    myint_t ** arr = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        arr[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int whichRow = 0; whichRow < rows; whichRow++) {
         for(int whichCol = 0; whichCol < cols; whichCol++) {
-            arr[whichRow][whichCol] = 1;
+            arr[whichCol][whichRow] = 1;
         }
     }
     return arr;
@@ -124,8 +124,8 @@ int initIntermediatesResults() {
 
     for(int i = 0; i < TUPLE_NUMB; i++) {
             rowTuple temp;
-            temp.rowR = (int32_t) i;
-            temp.rowS = (uint32_t) i;
+            temp.rowR = (myint_t) i;
+            temp.rowS = (myint_t) i;
 
             pushResult(headRes, &temp);
     }
@@ -181,18 +181,18 @@ void updateRowIdsTest() {
 
     
 
-    myint_t ** arr = updateRowIds(intNode, headResLocal, 0);
-    CU_ASSERT_PTR_NULL(arr);
+    myint_t ** arr = updateRowIds(intNode, headResLocal, 0, 0);
+    //CU_ASSERT_PTR_NULL(arr[0]);
 
     for(int i = 0; i < rows / 2; i++) {
         rowTuple temp;
-        temp.rowR = (int32_t) i * 2;
-        temp.rowS = (uint32_t) i * 2;
+        temp.rowR = (myint_t) i * 2;
+        temp.rowS = (myint_t) i * 2;
 
         pushResult(headResLocal, &temp);
     }
 
-    arr = updateRowIds(intNode, headResLocal, rows / 2);
+    arr = updateRowIds(intNode, headResLocal, rows / 2, 0);
 
     CU_ASSERT(arr[0][0] == 0);
     CU_ASSERT(arr[1][0] == 0);
@@ -252,13 +252,13 @@ void joinRowIdsTest() {
 
     for(int i = 0; i < rows / 2; i++) {
         rowTuple temp;
-        temp.rowR = (int32_t) i * 2;
-        temp.rowS = (uint32_t) i * 2;
+        temp.rowR = (myint_t) i * 2;
+        temp.rowS = (myint_t) i * 2;
 
         pushResult(headResLocal, &temp);
     }
 
-    myint_t ** arr = joinRowIds(node1, node2, headResLocal, rows / 2);
+    myint_t ** arr = joinRowIds(node1, node2, headResLocal, rows / 2, 0);
 
     CU_ASSERT(arr[0][0] == 0);
     CU_ASSERT(arr[2][0] == 0);
@@ -388,15 +388,15 @@ void joinTwoIntermediates() {
 
     for(int i = 0; i < rows / 2; i++) {
         rowTuple temp;
-        temp.rowR = (int32_t) i * 2;
-        temp.rowS = (uint32_t) i * 2;
+        temp.rowR = (myint_t) i * 2;
+        temp.rowS = (myint_t) i * 2;
 
         pushResult(headResLocal, &temp);
     }
 
     CU_ASSERT(headInt->numOfIntermediates == 2);
 
-    updateInterAndDelete(headInt, headInt->start, headInt->start->next, headResLocal);
+    updateInterAndDelete(headInt, headInt->start, headInt->start->next, headResLocal, 0);
 
     CU_ASSERT(headInt->numOfIntermediates == 1);
 
@@ -447,13 +447,13 @@ void joinInterWithRelTest() {
 
     for(int i = 0; i < rows / 2; i++) {
         rowTuple temp;
-        temp.rowR = (int32_t) i * 2;
-        temp.rowS = (uint32_t) i * 2;
+        temp.rowR = (myint_t) i * 2;
+        temp.rowS = (myint_t) i * 2;
 
         pushResult(headResLocal, &temp);
     }
 
-    updateInterFromRes(node, headResLocal, 5);
+    updateInterFromRes(node, headResLocal, 5, 0);
 
     CU_ASSERT(node->data->numOfCols == cols + 1);
     CU_ASSERT(node->data->numbOfRows == rows / 2);
@@ -557,16 +557,16 @@ void testNextRowId()
 
 int smarterInit()
 {
-    initList();
+    headInt = initialiseHead();
     int rows = 1000;
     int cols = 2;
-    myint_t ** rowIds = (myint_t **) malloc(rows * sizeof(myint_t *));
-    for(int i = 0; i < rows; i++) {
-        rowIds[i] = (myint_t *) malloc(cols * sizeof(myint_t));
+    myint_t ** rowIds = (myint_t **) malloc(cols * sizeof(myint_t *));
+    for(int i = 0; i < cols; i++) {
+        rowIds[i] = (myint_t *) malloc(rows * sizeof(myint_t));
     }
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            rowIds[i][j] = i;
+            rowIds[j][i] = i;
         }
     }
 
@@ -593,7 +593,7 @@ int smarterInit()
 
 int smarterFree()
 {
-	freeList();
+	freeInterList(headInt);
 	free(cr);
         free(col);
 	return 0;
@@ -606,19 +606,17 @@ void testRelationsheepForging()
 	rel = forgeRelationsheep(headInt, cr);
 
 	CU_ASSERT(rel->size==rows2);
-	printf("Size is %d\n", rel->size);
 	for (int i=0; i<rows2; i++)
 	{
 		CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
 	}
 
-	/*cr -> rel = 1;
+	cr -> rel = 1;
 	free(rel->tuples);
 	free(rel);
 	rel = forgeRelationsheep(headInt, cr);
 
         CU_ASSERT(rel->size==rows);
-        printf("Size is %d\n", rel->size);
         for (int i=0; i<rows; i++)
         {
                 CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
@@ -631,7 +629,6 @@ void testRelationsheepForging()
         rel = forgeRelationsheep(headInt, cr);
 
         CU_ASSERT(rel->size==rows);
-        printf("Size is %d\n", rel->size);
         for (int i=0; i<rows; i++)
         {
                 CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
@@ -644,12 +641,11 @@ void testRelationsheepForging()
         rel = forgeRelationsheep(headInt, cr);
 
         CU_ASSERT(rel->size==rows);
-        printf("Size is %d\n", rel->size);
         for (int i=0; i<rows; i++)
         {
                 CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload);
 		if (i%2==1) CU_ASSERT(rel->tuples[i].key==rel->tuples[i-1].key);
-        }*/
+        }
 
 	free(rel->tuples);
 	free(rel);
@@ -664,11 +660,11 @@ void testFilter()
 	filt.op = 1;
 	filt.value = 1000;
 	workerF(&filt, headInt);
-	printf("Made it here\n");
 	CU_ASSERT(headInt->numOfIntermediates==3);
 	CU_ASSERT(findNode(headInt,cr->rel)->data->numOfCols==1);
 	CU_ASSERT(findNode(headInt,cr->rel)->data->numbOfRows==filt.value);
-	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[i][0]==i);  //edw thelei allagh vre
+	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[0][i]==i);  //edw thelei allagh vre
+
 }
 
 int main(void) {
