@@ -100,7 +100,7 @@ void workerJ(join *pred, headInter * hq)
 			char switched;
 
 			res = performRHJ(hq,r1,r2,&newRel, &switched);
-			if (used==0) createInterFromRes(hq,res,rel1,rel2);
+			if (used==0) createInterFromRes(hq,res,rel1,rel2, switched);
 			else if (used==1)
 			{
 				if (rel1==newRel) {
@@ -108,7 +108,7 @@ void workerJ(join *pred, headInter * hq)
 					//fprintf(stderr, "REL1 NEW\n");
 				}
 				else{
-					fprintf(stderr, "REL2 NEW %ld | new rel: %ld | newRelRows: %ld\n", n1->data->numbOfRows, newRel, r2->rows);
+					//fprintf(stderr, "REL2 NEW %ld | new rel: %ld | newRelRows: %ld\n", n1->data->numbOfRows, newRel, r2->rows);
 					updateInterFromRes(n1,res,newRel,switched);
 				}
 			}
@@ -164,12 +164,11 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 		for ( ; i < next; i++)
 		{
 			j = rowIds[i];
-			//if(j >= r->rows) fprintf(stderr, "J = %ld, rel = %ld\n", j, r->rel); 
                 	t[cur].key = col[j];
         	        t[cur++].payload = i;
 		}
         }
-	fprintf(stderr, "AAA %ld is already in an inter\n", r->rel);
+	//fprintf(stderr, "AAA %ld is already in an inter\n", r->rel);
 	rel->size = cur;
 	//fprintf(stderr, "size is %ld\n", cur);
 	rel->tuples = realloc((void *) t, cur * sizeof(tuple));
@@ -179,9 +178,10 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, char *switched)
 {
 	relation *relation1 = forgeRelationsheep(hi,r1);
+	//fprintf(stderr, "Rel111111111111111111111\n");
 
 	relation *relation2 = forgeRelationsheep(hi,r2);
-	fprintf(stderr, "REL1 ROWS: %ld | REL2 ROWS: %ld\n", relation1->size, relation2->size);
+	//fprintf(stderr, "REL1 ROWS: %ld | REL2 ROWS: %ld\n", relation1->size, relation2->size);
 
 	char new1=0, new2=0;
 	if (findNode(hi,r1->rel)==NULL) new1=1;

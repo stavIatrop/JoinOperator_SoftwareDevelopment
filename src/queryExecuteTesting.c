@@ -143,7 +143,7 @@ int freeIntermedieatesResults() {
 
 void createResArrayTest() {
     myint_t size = 0;
-    myint_t ** arr = createResultArray(headRes, &size);
+    myint_t ** arr = createResultArray(headRes, &size, 0);
 
     CU_ASSERT(size == TUPLE_NUMB);
     CU_ASSERT(arr[0][0] == 0);

@@ -224,7 +224,7 @@ void freeTable(table * t) {
 void printTable(table * t) {
         printf("  <<< Printing table>>>\n");
         for(myint_t i = 0; i < t->columns; i++) {
-                printf("Column %d: ", i);
+                printf("Column %ld: ", i);
                 for(myint_t j = 0; j < t->rows; j++) {
                        printf("%lu \t", t->content[i][j]); 
                 }

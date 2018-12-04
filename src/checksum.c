@@ -17,7 +17,7 @@ checksum * performChecksums(colRel * sums, myint_t numbOfSums, headInter * headI
     retChecksum->checksums = (myint_t *) malloc(numbOfSums * sizeof(myint_t));
     retChecksum->numbOfChecksums = numbOfSums;
 
-    fprintf(stderr, "    Starting checksums...");
+    //fprintf(stderr, "    Starting checksums...");
     fflush(stderr);
     for(myint_t whichSum = 0; whichSum < numbOfSums; whichSum++) {
         for(myint_t whichRel = 0; whichRel < headInt->start->data->numOfCols; whichRel++) {
@@ -27,10 +27,10 @@ checksum * performChecksums(colRel * sums, myint_t numbOfSums, headInter * headI
                 break;
             }
         }
-        fprintf(stderr, "%d ", whichSum);
+        //fprintf(stderr, "%ld ", whichSum);
         fflush(stderr);
     }
-    fprintf(stderr, "Finished\n");
+    //fprintf(stderr, "Finished\n");
     fflush(stderr);
     return retChecksum;
 }

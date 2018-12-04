@@ -155,9 +155,9 @@ int main(void) {
 
         printf("Starting searching\n");
         headResult * list = search(*indexA, S, 101);
-        printf("Exiting searching Nodes = %d | ResultsPerNode = %d\n", list->numbOfNodes, list->firstNode->size);
+        printf("Exiting searching Nodes = %ld | ResultsPerNode = %ld\n", list->numbOfNodes, list->firstNode->size);
         //for(int j = 0; j < list->firstNode->size; j++) {
-        //        printf("Row1 = %d | Row2 = %d\n", list->firstNode->tuples[j].rowR, list->firstNode->tuples[j].rowS);
+        //        printf("Row1 = %ld | Row2 = %ld\n", list->firstNode->tuples[j].rowR, list->firstNode->tuples[j].rowS);
         //}
 
         int result = checkResults(list);

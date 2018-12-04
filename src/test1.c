@@ -39,7 +39,7 @@ int main(int argc, char const *argv[])
 	reorderedR *R;
 
 
-	printf("\n\n------------Test 1: %d random keys:------------\n\n",size);
+	printf("\n\n------------Test 1: %ld random keys:------------\n\n",size);
 	for (myint_t i=0; i<size; i++)
 	{
 		random = rand();
@@ -53,7 +53,7 @@ int main(int argc, char const *argv[])
         hash1=FIRST_REORDERED;
 
 
-	printf("\n\n------------Test 2: keys are 0 - %d (reversed):------------\n\n",size-1);
+	printf("\n\n------------Test 2: keys are 0 - %ld (reversed):------------\n\n",size-1);
         for (myint_t i=0; i<size; i++)
         {
                 //if (i%100 == 0) r.tuples[i].key = 526;
@@ -67,7 +67,7 @@ int main(int argc, char const *argv[])
         hash1=FIRST_REORDERED;
 
 
-        printf("\n\n------------Test 3: %d identical keys:------------\n\n",size);
+        printf("\n\n------------Test 3: %ld identical keys:------------\n\n",size);
 	random = rand();
         for (myint_t i=0; i<size; i++)
         {
@@ -81,7 +81,7 @@ int main(int argc, char const *argv[])
         hash1=FIRST_REORDERED;
 
 
-        printf("\n\n------------Test 4: %d keys with 1%% of them being identical:------------\n\n",size);
+        printf("\n\n------------Test 4: %ld keys with 1%% of them being identical:------------\n\n",size);
         for (myint_t i=0; i<size; i++)
         {
                 random = rand();
@@ -96,7 +96,7 @@ int main(int argc, char const *argv[])
         hash1=FIRST_REORDERED;
 
 
-        printf("\n\n------------Test 5: %d keys with 10%% of them being identical:------------\n\n",size);
+        printf("\n\n------------Test 5: %ld keys with 10%% of them being identical:------------\n\n",size);
         for (myint_t i=0; i<size; i++)
         {
                 random = rand();
@@ -121,7 +121,7 @@ int main(int argc, char const *argv[])
         hash1=FIRST_REORDERED;
 
 
-        printf("\n\n------------Test 7: %d keys with 2 groups of 10%% and 20%% of them being identical within each group:------------\n\n",size);
+        printf("\n\n------------Test 7: %ld keys with 2 groups of 10%% and 20%% of them being identical within each group:------------\n\n",size);
         for (myint_t i=0; i<size; i++)
         {
                 random = rand();
@@ -137,7 +137,7 @@ int main(int argc, char const *argv[])
         hash1=FIRST_REORDERED;
 
 
-	printf("\n\n------------Test 8: %d keys that only have values [0-9]:------------\n\n",size);
+	printf("\n\n------------Test 8: %ld keys that only have values [0-9]:------------\n\n",size);
         for (myint_t i=0; i<size; i++)
         {
                 random = rand();
@@ -166,7 +166,7 @@ int main(int argc, char const *argv[])
 	hash1=FIRST_REORDERED;
 
 
-	printf("\n\n------------Test 10: %d keys with some of them sneakily being in the same bucket:------------\n\n",size);
+	printf("\n\n------------Test 10: %ld keys with some of them sneakily being in the same bucket:------------\n\n",size);
         for (myint_t i=0; i<size; i++)
         {
                 random = rand();

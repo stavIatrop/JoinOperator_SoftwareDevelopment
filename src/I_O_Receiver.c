@@ -149,27 +149,27 @@ int main(void) {
                     
                     query * newQuery = ConstructQuery(stdoutFile, queryStr, rels, joins, sums, filters, relArray);
 
-                    fprintf(stderr, "\n>>>> Executing query %ld\n", whichQuery);
-                    printFilters(newQuery);
-                    printJoins(newQuery);
-                    printChecksums(newQuery);
+                    //fprintf(stderr, "\n>>>> Executing query %ld\n", whichQuery);
+                    //printFilters(newQuery);
+                    //printJoins(newQuery);
+                    //printChecksums(newQuery);
                     
 
 
                     headInter * headInt = initialiseHead();
                     //Perform filters
-                    fprintf(stderr, "    Starting filters...\n ");
+                    //fprintf(stderr, "    Starting filters...\n ");
                     fflush(stderr);
                     for(myint_t whichFilter = 0; whichFilter < newQuery->numOfFilters; whichFilter++) {
                         workerF(&(newQuery->filters[whichFilter]), headInt);
-                        fprintf(stderr, "%ld ", whichFilter);
+                       // fprintf(stderr, "%ld ", whichFilter);
                         fflush(stdout);
                     }
-                    fprintf(stderr, "Finished\n");
+                    //fprintf(stderr, "Finished\n");
                     fflush(stderr);
 
                     //Perform joins
-                    fprintf(stderr, "    Starting joins...\n");
+                    //fprintf(stderr, "    Starting joins...\n");
                     fflush(stderr);
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
 
@@ -178,18 +178,21 @@ int main(void) {
                         //fprintf(stderr, "Inters1: %ld\n", headInt->numOfIntermediates);
 
                         workerJ(&(newQuery->joins[whichJoin]), headInt);
-                        fprintf(stderr, "%ld ", whichJoin);
+                        //fprintf(stderr, "%ld ", whichJoin);
                         fflush(stdout);
                         //fprintf(stderr, "Inters2: %ld\n", headInt->numOfIntermediates);
 
                     }
-                    fprintf(stderr, "Finished\n");
+                   // fprintf(stderr, "Finished\n");
                     fflush(stderr);
 
                     //Perform checksums
 
 
                     checksum * cs = performChecksums(newQuery->sums, newQuery->numOfSums, headInt);
+
+                    freeInterList(headInt);
+
                     // for(myint_t whichCs = 0; whichCs < cs->numbOfChecksums; whichCs++) {
                     //    fprintf(stderr, "CS = %ld\n", cs->checksums[whichCs]);
 
@@ -198,11 +201,14 @@ int main(void) {
 
                     writePipe(cs);
 
+                    free(cs->checksums);
+                    free(cs);
+
                     //Perform checksums
 
                     //fprintf(stderr, "FINISHED ONE: Inters: %ld | Rows = %ld\n", headInt->numOfIntermediates, headInt->start->data->numbOfRows);
 
-                    fprintf(stderr, "FINISHED ONE: Inters: %ld | Rows = %ld\n", headInt->numOfIntermediates, headInt->start->data->numbOfRows);
+                    //fprintf(stderr, "FINISHED ONE: Inters: %ld | Rows = %ld\n", headInt->numOfIntermediates, headInt->start->data->numbOfRows);
 
                     //fprintf(stderr, "%ld | %ld\n", headInt->start->data->rowIds[0][0], headInt->start->data->rowIds[1][0]);
 

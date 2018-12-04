@@ -109,7 +109,7 @@ void deleteInterNode(headInter * head, nodeInter * node) {
     head->numOfIntermediates -= 1;
 }
 
-myint_t ** createResultArray(headResult * head, myint_t * size) {
+myint_t ** createResultArray(headResult * head, myint_t * size, char switched) {
 
     myint_t numbOfResults = countSizeOfList(head);
     *size = numbOfResults;
@@ -121,22 +121,35 @@ myint_t ** createResultArray(headResult * head, myint_t * size) {
     //Inserting the results in the intermediate array
     resultNode * currentNode = head->firstNode;    
     myint_t counter = 0;
-    for(myint_t whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
-        for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
-            retArr[0][counter] = currentNode->tuples[whichRes].rowR;
-            retArr[1][counter] = currentNode->tuples[whichRes].rowS;
-            counter += 1;
+    if(switched == 0) {
+        for(myint_t whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
+                retArr[0][counter] = currentNode->tuples[whichRes].rowR;
+                retArr[1][counter] = currentNode->tuples[whichRes].rowS;
+                counter += 1;
+            }
+            currentNode = currentNode->nextNode;
         }
-        currentNode = currentNode->nextNode;
     }
+    else {
+        for(myint_t whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
+                retArr[0][counter] = currentNode->tuples[whichRes].rowS;
+                retArr[1][counter] = currentNode->tuples[whichRes].rowR;
+                counter += 1;
+            }
+            currentNode = currentNode->nextNode;
+        }
+    }
+    
 
     return retArr;
 }
 
 //CASE: Both join relationships are not a member of any other Intermediate
-void createInterFromRes(headInter * headInt, headResult * headRes, myint_t rel1, myint_t rel2) {
+void createInterFromRes(headInter * headInt, headResult * headRes, myint_t rel1, myint_t rel2, char switched) {
     myint_t rows;
-    myint_t ** rowIds = createResultArray(headRes, &rows);
+    myint_t ** rowIds = createResultArray(headRes, &rows, switched);
 
     myint_t * joinedRels = (myint_t *) malloc(2 * sizeof(myint_t));
     joinedRels[0] = rel1; 
@@ -161,18 +174,9 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
         if(switched == 0) {
             for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
                 for(myint_t whichCol = 0; whichCol < intNode->data->numOfCols; whichCol++) {
-                    myint_t aa = currentNode->tuples[whichRes].rowR;
-                    myint_t cc = intNode->data->rowIds[whichCol][0];
-                    // if(aa > 3436) {
-                    //     fprintf(stderr, "RRRRRRRRRRRR\n");
-                    // }
                     retArr[whichCol][counter] = intNode->data->rowIds[whichCol][currentNode->tuples[whichRes].rowR];
                 //if(retArr[whichCol][counter] > 10000000) fprintf(stderr, "ERROR!!!!!\n");
                 }
-                myint_t sss = currentNode->tuples[whichRes].rowS;;
-                // if(sss > 3436) {
-                //         fprintf(stderr, "SSSSSSSS\n");
-                //     }
                 retArr[intNode->data->numOfCols][counter] = currentNode->tuples[whichRes].rowS;
                 counter += 1;
 
@@ -219,7 +223,7 @@ void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t added
 
     updateInter(intNode, intNode->data->numOfCols + 1, numbOfResults, joinedRels, newRowIds);
 
-    fprintf(stderr, "    Join inter rows = %ld | cols = %ld\n", intNode->data->numbOfRows, intNode->data->numOfCols);
+    //fprintf(stderr, "    Join inter rows = %ld | cols = %ld\n", intNode->data->numbOfRows, intNode->data->numOfCols);
 
 
 }

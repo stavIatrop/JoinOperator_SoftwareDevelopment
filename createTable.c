@@ -42,7 +42,7 @@ myint_t main(myint_t argc, char const *argv[])
                                 numb = rand();
                                 digits = digitsOfInt(numb);
                                 char * tempString = (char *) malloc((digits +1) * sizeof(char));
-                                sprintf(tempString, "%d", numb);
+                                sprintf(tempString, "%ld", numb);
                                 if(whichRow == 0) {
                                         strcpy(buffer, tempString);
                                 }
@@ -67,7 +67,7 @@ myint_t main(myint_t argc, char const *argv[])
                 }
                 for(myint_t whichInt = 0; whichInt < rows * cols; whichInt++) {
                         array[whichInt] = rand();	//RANDOM
-                        //printf("%d | %lu\n", whichInt, array[whichInt]);
+                        //printf("%ld | %lu\n", whichInt, array[whichInt]);
                         //array[whichInt] = 7;		//SAME
 			//array[whichInt] = whichInt;	//ORDERED
                 }
