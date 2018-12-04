@@ -7,7 +7,7 @@
 
 void workerF(filter *pred, headInter *hq)
 {
-	fprintf(stderr, "%ld\n", pred->participant.rows);
+	//fprintf(stderr, "%ld\n", pred->participant.rows);
 	colRel *r = &(pred->participant);
         myint_t *col = r->col;
 	char op = pred->op;
@@ -42,7 +42,7 @@ void workerF(filter *pred, headInter *hq)
 				temp[cur++]=i;
 			}
                 }
-		//fprintf(stderr, "sizeF is %ld\n", rows);
+		//fprintf(stderr, "Inter after filter =  %ld\n", cur);
 		temp = realloc((void *) temp, cur * sizeof(myint_t));
 		createInterSelfJoin(hq,r->rel,temp,cur);
 		free(temp);
@@ -98,12 +98,19 @@ void workerJ(join *pred, headInter * hq)
 			headResult *res;
 			myint_t newRel;
 			char switched;
+
 			res = performRHJ(hq,r1,r2,&newRel, &switched);
 			if (used==0) createInterFromRes(hq,res,rel1,rel2);
 			else if (used==1)
 			{
-				if (rel1==newRel) updateInterFromRes(n2,res,newRel,switched);
-				else updateInterFromRes(n1,res,newRel,switched);
+				if (rel1==newRel) {
+					updateInterFromRes(n2,res,newRel,switched);
+					//fprintf(stderr, "REL1 NEW\n");
+				}
+				else{
+					fprintf(stderr, "REL2 NEW %ld | new rel: %ld | newRelRows: %ld\n", n1->data->numbOfRows, newRel, r2->rows);
+					updateInterFromRes(n1,res,newRel,switched);
+				}
 			}
 			else updateInterAndDelete(hq,n1,n2,res,switched);
 			freeResultList(res);
@@ -157,10 +164,12 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 		for ( ; i < next; i++)
 		{
 			j = rowIds[i];
+			//if(j >= r->rows) fprintf(stderr, "J = %ld, rel = %ld\n", j, r->rel); 
                 	t[cur].key = col[j];
         	        t[cur++].payload = i;
 		}
         }
+	fprintf(stderr, "AAA %ld is already in an inter\n", r->rel);
 	rel->size = cur;
 	//fprintf(stderr, "size is %ld\n", cur);
 	rel->tuples = realloc((void *) t, cur * sizeof(tuple));
@@ -172,18 +181,22 @@ headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, c
 	relation *relation1 = forgeRelationsheep(hi,r1);
 
 	relation *relation2 = forgeRelationsheep(hi,r2);
-
-	headResult *res;
-
-	res = radixHashJoin(relation1,relation2, switched);
+	fprintf(stderr, "REL1 ROWS: %ld | REL2 ROWS: %ld\n", relation1->size, relation2->size);
 
 	char new1=0, new2=0;
 	if (findNode(hi,r1->rel)==NULL) new1=1;
 	if (findNode(hi,r2->rel)==NULL) new2=1;
-	if (new1==1 && new2==0) *newRel = r1->rel;
-	if (new1==0 && new2==1) *newRel = r2->rel;
-
-	return res;
+	if (new1==1 && new2==0)
+	{
+		*newRel = r1->rel;
+		return radixHashJoin(relation2,relation1, switched);
+	}
+	if (new1==0 && new2==1)
+	{
+		*newRel = r2->rel;
+		return radixHashJoin(relation1,relation2, switched);
+	}
+	else return radixHashJoin(relation1,relation2, switched);
 }
 
 myint_t *performSameNodeJoin(nodeInter *node, join *pred, myint_t *survivors)

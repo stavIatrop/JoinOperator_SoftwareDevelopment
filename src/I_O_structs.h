@@ -26,7 +26,7 @@ void FreeInput(Input *);
 
 relationsheepArray InitializeRelSheepArray(myint_t numRels);
 void FillRelArray(relationsheepArray * , Input *);
-int FillRel(relationsheep * , FILE *);
+myint_t FillRel(relationsheep * , FILE *);
 void FreeRelArray(relationsheepArray );
 void PrintRelArray(relationsheepArray *, FILE *);
 

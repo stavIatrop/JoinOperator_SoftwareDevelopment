@@ -7,6 +7,6 @@
 #define MAX_BUFFER 4096
 
 char * readFromPipe(const char * );
-int numDigits(myint_t );
+myint_t numDigits(myint_t );
 void writePipe(checksum * );
 #endif

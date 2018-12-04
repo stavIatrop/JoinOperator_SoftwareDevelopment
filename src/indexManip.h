@@ -3,8 +3,8 @@
 
 #include "basicStructs.h"
 
-relationIndex initializeIndex(int , relation * , int , relationIndex * , myint_t );
-indexArray * initializeIndexArray(int );
+relationIndex initializeIndex(myint_t , relation * , myint_t , relationIndex * , myint_t );
+indexArray * initializeIndexArray(myint_t );
 void freeIndexArray(indexArray * idxArray);
 
 #endif

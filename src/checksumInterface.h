@@ -10,7 +10,7 @@ typedef struct Checksum {
     myint_t numbOfChecksums;
 } checksum;
 
-checksum * performChecksums(colRel * sums, int numbOfSums, headInter * headInt);
+checksum * performChecksums(colRel * sums, myint_t numbOfSums, headInter * headInt);
 myint_t calcChecksum(myint_t ** intValues, myint_t intRows, myint_t intCol,  myint_t * relValues);
 
 #endif

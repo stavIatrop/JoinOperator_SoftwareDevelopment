@@ -26,22 +26,22 @@ typedef struct Arguments {
         myint_t colS;
         myint_t colR;
 
-        int type;
+        myint_t type;
         char outPath[500];
 } arguments;
 
-arguments * readArguments(int argc, char *argv[]);
+arguments * readArguments(myint_t argc, char *argv[]);
 
-table * readTable(char * filePath, int fileType);
-int readAsciiTable(table * t, FILE * inputFile);
-int readBinTable(table * t, FILE * inputFile);
-int applyLine(table * t, myint_t whichCol, char * buffer);
+table * readTable(char * filePath, myint_t fileType);
+myint_t readAsciiTable(table * t, FILE * inputFile);
+myint_t readBinTable(table * t, FILE * inputFile);
+myint_t applyLine(table * t, myint_t whichCol, char * buffer);
 relation * extractRelation(uint64_t * col, uint64_t size);
 void printTable(table * t);
 void printRelation(relation * r);
 void freeTable(table * t);
 
-int writeList(headResult * head, char * outPath);
+myint_t writeList(headResult * head, char * outPath);
 
 headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched);
 

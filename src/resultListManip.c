@@ -23,7 +23,7 @@ resultNode * initialiseResultNode() {
 
 
 void pushResult(headResult * head, rowTuple * t) {
-        int maxTuples = MB / sizeof(tuple);
+        myint_t maxTuples = MB / sizeof(tuple);
         resultNode * finalNode = NULL;
         if(head->numbOfNodes == 0) {
                 head->firstNode = initialiseResultNode();
@@ -33,7 +33,7 @@ void pushResult(headResult * head, rowTuple * t) {
         else {
                 //Traversing to the end of list
                 finalNode = head->firstNode;
-                for(int whichNode = 0; whichNode < head->numbOfNodes - 1; whichNode++) {
+                for(myint_t whichNode = 0; whichNode < head->numbOfNodes - 1; whichNode++) {
                         finalNode = finalNode->nextNode;
                 }
 
@@ -67,14 +67,14 @@ void freeResultNode(resultNode * node) {
 }
 
 //It expects that rowIdS matches rowIdR (for debugging purposes)
-int checkResults(headResult * head) {
+myint_t checkResults(headResult * head) {
         resultNode * currNode;
         if(head->firstNode == NULL) {
                 return 0;
         }
         currNode = head->firstNode;
-        for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
-                for(int whichTup = 0; whichTup < currNode->size; whichTup++) {
+        for(myint_t whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+                for(myint_t whichTup = 0; whichTup < currNode->size; whichTup++) {
                         if(currNode->tuples[whichTup].rowR != currNode->tuples[whichTup].rowS) {
                                 return -1;
                         }
@@ -92,7 +92,7 @@ myint_t countSizeOfList(headResult * head) {
 
     myint_t numbOfResults = 0;
     resultNode * currentNode = head->firstNode;
-    for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+    for(myint_t whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
         numbOfResults += currentNode->size;
         currentNode = currentNode->nextNode;
     }

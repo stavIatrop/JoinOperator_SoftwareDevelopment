@@ -12,8 +12,30 @@
 #include "jointPerformer.h"
 #include "interListInterface.h"
 
+void printJoins(query * newQuery) {
+    fprintf(stderr, "    Printing Joins of Query\n");
+    for(myint_t i = 0; i < newQuery->numOfJoins; i++) {
+        fprintf(stderr, "        %ld . Rel1: %ld Rows1: %ld Test1: %ld | Rel2: %ld Rows2: %ld Test2: %ld\n",i, newQuery->joins[i].participant1.rel, newQuery->joins[i].participant1.rows, newQuery->joins[i].participant1.col[0], newQuery->joins[i].participant2.rel, newQuery->joins[i].participant2.rows, newQuery->joins[i].participant2.col[0]);
+    }
+}
+
+void printFilters(query * newQuery) {
+    fprintf(stderr, "    Printing Filters of Query\n");
+    for(myint_t i = 0; i < newQuery->numOfFilters; i++) {
+        fprintf(stderr, "        %ld . Rel: %ld | Rows: %ld | Test: %ld | Op: %d | Value: %ld\n",i, newQuery->filters[i].participant.rel, newQuery->filters[i].participant.rows, newQuery->filters[i].participant.col[0], newQuery->filters[i].op, newQuery->filters[i].value);
+    }
+}
+
+void printChecksums(query * newQuery) {
+    fprintf(stderr, "    Printing Checksums of Query\n");
+    for(myint_t i = 0; i < newQuery->numOfSums; i++) {
+        fprintf(stderr, "        %ld . Rel: %ld | Rows: %ld | Test: %ld\n",i, newQuery->sums[i].rel, newQuery->sums[i].rows, newQuery->sums[i].col[0]);
+    }
+}
+
 int main(void) {
 
+    myint_t whichQuery = 0;
     
     FILE * stdoutFile = fopen("stdoutFile", "w");  //checking the outpout
 
@@ -62,7 +84,7 @@ int main(void) {
             break;
         }
 
-        int end = 0, start = 0;
+        myint_t end = 0, start = 0;
         myint_t i, rels = 1, joins = 0, sums = 1, filters = 0;
         myint_t slice = 0;
         for(i = 0; i < strlen(inputStr); i++) {
@@ -127,13 +149,28 @@ int main(void) {
                     
                     query * newQuery = ConstructQuery(stdoutFile, queryStr, rels, joins, sums, filters, relArray);
 
+                    fprintf(stderr, "\n>>>> Executing query %ld\n", whichQuery);
+                    printFilters(newQuery);
+                    printJoins(newQuery);
+                    printChecksums(newQuery);
+                    
+
+
                     headInter * headInt = initialiseHead();
                     //Perform filters
+                    fprintf(stderr, "    Starting filters...\n ");
+                    fflush(stderr);
                     for(myint_t whichFilter = 0; whichFilter < newQuery->numOfFilters; whichFilter++) {
                         workerF(&(newQuery->filters[whichFilter]), headInt);
+                        fprintf(stderr, "%ld ", whichFilter);
+                        fflush(stdout);
                     }
+                    fprintf(stderr, "Finished\n");
+                    fflush(stderr);
 
                     //Perform joins
+                    fprintf(stderr, "    Starting joins...\n");
+                    fflush(stderr);
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
 
                         //fprintf(stderr, "Inters: %ld\n", headInt->numOfIntermediates);
@@ -141,13 +178,19 @@ int main(void) {
                         //fprintf(stderr, "Inters1: %ld\n", headInt->numOfIntermediates);
 
                         workerJ(&(newQuery->joins[whichJoin]), headInt);
+                        fprintf(stderr, "%ld ", whichJoin);
+                        fflush(stdout);
                         //fprintf(stderr, "Inters2: %ld\n", headInt->numOfIntermediates);
 
                     }
+                    fprintf(stderr, "Finished\n");
+                    fflush(stderr);
 
                     //Perform checksums
+
+
                     checksum * cs = performChecksums(newQuery->sums, newQuery->numOfSums, headInt);
-                    // for(int whichCs = 0; whichCs < cs->numbOfChecksums; whichCs++) {
+                    // for(myint_t whichCs = 0; whichCs < cs->numbOfChecksums; whichCs++) {
                     //    fprintf(stderr, "CS = %ld\n", cs->checksums[whichCs]);
 
                     // }
@@ -191,7 +234,7 @@ int main(void) {
                     fflush(stdoutFile);
                     
                     
-                    for(int g = 0; g < newQuery->numOfRels; g++ ) {
+                    for(myint_t g = 0; g < newQuery->numOfRels; g++ ) {
                         char * debug = malloc(20);
                         sprintf(debug, "%ld", newQuery->rels[g]);
                         fprintf(stdoutFile, "%s\n", debug );
@@ -203,7 +246,7 @@ int main(void) {
                     fprintf(stdoutFile, "joins\n" );
                     fflush(stdoutFile);
 
-                    for(int g = 0; g < newQuery->numOfJoins; g++ ) {
+                    for(myint_t g = 0; g < newQuery->numOfJoins; g++ ) {
                         char * debug = malloc(20);
                         sprintf(debug, "%ld", newQuery->joins[g].participant1.rel);
                         fprintf(stdoutFile, "%s\n", debug );
@@ -229,7 +272,7 @@ int main(void) {
                     fprintf(stdoutFile, "filters\n" );
                     fflush(stdoutFile);
 
-                    for(int g = 0; g < newQuery->numOfFilters; g++ ) {
+                    for(myint_t g = 0; g < newQuery->numOfFilters; g++ ) {
                         char * debug = malloc(20);
                         sprintf(debug, "%ld", newQuery->filters[g].participant.rel);
                         fprintf(stdoutFile, "%s\n", debug );
@@ -255,7 +298,7 @@ int main(void) {
                     fprintf(stdoutFile, "sums\n" );
                     fflush(stdoutFile);
 
-                    for(int g = 0; g < newQuery->numOfSums; g++ ) {
+                    for(myint_t g = 0; g < newQuery->numOfSums; g++ ) {
                         char * debug = malloc(20);
                         sprintf(debug, "%ld", newQuery->sums[g].rel);
                         fprintf(stdoutFile, "%s\n", debug );
@@ -284,6 +327,7 @@ int main(void) {
                     sums = 1;
                     filters = 0;
                     slice = 0;
+                    whichQuery++;
                 }
         }
 

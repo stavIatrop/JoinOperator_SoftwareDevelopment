@@ -4,9 +4,9 @@
 
 #include "queryStructs.h"
 
-int SubStrOccur(char * str, char * subStr) {
+myint_t SubStrOccur(char * str, char * subStr) {
 
-	int count = 0;
+	myint_t count = 0;
 	//fprintf(stderr, "%s\n", str );
 	char *tmp = str;
 	while((tmp = strstr(tmp, subStr))) {

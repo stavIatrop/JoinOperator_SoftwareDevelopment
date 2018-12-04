@@ -33,7 +33,7 @@ headInter * initialiseHead() {
 }
 
 void freeNode(nodeInter * node) {
-    for(int whichCol = 0; whichCol < node->data->numOfCols; whichCol++) {
+    for(myint_t whichCol = 0; whichCol < node->data->numOfCols; whichCol++) {
        free(node->data->rowIds[whichCol]);
     }
     free(node->data->rowIds);
@@ -63,7 +63,7 @@ void pushInter(headInter * head ,myint_t cols, myint_t rows, myint_t * joinedRel
     }
     else {
         nodeInter * finalNode = head->start;
-        for(int whichNode = 0; whichNode < head->numOfIntermediates - 1; whichNode++) {
+        for(myint_t whichNode = 0; whichNode < head->numOfIntermediates - 1; whichNode++) {
             finalNode = finalNode->next;
         }
         finalNode->next = initialiseNode(cols, rows, joinedRels, rowIds);
@@ -73,7 +73,7 @@ void pushInter(headInter * head ,myint_t cols, myint_t rows, myint_t * joinedRel
 
 void updateInter(nodeInter * node, myint_t cols,  myint_t rows, myint_t * joinedRels, myint_t ** rowIds) {
     free(node->data->joinedRels);
-    for(int i = 0; i < node->data->numOfCols; i++) {
+    for(myint_t i = 0; i < node->data->numOfCols; i++) {
         free(node->data->rowIds[i]);
     }
     free(node->data->rowIds);
@@ -96,7 +96,7 @@ void deleteInterNode(headInter * head, nodeInter * node) {
         }
         else {
             nodeInter * currentNode = head->start;
-            for(int whichNode = 0; whichNode < head->numOfIntermediates - 1; whichNode++) {
+            for(myint_t whichNode = 0; whichNode < head->numOfIntermediates - 1; whichNode++) {
                 if(currentNode->next == node) {
                     freeNode(node);
                     currentNode->next = temp;
@@ -114,15 +114,15 @@ myint_t ** createResultArray(headResult * head, myint_t * size) {
     myint_t numbOfResults = countSizeOfList(head);
     *size = numbOfResults;
     myint_t ** retArr = (myint_t **) malloc(2 * sizeof(myint_t *));
-    for(int i = 0; i < 2; i++) {
+    for(myint_t i = 0; i < 2; i++) {
         retArr[i] = (myint_t *) malloc(numbOfResults * sizeof(myint_t));
     }
 
     //Inserting the results in the intermediate array
     resultNode * currentNode = head->firstNode;    
     myint_t counter = 0;
-    for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
-        for(int whichRes = 0; whichRes < currentNode->size; whichRes++) {
+    for(myint_t whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+        for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
             retArr[0][counter] = currentNode->tuples[whichRes].rowR;
             retArr[1][counter] = currentNode->tuples[whichRes].rowS;
             counter += 1;
@@ -157,25 +157,40 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
     //Copy the rows of the inter that where joined and add them the row of the new relationship
     resultNode * currentNode = headRes->firstNode;    
     myint_t counter = 0;
-    for(int whichNode = 0; whichNode < headRes->numbOfNodes; whichNode++) {
+    for(myint_t whichNode = 0; whichNode < headRes->numbOfNodes; whichNode++) {
         if(switched == 0) {
-            for(int whichRes = 0; whichRes < currentNode->size; whichRes++) {
-                for(int whichCol = 0; whichCol < intNode->data->numOfCols; whichCol++) {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
+                for(myint_t whichCol = 0; whichCol < intNode->data->numOfCols; whichCol++) {
+                    myint_t aa = currentNode->tuples[whichRes].rowR;
+                    myint_t cc = intNode->data->rowIds[whichCol][0];
+                    // if(aa > 3436) {
+                    //     fprintf(stderr, "RRRRRRRRRRRR\n");
+                    // }
                     retArr[whichCol][counter] = intNode->data->rowIds[whichCol][currentNode->tuples[whichRes].rowR];
                 //if(retArr[whichCol][counter] > 10000000) fprintf(stderr, "ERROR!!!!!\n");
                 }
+                myint_t sss = currentNode->tuples[whichRes].rowS;;
+                // if(sss > 3436) {
+                //         fprintf(stderr, "SSSSSSSS\n");
+                //     }
                 retArr[intNode->data->numOfCols][counter] = currentNode->tuples[whichRes].rowS;
                 counter += 1;
 
             }
         }
         else {
-            for(int whichRes = 0; whichRes < currentNode->size; whichRes++) {
-                for(int whichCol = 0; whichCol < intNode->data->numOfCols; whichCol++) {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
+                for(myint_t whichCol = 0; whichCol < intNode->data->numOfCols; whichCol++) {
+                    // if(intNode->data->rowIds[whichCol][currentNode->tuples[whichRes].rowS] > 3436) {
+                    //     fprintf(stderr, "SSSSSSSSSS\n");
+                    // }
                     retArr[whichCol][counter] = intNode->data->rowIds[whichCol][currentNode->tuples[whichRes].rowS];
                 //if(retArr[whichCol][counter] > 10000000) fprintf(stderr, "ERROR!!!!!\n");
                 }
                 retArr[intNode->data->numOfCols][counter] = currentNode->tuples[whichRes].rowR;
+                // if(currentNode->tuples[whichRes].rowR > 3436) {
+                //         fprintf(stderr, "RRRRRRRRRRRR\n");
+                //     }
                 counter += 1;
             }
         }
@@ -189,10 +204,11 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
 void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t addedRel, char switched) {
     //New rows
     myint_t numbOfResults = countSizeOfList(headRes);
+	//fprintf(stderr, "AAAAAAAAAAAA: %ld\n", numbOfResults);
 
     //Add new rel in joinedRels
     myint_t * joinedRels = (myint_t *) malloc((intNode->data->numOfCols + 1) * sizeof(myint_t));
-    for(int whichRel = 0; whichRel < intNode->data->numOfCols; whichRel++) {
+    for(myint_t whichRel = 0; whichRel < intNode->data->numOfCols; whichRel++) {
         joinedRels[whichRel] = intNode->data->joinedRels[whichRel];
     }
     joinedRels[intNode->data->numOfCols] = addedRel;
@@ -200,7 +216,11 @@ void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t added
     //Create new rowIds
     myint_t ** newRowIds = updateRowIds(intNode, headRes, numbOfResults, switched);
 
+
     updateInter(intNode, intNode->data->numOfCols + 1, numbOfResults, joinedRels, newRowIds);
+
+    fprintf(stderr, "    Join inter rows = %ld | cols = %ld\n", intNode->data->numbOfRows, intNode->data->numOfCols);
+
 
 }
 
@@ -214,16 +234,16 @@ myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes
 
     resultNode * currentNode = headRes->firstNode;    
     myint_t counter = 0;
-    for(int whichNode = 0; whichNode < headRes->numbOfNodes; whichNode++) {
+    for(myint_t whichNode = 0; whichNode < headRes->numbOfNodes; whichNode++) {
         if(switched == 0) {
-            for(int whichRes = 0; whichRes < currentNode->size; whichRes++) {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
                 //Add the rowIds of the first Intermediate
-                for(int whichCol = 0; whichCol < node1->data->numOfCols; whichCol++) {
+                for(myint_t whichCol = 0; whichCol < node1->data->numOfCols; whichCol++) {
                     retArr[whichCol][counter] = node1->data->rowIds[whichCol][currentNode->tuples[whichRes].rowR];
                 }
 
                 //Add the rowIds of the second Intermediate
-                for(int whichCol = node1->data->numOfCols; whichCol < node1->data->numOfCols + node2->data->numOfCols; whichCol++) {
+                for(myint_t whichCol = node1->data->numOfCols; whichCol < node1->data->numOfCols + node2->data->numOfCols; whichCol++) {
                     retArr[whichCol][counter] = node2->data->rowIds[whichCol - node1->data->numOfCols][currentNode->tuples[whichRes].rowS];
                 }
 
@@ -231,14 +251,14 @@ myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes
             }
         }
         else {
-            for(int whichRes = 0; whichRes < currentNode->size; whichRes++) {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
                 //Add the rowIds of the first Intermediate
-                for(int whichCol = 0; whichCol < node1->data->numOfCols; whichCol++) {
+                for(myint_t whichCol = 0; whichCol < node1->data->numOfCols; whichCol++) {
                     retArr[whichCol][counter] = node1->data->rowIds[whichCol][currentNode->tuples[whichRes].rowS];
                 }
 
                 //Add the rowIds of the second Intermediate
-                for(int whichCol = node1->data->numOfCols; whichCol < node1->data->numOfCols + node2->data->numOfCols; whichCol++) {
+                for(myint_t whichCol = node1->data->numOfCols; whichCol < node1->data->numOfCols + node2->data->numOfCols; whichCol++) {
                     retArr[whichCol][counter] = node2->data->rowIds[whichCol - node1->data->numOfCols][currentNode->tuples[whichRes].rowR];
                 }
 
@@ -259,12 +279,12 @@ void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * no
     myint_t * joinedRels = (myint_t *) malloc((node1->data->numOfCols + node2->data->numOfCols) * sizeof(myint_t));
 
     //Add joinedRels of node1 in new joinedRels
-    for(int whichRel = 0; whichRel < node1->data->numOfCols; whichRel++) {
+    for(myint_t whichRel = 0; whichRel < node1->data->numOfCols; whichRel++) {
         joinedRels[whichRel] = node1->data->joinedRels[whichRel];
     }
 
     //Add joinedRels of node2 in new joinedRels
-    for(int whichRel = node1->data->numOfCols; whichRel < node1->data->numOfCols + node2->data->numOfCols; whichRel++) {
+    for(myint_t whichRel = node1->data->numOfCols; whichRel < node1->data->numOfCols + node2->data->numOfCols; whichRel++) {
         joinedRels[whichRel] = node2->data->joinedRels[whichRel - node1->data->numOfCols];
     }
 
@@ -288,19 +308,19 @@ void updateInterSelfJoin(nodeInter * node, myint_t * joinRows, myint_t numbOfRow
     }
     else {
         newRowIds = (myint_t **) malloc(node->data->numOfCols * sizeof(myint_t *));
-        for(int i = 0; i < node->data->numOfCols; i++) {
+        for(myint_t i = 0; i < node->data->numOfCols; i++) {
             newRowIds[i] = (myint_t *) malloc(numbOfRows * sizeof(myint_t));
         }
 
-        for(int whichRow = 0; whichRow < numbOfRows; whichRow++) {
-            for(int whichCol = 0; whichCol < node->data->numOfCols; whichCol++) {
+        for(myint_t whichRow = 0; whichRow < numbOfRows; whichRow++) {
+            for(myint_t whichCol = 0; whichCol < node->data->numOfCols; whichCol++) {
                 newRowIds[whichCol][whichRow] = node->data->rowIds[whichCol][joinRows[whichRow]];
             }
         }
     }
 
     myint_t * joinedRels = (myint_t *) malloc(node->data->numOfCols * sizeof(myint_t));
-    for(int whichRel = 0; whichRel < node->data->numOfCols; whichRel++) {
+    for(myint_t whichRel = 0; whichRel < node->data->numOfCols; whichRel++) {
         joinedRels[whichRel] = node->data->joinedRels[whichRel];
     }
     
@@ -310,7 +330,7 @@ void updateInterSelfJoin(nodeInter * node, myint_t * joinRows, myint_t numbOfRow
 //CASE: Self join on rel that does NOT exist in an Intermediate
 void createInterSelfJoin(headInter * head, myint_t rel, myint_t * rows, myint_t numbOfRows) {
     myint_t ** newRowIds = (myint_t **) malloc( sizeof(myint_t *));
-    for(int i = 0; i < 1; i++) {
+    for(myint_t i = 0; i < 1; i++) {
         newRowIds[i] = (myint_t *) malloc(numbOfRows * sizeof(myint_t));
     }
 

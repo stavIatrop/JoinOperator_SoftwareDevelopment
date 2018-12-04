@@ -45,8 +45,8 @@ void AddInputNode(Input * input, char *file) {
 
 void ConstructInput(Input * input, char * inputStr) {
 
-	int end = 0, start = 0;
-    int i;
+	myint_t end = 0, start = 0;
+    myint_t i;
     for(i = 0; i < strlen(inputStr); i++) {
 
             if( inputStr[i] == '\n') {
@@ -70,7 +70,7 @@ void ConstructInput(Input * input, char * inputStr) {
 void FreeInput(Input * input){
 
 	InputNode * temp;
-	for(int i = 0; i < input->numNodes; i++) {
+	for(myint_t i = 0; i < input->numNodes; i++) {
 		temp = input->head;
 		input->head = temp->next;
 		free(temp->filename);
@@ -93,7 +93,7 @@ void FillRelArray(relationsheepArray * relArray, Input * input) {
 	InputNode * temp;
 	temp = input->head;
 
-	for (int i = 0; i < input->numNodes; i++) {
+	for (myint_t i = 0; i < input->numNodes; i++) {
 		
 		FILE * inputFile  = fopen(temp->filename, "rb");
 		
@@ -109,7 +109,7 @@ void FillRelArray(relationsheepArray * relArray, Input * input) {
 	return;
 }
 
-int FillRel(relationsheep * rel, FILE * inputFile) {
+myint_t FillRel(relationsheep * rel, FILE * inputFile) {
 
 
 	if(fread((void *) &(rel->rows), sizeof(myint_t), 1, inputFile) != 1) {
@@ -122,7 +122,7 @@ int FillRel(relationsheep * rel, FILE * inputFile) {
     }
     
     rel->pointToCols = (myint_t **) malloc(rel->cols * sizeof(myint_t *));
-    for(int i = 0; i < rel->cols; i++) {
+    for(myint_t i = 0; i < rel->cols; i++) {
 
     	rel->pointToCols[i] = (myint_t *) malloc(rel->rows * sizeof(myint_t));
     	if(fread((void *) rel->pointToCols[i], sizeof(myint_t), rel->rows, inputFile) != rel->rows) {
@@ -137,11 +137,11 @@ int FillRel(relationsheep * rel, FILE * inputFile) {
 void PrintRelArray(relationsheepArray * relArray, FILE * fp) {
 
 
-	for(int i = 0; i < relArray->numOfRels; i++) {
+	for(myint_t i = 0; i < relArray->numOfRels; i++) {
 
-		for(int j = 0; j < relArray->rels[i].cols; j++ ) {
+		for(myint_t j = 0; j < relArray->rels[i].cols; j++ ) {
 
-			for(int k = 0; k < relArray->rels[i].rows; k++) {
+			for(myint_t k = 0; k < relArray->rels[i].rows; k++) {
 
 				char * s = malloc(10 * sizeof(char));
 				sprintf(s, "%ld", relArray->rels[i].pointToCols[j][k]);

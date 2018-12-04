@@ -13,7 +13,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         //TO BE REMOVED
         /*relation * rRel = malloc(sizeof(relation));
         relation * sRel = malloc(sizeof(relation));
-        int size1 = 10000000, size2 = 10000000;
+        myint_t size1 = 10000000, size2 = 10000000;
 	rRel->tuples = malloc(size1 * sizeof(tuple));
 	rRel->size=size1;
         sRel->tuples = malloc(size2 * sizeof(tuple));

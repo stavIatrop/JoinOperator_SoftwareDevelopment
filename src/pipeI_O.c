@@ -11,7 +11,7 @@
 char * readFromPipe(const char * stopWord) {
 
 
-	int lenInput = MAX_BUFFER + 1;
+	myint_t lenInput = MAX_BUFFER + 1;
     char * inputStr = (char *) malloc(lenInput * sizeof(char));
     memset(inputStr, '\0', MAX_BUFFER);
 
@@ -27,8 +27,8 @@ char * readFromPipe(const char * stopWord) {
     	}
     	if (bytes == 0) break;
 
-        int end = 0, start = 0;
-        int i;
+        myint_t end = 0, start = 0;
+        myint_t i;
         for(i = 0; i < bytes; i++) {
 
             if( buffer[i] == '\n') {
@@ -72,9 +72,9 @@ char * readFromPipe(const char * stopWord) {
 	return inputStr;
 }
 
-int numDigits(myint_t n) {
+myint_t numDigits(myint_t n) {
 
-  int counter = 0;
+  myint_t counter = 0;
   
   while(n != 0) {
 
@@ -87,9 +87,9 @@ int numDigits(myint_t n) {
 void writePipe(checksum * cs) {
 
     char ** CSStrings = (char **) malloc(cs->numbOfChecksums * sizeof(char *));
-    int csLength = 0;
+    myint_t csLength = 0;
 
-    for(int i = 0; i < cs->numbOfChecksums; i++) {
+    for(myint_t i = 0; i < cs->numbOfChecksums; i++) {
 
         if (cs->checksums[i] == 0) {
 
@@ -101,7 +101,7 @@ void writePipe(checksum * cs) {
 
         } else { 
 
-            int digits = numDigits(cs->checksums[i]) + 1;       //plus 1 for space character
+            myint_t digits = numDigits(cs->checksums[i]) + 1;       //plus 1 for space character
             CSStrings[i] = (char *) malloc((digits + 1) * sizeof(char));
             memset(CSStrings[i], '\0', (digits + 1));
             sprintf(CSStrings[i], "%ld ", cs->checksums[i]);
@@ -117,7 +117,7 @@ void writePipe(checksum * cs) {
     char * messageInABottle = (char *) malloc( (csLength + 1) * sizeof(char));
     memset(messageInABottle, '\0', csLength + 1);
 
-    for(int i = 0; i < cs->numbOfChecksums; i++) {
+    for(myint_t i = 0; i < cs->numbOfChecksums; i++) {
 
         strcat(messageInABottle, CSStrings[i]);
         free(CSStrings[i]);
@@ -125,8 +125,8 @@ void writePipe(checksum * cs) {
     free(CSStrings);
     strcat(messageInABottle, "\0");
 
-    int bSent = 0;
-    int bWritten;
+    myint_t bSent = 0;
+    myint_t bWritten;
     while( (bWritten = write(STDOUT_FILENO, messageInABottle + bSent, strlen(messageInABottle) - bSent)) > 0 ) {
 
 
