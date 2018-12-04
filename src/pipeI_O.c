@@ -140,6 +140,7 @@ void writePipe(checksum * cs) {
         break;
     }
 
+    free(messageInABottle);
 
     return;
 

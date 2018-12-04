@@ -160,6 +160,14 @@ void PrintRelArray(relationsheepArray * relArray, FILE * fp) {
 
 void FreeRelArray(relationsheepArray relArray) {
 
+	for(myint_t i = 0; i < relArray.numOfRels; i++) {
+
+		for(myint_t j = 0; j < relArray.rels[i].cols; j++) {
+
+			free(relArray.rels[i].pointToCols[j]);
+		}
+		free(relArray.rels[i].pointToCols);
+	}
 	free(relArray.rels);
 	return;
 }

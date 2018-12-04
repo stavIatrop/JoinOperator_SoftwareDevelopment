@@ -81,6 +81,7 @@ int main(void) {
         inputStr = readFromPipe("F");
         
         if( strlen(inputStr) == 0) {        //no more query batches
+        	free(inputStr);
             break;
         }
 
@@ -346,9 +347,7 @@ int main(void) {
         perror("Failed to close file");
         return -1;
     }
-    while(1) {
-
-    }
+    FreeRelArray(relArray);
 	
 	return 0;
 
