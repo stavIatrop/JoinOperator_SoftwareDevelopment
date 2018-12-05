@@ -4,16 +4,16 @@
 #include "hashing.h"
 #include "indexManip.h"
 
-indexArray * indexing(reorderedR * ror, uint32_t hash1) {
+indexArray * indexing(reorderedR * ror, myint_t hash1) {
 
-	uint32_t sizeOfIndexArray = hash1Range(hash1);
+	myint_t sizeOfIndexArray = hash1Range(hash1);
 	indexArray * mainIndexArray = initializeIndexArray(sizeOfIndexArray);
 
-	uint32_t range = (CACHE_SIZE - AVAILABLE_CACHE_SIZE) / sizeof(uint32_t);		//computing hash2 range so that the bucketArray in indexing occupies
-	uint32_t hash2 = (uint32_t) log2(range);										//no more than CACHE_SIZE - AVAILABLE_CACHE_SIZE
-	uint32_t hash2Var;
+	myint_t range = (CACHE_SIZE - AVAILABLE_CACHE_SIZE) / sizeof(myint_t);		//computing hash2 range so that the bucketArray in indexing occupies
+	myint_t hash2 = (myint_t) log2(range);										//no more than CACHE_SIZE - AVAILABLE_CACHE_SIZE
+	myint_t hash2Var;
 
-	uint32_t i, whichPsum = 0;			//whichPsum stores index to PsumArray , increases every time an indexArray entry is constructed
+	myint_t i, whichPsum = 0;			//whichPsum stores index to PsumArray , increases every time an indexArray entry is constructed
 
 	for( i = 0; i < sizeOfIndexArray; i++) {
 
@@ -28,8 +28,8 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1) {
 		if(i == (ror->pSumArr).psum[whichPsum].h1Res ){ 			//index is created when there is a bucket of i's
 
 			relation * rel = getStartOfBucket(ror, whichPsum);
-			uint32_t bucketArrSize = hash2Range(hash2Var);
-			uint32_t sizeOfIndex = sizeof(uint32_t) + rel->size * (sizeof(tuple) + sizeof(uint32_t)) + bucketArrSize * sizeof(uint32_t); //size + size of a bucket + size of chain + size of bucketIndexArray
+			myint_t bucketArrSize = hash2Range(hash2Var);
+			myint_t sizeOfIndex = sizeof(myint_t) + rel->size * (sizeof(tuple) + sizeof(myint_t)) + bucketArrSize * sizeof(myint_t); //size + size of a bucket + size of chain + size of bucketIndexArray
 			
 			if((double) sizeOfIndex / (double)CACHE_SIZE <= 1 ) {				//if indexStruct fits in cache
 
@@ -39,12 +39,12 @@ indexArray * indexing(reorderedR * ror, uint32_t hash1) {
 
 			} else {												//indexStruct doesn't fit in cache
 
-				uint32_t sizeAll = rel->size;					//size of the whole bucket
-				uint32_t eachSize;
+				myint_t sizeAll = rel->size;					//size of the whole bucket
+				myint_t eachSize;
 				
 				recomputeSizes(&eachSize, &hash2Var, sizeAll);  //re-compute size of each subBucket and hash2 range so as to fit in cache
 				bucketArrSize = hash2Range(hash2Var);
-				uint32_t sizeIndexedSoFar = 0;
+				myint_t sizeIndexedSoFar = 0;
 
 				tuple * startOfBuck = rel->tuples;				//store start of initial bucket
 				rel->size =  eachSize;

@@ -9,30 +9,32 @@
 #define BUCKET_MEMORY_LIMIT (2<<28)
 #define FIRST_REORDERED 100
 
+typedef uint64_t myint_t;
+
 typedef struct Tuple {
-        int32_t key;
-        uint32_t payload;
+        myint_t key;
+        myint_t payload;
 } tuple;
 
 typedef struct Relation {
         tuple * tuples;
-        uint32_t size;
+        myint_t size;
 } relation;
 
 //<-- ReorderedR structs
 typedef struct HistTuple {
-        uint32_t h1Res;
-        uint32_t offset;
+        myint_t h1Res;
+        myint_t offset;
 } histTuple;
 
 typedef struct PSumTuple {
-        uint32_t h1Res;
-        uint32_t offset;
+        myint_t h1Res;
+        myint_t offset;
 } pSumTuple;
 
 typedef struct PSumArray {
         pSumTuple * psum;
-        uint32_t psumSize;
+        myint_t psumSize;
 }pSumArray;
 
 typedef struct ReorderedR {
@@ -43,17 +45,17 @@ typedef struct ReorderedR {
 
 //<-- Index structs
 typedef struct RelationIndex {
-        uint32_t * chain;
-        uint32_t * buckets;
+        myint_t * chain;
+        myint_t * buckets;
         relation * rel;
-        int32_t key;
+        myint_t key;
         struct RelationIndex * next;
-        uint32_t hash2;
+        myint_t hash2;
 } relationIndex;
 
 typedef struct IndexArray {
        relationIndex * indexes;
-       uint32_t size;
+       myint_t size;
 } indexArray;
 //-->
 
@@ -61,27 +63,28 @@ typedef struct IndexArray {
 typedef struct ResultNode resultNode;
 
 typedef struct RowTuple {
-        uint32_t rowR;
-        uint32_t rowS;
+        myint_t rowR;
+        myint_t rowS;
 } rowTuple;
 
 struct ResultNode {
         rowTuple * tuples;
-        uint32_t size;
+        myint_t size;
         resultNode * nextNode;
 };
 
 typedef struct HeadResult {
         resultNode * firstNode;
-        uint32_t numbOfNodes;
+        
+        myint_t numbOfNodes;
 } headResult;
 //-->
 
 //Valerios
-reorderedR * reorderRelation(relation * r, uint32_t *hash1);
+reorderedR * reorderRelation(relation * r, myint_t *hash1);
 
 //Stavroula
-indexArray * indexing(reorderedR * ror, uint32_t hash1);
+indexArray * indexing(reorderedR * ror, myint_t hash1);
 
 //Mixalhs
 headResult * search(indexArray * indArr, reorderedR * s);

@@ -4,7 +4,7 @@
 #include "basicStructs.h"
 #include "viceFunctions.h"
 
-reorderedR * reorderRelation(relation * r, uint32_t *hash1)
+reorderedR * reorderRelation(relation * r, myint_t *hash1)
 {
 	if (r==NULL) return NULL;
 
@@ -16,9 +16,9 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 		R->pSumArr.psum = NULL;
 		return R;
 	}
-	uint32_t size = r->size, i, *hash_values, *hist;
+	myint_t size = r->size, i, *hash_values, *hist;
 
-	hash_values = malloc(size * sizeof(uint32_t));	//stores the hash value of every key
+	hash_values = malloc(size * sizeof(myint_t));	//stores the hash value of every key
 	if (hash_values==NULL)
 	{
 		perror("Wrong arguments");
@@ -33,8 +33,8 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 	else
 	{
 		*hash1 = pow(2,*hash1);
-		uint32_t max;
-		hist = malloc(*hash1 * sizeof(uint32_t));
+		myint_t max;
+		hist = malloc(*hash1 * sizeof(myint_t));
 		if (hist ==NULL)
 		{
 			perror("Wrong arguments");
@@ -43,7 +43,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 		DoTheHash(r,*hash1,hist,hash_values,&max,1);
 	}
 
-        uint32_t buckets = *hash1;
+        myint_t buckets = *hash1;
 
 	for (i = 0; i < *hash1; i++) if (hist[i] == 0) buckets--; //psum only contains entries for the hash values with at least 1 element
 
@@ -64,8 +64,8 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
         }
 
 
-	uint32_t j = 0, prevJ;
-	uint32_t *helpPSum = malloc((*hash1) * sizeof(uint32_t)); //like psum, but contains entries for all hash values. Needed to sort
+	myint_t j = 0, prevJ;
+	myint_t *helpPSum = malloc((*hash1) * sizeof(myint_t)); //like psum, but contains entries for all hash values. Needed to sort
 	if (helpPSum ==NULL)
         {
                 perror("Wrong arguments");
@@ -96,7 +96,7 @@ reorderedR * reorderRelation(relation * r, uint32_t *hash1)
 		prevJ = j++;
 	}
 							//members counts how many elements have been sorted so far for each hash value
-	uint32_t current_bucket = psum->psum[0].h1Res, current = 0, *members = malloc(*hash1 * sizeof(uint32_t));
+	myint_t current_bucket = psum->psum[0].h1Res, current = 0, *members = malloc(*hash1 * sizeof(myint_t));
 	if (members ==NULL)
         {
                 perror("Wrong arguments");

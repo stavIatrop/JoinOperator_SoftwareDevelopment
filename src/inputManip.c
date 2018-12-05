@@ -7,7 +7,7 @@
 #include "basicStructs.h"
 #include "inputInterface.h"
 
-arguments * readArguments(int argc, char *argv[]) {
+arguments * readArguments(myint_t argc, char *argv[]) {
 
         char charType[500];
         charType[0] = '!';
@@ -17,7 +17,7 @@ arguments * readArguments(int argc, char *argv[]) {
         args->outPath[0]='!';
         args->colR = -1;
         args->colS = -1;
-        int opt;
+        myint_t opt;
         while((opt = getopt(argc, argv, "R:S:r:s:t:o:")) != -1)
         {
                 switch(opt)
@@ -62,31 +62,31 @@ arguments * readArguments(int argc, char *argv[]) {
         return args;
 }
 
-int writeList(struct HeadResult * head, char * outPath) {
+myint_t writeList(struct HeadResult * head, char * outPath) {
         FILE * outputFile = fopen(outPath, "w");
         if(outputFile == NULL) {
                 perror("Failed to open output file");
                 return -1;
         }
 
-        uint32_t totalSize = 0;
+        myint_t totalSize = 0;
         if(head->numbOfNodes != 0) {
                 resultNode * temp = head->firstNode;
-                for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+                for(myint_t whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
                         totalSize += temp->size;
                         temp = temp->nextNode;
                 }
         }
 
-        if(fprintf(outputFile, "%u\n", totalSize) < 0) {
+        if(fprintf(outputFile, "%ld\n", totalSize) < 0) {
                 perror("Failed to write number of results");
                 return -1;
         }
 
         if(head->numbOfNodes != 0) {
-                int writes = 0;
+                myint_t writes = 0;
                 resultNode * writeNode = head->firstNode;
-                for(int whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
+                for(myint_t whichNode = 0; whichNode < head->numbOfNodes; whichNode++) {
                         if((writes = fwrite(writeNode->tuples, sizeof(tuple), writeNode->size, outputFile)) != writeNode->size) {
                                 perror("Failed to write node");
                                 return -1;
@@ -98,7 +98,7 @@ int writeList(struct HeadResult * head, char * outPath) {
         return 0;
 }
 
-table * readTable(char * filePath, int fileType) {
+table * readTable(char * filePath, myint_t fileType) {
         
         size_t len;
         table * t = (table *) malloc(sizeof(table));
@@ -124,13 +124,13 @@ table * readTable(char * filePath, int fileType) {
         }
         free(firstLine);
 
-        t->content = (int32_t **) malloc(t->columns * sizeof(int32_t *));
+        t->content = (uint64_t **) malloc(t->columns * sizeof(uint64_t *));
         if(t->content == NULL) {
                 perror("Failed to malloc columns");
                 return NULL;
         }
-        for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
-                t->content[whichCol] = (int32_t *) calloc(t->rows, sizeof(int32_t));
+        for(uint64_t whichCol = 0; whichCol < t->columns; whichCol++) {
+                t->content[whichCol] = (uint64_t *) calloc(t->rows, sizeof(uint64_t));
                 if(t->content[whichCol] == NULL) {
                         perror("Failed to malloc row of column");
                         return NULL;
@@ -154,10 +154,10 @@ table * readTable(char * filePath, int fileType) {
 
 }
 
-int readAsciiTable(table * t, FILE * inputFile) {
+myint_t readAsciiTable(table * t, FILE * inputFile) {
         char * tempLine = NULL;
         size_t len;
-        for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
+        for(myint_t whichCol = 0; whichCol < t->columns; whichCol++) {
                 len = 0;
                 tempLine = NULL;
 
@@ -175,9 +175,9 @@ int readAsciiTable(table * t, FILE * inputFile) {
         return 0;
 }
 
-int readBinTable(table * t, FILE * inputFile) {
-        for(int32_t whichCol = 0; whichCol < t->columns; whichCol++) {
-                if(fread(t->content[whichCol], sizeof(int32_t), t->rows, inputFile) != t->rows) {
+myint_t readBinTable(table * t, FILE * inputFile) {
+        for(myint_t whichCol = 0; whichCol < t->columns; whichCol++) {
+                if(fread(t->content[whichCol], sizeof(uint64_t), t->rows, inputFile) != t->rows) {
                         perror("Failed to read binary line");
                         return -1;
                 }
@@ -185,9 +185,9 @@ int readBinTable(table * t, FILE * inputFile) {
         return 0;
 }
 
-int applyLine(table * t, int32_t whichCol, char * buffer) {
+myint_t applyLine(table * t, myint_t whichCol, char * buffer) {
         char * tok = strtok(buffer, "|\n");
-        for(int32_t whichLine = 0; whichLine < t->rows; whichLine++) {
+        for(myint_t whichLine = 0; whichLine < t->rows; whichLine++) {
                 if(tok == NULL) {
                         perror("Strtok failed");
                         return -1;
@@ -198,22 +198,22 @@ int applyLine(table * t, int32_t whichCol, char * buffer) {
         return 0;
 }
 
-relation * extractRelation(table * t, int column) {
+relation * extractRelation(uint64_t * col, uint64_t size) {
         relation * r = (relation *) malloc(sizeof(relation));
 
-        r->size = t->rows;
-        r->tuples = (tuple *) malloc(t->rows * sizeof(tuple));
+        r->size = size;
+        r->tuples = (tuple *) malloc(size * sizeof(tuple));
 
-        for(int whichRow = 0; whichRow < t->rows; whichRow++) {
+        for(myint_t whichRow = 0; whichRow < size; whichRow++) {
                 r->tuples[whichRow].payload = whichRow;
-                r->tuples[whichRow].key = t->content[column][whichRow];
+                r->tuples[whichRow].key = col[whichRow];
         }
 
         return r;
 }
 
 void freeTable(table * t) {
-        for(int i = 0; i < t->columns; i++) {
+        for(myint_t i = 0; i < t->columns; i++) {
                 free(t->content[i]);
         }
         free(t->content);
@@ -223,10 +223,10 @@ void freeTable(table * t) {
 //DEBUG PURPOSES
 void printTable(table * t) {
         printf("  <<< Printing table>>>\n");
-        for(int i = 0; i < t->columns; i++) {
-                printf("Column %d: ", i);
-                for(int j = 0; j < t->rows; j++) {
-                       printf("%d \t", t->content[i][j]); 
+        for(myint_t i = 0; i < t->columns; i++) {
+                printf("Column %ld: ", i);
+                for(myint_t j = 0; j < t->rows; j++) {
+                       printf("%lu \t", t->content[i][j]); 
                 }
                 printf("\n");
         }
@@ -234,9 +234,9 @@ void printTable(table * t) {
 }
 
 void printRelation(relation * r) {
-        printf("  <<< Printing relation of size %d >>>\n", r->size);
-        for(int i = 0; i < r->size; i++) {
-                printf("(%d, %d)\n", r->tuples[i].payload, r->tuples[i].key);
+        printf("  <<< Printing relation of size %ld >>>\n", r->size);
+        for(myint_t i = 0; i < r->size; i++) {
+                printf("(%ld, %ld)\n", r->tuples[i].payload, r->tuples[i].key);
         }
         printf("\n");
 }

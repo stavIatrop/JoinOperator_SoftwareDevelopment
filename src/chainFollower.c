@@ -8,10 +8,11 @@
 #include "hashing.h"
 #include "chainFollowerInterface.h"
 
+//myint_t counter = 0;
 //DO NOT KNOW IF CACHE LOCALITY IS ACHIEVED DUE TO POINTERS
-void followChain(headResult * resultList, relationIndex * rIndex, tuple t, uint32_t h1) {
-        uint32_t hashRes = hashing(t.key, h1, rIndex->hash2);
-        uint32_t chainPointer = rIndex->buckets[hashRes] - 1;
+void followChain(headResult * resultList, relationIndex * rIndex, tuple t, myint_t h1) {
+        myint_t hashRes = hashing(t.key, h1, rIndex->hash2);
+        myint_t chainPointer = rIndex->buckets[hashRes] - 1;
 
         //Case: No matching h2
         if(chainPointer == EMPTY_BUCKET) {
@@ -25,6 +26,7 @@ void followChain(headResult * resultList, relationIndex * rIndex, tuple t, uint3
                         temp->rowR = rIndex->rel->tuples[chainPointer].payload;
                         temp->rowS = t.payload;
                         pushResult(resultList, temp);
+                        //counter++;
                         free(temp);
                 }
 
@@ -39,13 +41,13 @@ void followChain(headResult * resultList, relationIndex * rIndex, tuple t, uint3
         }
 }
 
-void searchKeyRec(relationIndex * keyIndex, headResult * resultList, tuple * checkedTuples, uint32_t tuplesNumb, uint32_t h1) {
+void searchKeyRec(relationIndex * keyIndex, headResult * resultList, tuple * checkedTuples, myint_t tuplesNumb, myint_t h1) {
         //Empty index (no matching h2 value)
         if(keyIndex->rel == NULL) {
                 return;
         }
 
-        for(uint32_t whichTup = 0; whichTup < tuplesNumb; whichTup++) {
+        for(myint_t whichTup = 0; whichTup < tuplesNumb; whichTup++) {
                 followChain(resultList, keyIndex, checkedTuples[whichTup], h1);
         }
 
@@ -56,11 +58,11 @@ void searchKeyRec(relationIndex * keyIndex, headResult * resultList, tuple * che
 }
 
 headResult * search(indexArray * indArr, reorderedR * s) {
-        uint32_t size;
+        myint_t size;
         tuple * startTup = NULL;
-        uint32_t key1;
+        myint_t key1;
         headResult * resultList = initialiseResultHead();
-        for(uint32_t whichKey = 0; whichKey < s->pSumArr.psumSize; whichKey++) {
+        for(myint_t whichKey = 0; whichKey < s->pSumArr.psumSize; whichKey++) {
                 //Variable size is how many values belong in the same h1 key
                 if(whichKey < s->pSumArr.psumSize - 1) {
                         size = s->pSumArr.psum[whichKey + 1].offset -  s->pSumArr.psum[whichKey].offset;
@@ -72,8 +74,9 @@ headResult * search(indexArray * indArr, reorderedR * s) {
                 
                 startTup = &(s->rel->tuples[s->pSumArr.psum[whichKey].offset]);
 
-                searchKeyRec(&(indArr->indexes[key1]), resultList, startTup, size, (uint32_t) log2(indArr->size));
+                searchKeyRec(&(indArr->indexes[key1]), resultList, startTup, size, (myint_t) log2(indArr->size));
         }
 
+        //fprintf(stderr, "PUSHES: %ld\n", counter);
         return resultList;
 }

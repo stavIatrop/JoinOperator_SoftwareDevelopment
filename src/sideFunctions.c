@@ -7,10 +7,10 @@
 #include "indexManip.h"
 #include "hashing.h"
 
-relation * getStartOfBucket(reorderedR * ror, uint32_t whichPsum) {  		//computes and returns the start index of a bucket
+relation * getStartOfBucket(reorderedR * ror, myint_t whichPsum) {  		//computes and returns the start index of a bucket
 
 	relation * newRelation = (relation *) malloc(sizeof(relation));
-	uint32_t index;
+	myint_t index;
 	index = ror->pSumArr.psum[whichPsum].offset; 								//startIndex of specific bucket
 	tuple * tempTuple;
 	tempTuple =	&(ror->rel->tuples[index]); 
@@ -28,9 +28,9 @@ relation * getStartOfBucket(reorderedR * ror, uint32_t whichPsum) {  		//compute
 }
 
 
-void updateChain(uint32_t * chain, uint32_t * buckets, uint32_t hash2Index, uint32_t i) {
+void updateChain(myint_t * chain, myint_t * buckets, myint_t hash2Index, myint_t i) {
 
-	uint32_t temp;
+	myint_t temp;
 	temp = buckets[hash2Index];
 	buckets[hash2Index] = i + 1;
 	chain[i] = temp;
@@ -40,11 +40,11 @@ void updateChain(uint32_t * chain, uint32_t * buckets, uint32_t hash2Index, uint
 
 
 
-void buildIndex(relationIndex * oneIndex, uint32_t hash1, uint32_t hash2) {
+void buildIndex(relationIndex * oneIndex, myint_t hash1, myint_t hash2) {
 
-	uint32_t chainSize = oneIndex->rel->size;							//chainSize is the same with the size of bucket
+	myint_t chainSize = oneIndex->rel->size;							//chainSize is the same with the size of bucket
 
-	uint32_t i, hash2Index;
+	myint_t i, hash2Index;
 	for (i = 0; i < chainSize; i++) {									//loop through elements of bucket
 
 		hash2Index = hashing(oneIndex->rel->tuples[i].key, hash1, hash2);
@@ -57,7 +57,7 @@ void buildIndex(relationIndex * oneIndex, uint32_t hash1, uint32_t hash2) {
 }
 
 
-relation * getStartOfSubBucket(tuple *startOfBuck, uint32_t sizeIndexedSofar, uint32_t eachSize) {
+relation * getStartOfSubBucket(tuple *startOfBuck, myint_t sizeIndexedSofar, myint_t eachSize) {
 
 	relation * newRelation = (relation *) malloc(sizeof(relation));
 	newRelation->size = eachSize;
@@ -69,10 +69,10 @@ relation * getStartOfSubBucket(tuple *startOfBuck, uint32_t sizeIndexedSofar, ui
 }
 
 //when this function is called, indexing has already construct head of indexingList
-void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, uint32_t sizeAll, uint32_t eachSize, uint32_t sizeIndexedSofar, tuple * startOfBuck, uint32_t i) {
+void buildSubIndex(relationIndex ** oneIndex, myint_t hash1, myint_t hash2, myint_t sizeAll, myint_t eachSize, myint_t sizeIndexedSofar, tuple * startOfBuck, myint_t i) {
 
 	
-	uint32_t bucketSize = hash2Range(hash2);
+	myint_t bucketSize = hash2Range(hash2);
 	
 
 	while(sizeAll > 0) {
@@ -95,14 +95,14 @@ void buildSubIndex(relationIndex ** oneIndex, uint32_t hash1, uint32_t hash2, ui
 }
 
 
-_Bool IsPowerOfTwo(uint32_t x)
+_Bool IsPowerOfTwo(myint_t x)
 {
 	return ((x & (x - 1)) == 0);
 }
 
-uint32_t findPowerOf2Hash(uint32_t range) {
+myint_t findPowerOf2Hash(myint_t range) {
 
-	uint32_t flag = 0;
+	myint_t flag = 0;
 	if (range == 1)
 		return 0;
 	while(flag == 0 ) {
@@ -119,23 +119,23 @@ uint32_t findPowerOf2Hash(uint32_t range) {
 }
 
 
-void recomputeSizes(uint32_t * eachSize, uint32_t * hash2Var, uint32_t sizeAll) {
+void recomputeSizes(myint_t * eachSize, myint_t * hash2Var, myint_t sizeAll) {
 
 	*eachSize = sizeAll/2;
 
-	uint32_t sizeOfIndex = sizeof(uint32_t) + (*eachSize) * ( sizeof(tuple) + sizeof(uint32_t) ) + hash2Range(*hash2Var) * sizeof(uint32_t);
+	myint_t sizeOfIndex = sizeof(myint_t) + (*eachSize) * ( sizeof(tuple) + sizeof(myint_t) ) + hash2Range(*hash2Var) * sizeof(myint_t);
 
 	while( sizeOfIndex > CACHE_SIZE ) {
 
 		(*eachSize) = (*eachSize) / 2;
-		sizeOfIndex = sizeof(uint32_t) + (*eachSize) * ( sizeof(tuple) + sizeof(uint32_t) ) + hash2Range(*hash2Var) * sizeof(uint32_t);
+		sizeOfIndex = sizeof(myint_t) + (*eachSize) * ( sizeof(tuple) + sizeof(myint_t) ) + hash2Range(*hash2Var) * sizeof(myint_t);
 
 	}
 
 	while (sizeOfIndex <= CACHE_SIZE) {
 
 		(*hash2Var) = (*hash2Var) + 1;
-		sizeOfIndex = sizeof(uint32_t) + (*eachSize) * ( sizeof(tuple) + sizeof(uint32_t) ) + hash2Range(*hash2Var) * sizeof(uint32_t);
+		sizeOfIndex = sizeof(myint_t) + (*eachSize) * ( sizeof(tuple) + sizeof(myint_t) ) + hash2Range(*hash2Var) * sizeof(myint_t);
 	}
 
 	(*hash2Var) = (*hash2Var) - 1;

@@ -4,25 +4,25 @@
 #include <stdint.h>
 #include <time.h>
 
-int digitsOfInt(uint32_t integer)
+myint_t digitsOfInt(myint_t integer)
 {
-        int count = 1;
+        myint_t count = 1;
         while((integer = integer/10) > 0)
                 count++;
         return count;
 }
 
 
-int main(int argc, char const *argv[])
+myint_t main(myint_t argc, char const *argv[])
 {
         if(argc != 5) {
                 printf("Wrong arguments: ./createTable <cols> <rows> <fileName> ascii/bin\n");
                 return -1;
         }
 
-        uint32_t cols = atoi(argv[1]);
-        uint32_t rows = atoi(argv[2]);
-        int digits, numb;
+        myint_t cols = atoi(argv[1]);
+        myint_t rows = atoi(argv[2]);
+        myint_t digits, numb;
         srand(time(NULL));
         char * buffer;
         char * firstLine = (char *) malloc(50 * sizeof(char));
@@ -37,12 +37,12 @@ int main(int argc, char const *argv[])
 
         if(strcmp(argv[4], "bin") != 0) {
                 buffer = (char *) malloc(rows * 11 + 1);
-                for(int whichCol = 0; whichCol < cols; whichCol++) {
-                        for(int whichRow = 0; whichRow < rows; whichRow++) {
+                for(myint_t whichCol = 0; whichCol < cols; whichCol++) {
+                        for(myint_t whichRow = 0; whichRow < rows; whichRow++) {
                                 numb = rand();
                                 digits = digitsOfInt(numb);
                                 char * tempString = (char *) malloc((digits +1) * sizeof(char));
-                                sprintf(tempString, "%d", numb);
+                                sprintf(tempString, "%ld", numb);
                                 if(whichRow == 0) {
                                         strcpy(buffer, tempString);
                                 }
@@ -60,17 +60,18 @@ int main(int argc, char const *argv[])
                 free(buffer);
         }
         else {
-                int32_t * array = (int32_t *) calloc(rows * cols, sizeof(int32_t));
+                uint64_t * array = (uint64_t *) calloc(rows * cols, sizeof(uint64_t));
                 if(array == NULL) {
                         perror("Failed to allocate buffer");
                         return -1;
                 }
-                for(int whichInt = 0; whichInt < rows * cols; whichInt++) {
+                for(myint_t whichInt = 0; whichInt < rows * cols; whichInt++) {
                         array[whichInt] = rand();	//RANDOM
+                        //printf("%ld | %lu\n", whichInt, array[whichInt]);
                         //array[whichInt] = 7;		//SAME
 			//array[whichInt] = whichInt;	//ORDERED
                 }
-                fwrite(array, sizeof(int32_t), rows * cols, f);
+                fwrite(array, sizeof(uint64_t), rows * cols, f);
         }
         
         fclose(f);

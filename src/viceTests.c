@@ -16,7 +16,7 @@ void Powerful()
 	CU_ASSERT(FindNextPower(65)==128);
 	CU_ASSERT(FindNextPower(0)==1);
 	CU_ASSERT(FindNextPower(64)==64);
-	CU_ASSERT(FindNextPower((2<<29)+1)==2<<30);
+	CU_ASSERT(FindNextPower((2<<29)+1)== (myint_t) 2<<30);
 	CU_ASSERT(FindNextPower(1)==1);
 	CU_ASSERT(FindNextPower(3)==4);
 }
@@ -26,7 +26,7 @@ int initIdentical()
 	r3 = malloc(sizeof(relation));
 	r3->tuples = malloc(10000000 * sizeof(tuple));
 	r3->size = 10000000;
-	for (uint32_t i=0; i<10000000; i++)
+	for (myint_t i=0; i<10000000; i++)
 	{
 		if (i%10==0) r3->tuples[i].key=0;
 		else r3->tuples[i].key=i;

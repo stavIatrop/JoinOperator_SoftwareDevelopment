@@ -8,7 +8,6 @@
 #define GREATER 2
 #define EQUAL 3
 
-typedef uint64_t myint_t;
 
 typedef struct Relationsheep {
         myint_t rows;
@@ -61,6 +60,7 @@ typedef struct Query {
         myint_t numOfFilters;
         myint_t numOfJoins;
         myint_t numOfSums;
+        myint_t numOfRels;
         filter *filters;
         join *joins;
         colRel *sums;

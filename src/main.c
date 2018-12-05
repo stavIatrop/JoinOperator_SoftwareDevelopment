@@ -15,7 +15,7 @@
 int main(int argc, char *argv[])
 {
         //Reading Arguments
-        arguments * args = readArguments(argc, argv);
+        /*arguments * args = readArguments(argc, argv);
         if(args == NULL) {
                 perror("Wrong arguments");
                 return -1;
@@ -35,8 +35,17 @@ int main(int argc, char *argv[])
         clock_t end = clock();
         printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
+        colRel rColRel;
+        rColRel.rows = r->rows;
+        rColRel.rel = 0;
+        rColRel.col = r->content[args->colR];
+
+        colRel sColRel;
+        sColRel.rows = r->rows;
+        sColRel.rel = 0;
+        sColRel.col = r->content[args->colR];
         //Performing radixHashJoin
-        headResult * results = radixHashJoin(r, s, args->colR, args->colS);
+        headResult * results = radixHashJoin(&rColRel, &sColRel);
 
         printf(">>> Starting Writing...");
         begin = clock();
@@ -49,7 +58,7 @@ int main(int argc, char *argv[])
         freeResultList(results);
         freeTable(r);
         freeTable(s);
-        free(args);
+        free(args);*/
 
 
         return 0;

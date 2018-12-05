@@ -15,8 +15,8 @@
 #define HASH2 4
 #define PSUMSIZE 3
 
-uint32_t * chain = NULL;
-uint32_t * buckets = NULL;
+myint_t * chain = NULL;
+myint_t * buckets = NULL;
 
 relationIndex * oneIndex;
 
@@ -120,7 +120,7 @@ void testStartOfBucket() {
 
 void testBuildSubIndex() {
 
-	uint32_t sizeAll = 10, eachSize = 3, key = 10, sizeIndexedSofar = 3;
+	myint_t sizeAll = 10, eachSize = 3, key = 10, sizeIndexedSofar = 3;
 	sizeAll -= eachSize;
 	buildSubIndex(&newIndex, HASH1, HASH2, sizeAll, eachSize, sizeIndexedSofar, startOfBucket, key);
 	
@@ -215,8 +215,8 @@ void testBuildIndex(){
 
 int InitializeStructs() {
 
-	chain = (uint32_t *) malloc(8 * sizeof(uint32_t));
-	buckets = (uint32_t *) malloc(5 * sizeof(uint32_t));
+	chain = (myint_t *) malloc(8 * sizeof(myint_t));
+	buckets = (myint_t *) malloc(5 * sizeof(myint_t));
 
 	int i;
 	for(i = 0; i < 8; i++)
@@ -252,7 +252,7 @@ void testUpdateChain() {
 
 void testHashing() {
 
-	uint32_t value = 9;
+	myint_t value = 9;
 	value = hashing(value, HASH1, HASH2);
 	CU_ASSERT(value == 1);
 	value = 81;

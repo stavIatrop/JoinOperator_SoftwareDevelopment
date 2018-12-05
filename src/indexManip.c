@@ -3,7 +3,7 @@
 #include "basicStructs.h"
 
 
-relationIndex initializeIndex(uint32_t bucketSize, relation * rel, int32_t key, relationIndex * next, uint32_t hash2) {
+relationIndex initializeIndex(myint_t bucketSize, relation * rel, myint_t key, relationIndex * next, myint_t hash2) {
 
 	relationIndex newIndex;
 	newIndex.key = key;
@@ -16,13 +16,13 @@ relationIndex initializeIndex(uint32_t bucketSize, relation * rel, int32_t key, 
 		return newIndex;
 	}
 
-	newIndex.chain = (uint32_t *) malloc(rel->size * sizeof(uint32_t));
-	uint32_t i;
+	newIndex.chain = (myint_t *) malloc(rel->size * sizeof(myint_t));
+	myint_t i;
 	for( i = 0; i < rel->size; i++)
 		newIndex.chain[i] = 0;
 	
 
-	newIndex.buckets = (uint32_t *) malloc(bucketSize * sizeof(uint32_t));
+	newIndex.buckets = (myint_t *) malloc(bucketSize * sizeof(myint_t));
 	for( i = 0; i < bucketSize; i++)
 		newIndex.buckets[i] = 0;
 	
@@ -30,7 +30,7 @@ relationIndex initializeIndex(uint32_t bucketSize, relation * rel, int32_t key, 
 
 }
 
-indexArray * initializeIndexArray(uint32_t size){
+indexArray * initializeIndexArray(myint_t size){
 
 	indexArray * newIndexArray = (indexArray *) malloc(sizeof(indexArray));
 	newIndexArray->size = size;
@@ -59,7 +59,7 @@ void RecFree(relationIndex * indexes) {
 
 void freeIndexArray(indexArray * idxArray) {
 
-	uint32_t i;
+	myint_t i;
 	
 	for (i = 0; i < idxArray->size; i++){
 

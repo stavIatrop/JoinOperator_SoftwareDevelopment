@@ -5,14 +5,14 @@
 
 #include "basicStructs.h"
 
-relation * getStartOfBucket(reorderedR * , uint32_t );
-void buildIndex(relationIndex * , uint32_t, uint32_t );
-void updateChain(uint32_t * , uint32_t * , uint32_t , uint32_t );
-void buildSubIndex(relationIndex ** , uint32_t , uint32_t, uint32_t , uint32_t , uint32_t , tuple * , uint32_t );
-relation * getStartOfSubBucket(tuple *, uint32_t , uint32_t );
-_Bool IsPowerOfTwo(uint32_t );
-uint32_t findPowerOf2Hash(uint32_t );
-void recomputeSizes(uint32_t * , uint32_t * , uint32_t ); 
+relation * getStartOfBucket(reorderedR * , myint_t );
+void buildIndex(relationIndex * , myint_t, myint_t );
+void updateChain(myint_t * , myint_t * , myint_t , myint_t );
+void buildSubIndex(relationIndex ** , myint_t , myint_t, myint_t , myint_t , myint_t , tuple * , myint_t );
+relation * getStartOfSubBucket(tuple *, myint_t , myint_t );
+_Bool IsPowerOfTwo(myint_t );
+myint_t findPowerOf2Hash(myint_t );
+void recomputeSizes(myint_t * , myint_t * , myint_t ); 
 
 
 #endif
