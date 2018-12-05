@@ -175,7 +175,6 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
             for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
                 for(myint_t whichCol = 0; whichCol < intNode->data->numOfCols; whichCol++) {
                     retArr[whichCol][counter] = intNode->data->rowIds[whichCol][currentNode->tuples[whichRes].rowR];
-                //if(retArr[whichCol][counter] > 10000000) fprintf(stderr, "ERROR!!!!!\n");
                 }
                 retArr[intNode->data->numOfCols][counter] = currentNode->tuples[whichRes].rowS;
                 counter += 1;
@@ -185,16 +184,9 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
         else {
             for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
                 for(myint_t whichCol = 0; whichCol < intNode->data->numOfCols; whichCol++) {
-                    // if(intNode->data->rowIds[whichCol][currentNode->tuples[whichRes].rowS] > 3436) {
-                    //     fprintf(stderr, "SSSSSSSSSS\n");
-                    // }
                     retArr[whichCol][counter] = intNode->data->rowIds[whichCol][currentNode->tuples[whichRes].rowS];
-                //if(retArr[whichCol][counter] > 10000000) fprintf(stderr, "ERROR!!!!!\n");
                 }
                 retArr[intNode->data->numOfCols][counter] = currentNode->tuples[whichRes].rowR;
-                // if(currentNode->tuples[whichRes].rowR > 3436) {
-                //         fprintf(stderr, "RRRRRRRRRRRR\n");
-                //     }
                 counter += 1;
             }
         }

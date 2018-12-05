@@ -18,18 +18,16 @@ void workerF(filter *pred, headInter *hq)
 	if (node)
         {
                 inter * data = node->data;
-                myint_t limit=data->numbOfRows, next;
+                myint_t limit=data->numbOfRows;
                 for (i=0; i< data->numOfCols; i++) if (data->joinedRels[i]==r->rel) break;
                 myint_t *rowIds = data->rowIds[i];
                 i=0;
-                while(i < limit)
+                for (i=0; i < limit; i++)
                 {
-			next = findNextRowId(rowIds,i,limit);
-        	        if (ApplyFilter(col[rowIds[i]],op,value)>0) for ( ; i<next; i++)
+			if (ApplyFilter(col[rowIds[i]],op,value)>0)
         	        {
         	                temp[cur++]=i;
   	        	}
-			else i = next;
                 }
 		updateInterSelfJoin(node,temp,cur);
 		free(temp);
@@ -241,16 +239,14 @@ myint_t *performSelfJoin(nodeInter *valids, join *pred, myint_t *survivors)
 	if (valids)
 	{
 		inter * data = valids->data;
-		myint_t i, j, limit=data->numbOfRows, cols = data->numOfCols, next;
+		myint_t i, j, limit=data->numbOfRows, cols = data->numOfCols;
 		for (i=0;i< cols; i++) if (data->joinedRels[i]==r1->rel) break;
 		myint_t *trueValids = data->rowIds[i];
 		i=0;
-		while(i < limit)
+		for (i=0; i < limit; i++)
 		{
-			next = findNextRowId(trueValids,i,limit);
 			j = trueValids[i];
-			if (col1[j]==col2[j]) for (; i<next; i++) temp[cur++]=i;
-			else i = next;
+			if (col1[j]==col2[j]) temp[cur++]=i;
 		}
 	}
 	else
