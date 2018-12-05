@@ -162,7 +162,6 @@ int main(void) {
                     //fprintf(stderr, "    Starting filters...\n ");
                     for(myint_t whichFilter = 0; whichFilter < newQuery->numOfFilters; whichFilter++) {
                         workerF(&(newQuery->filters[whichFilter]), headInt);
-                       // fprintf(stderr, "%ld ", whichFilter);
                         fflush(stdout);
                     }
                     //fprintf(stderr, "Finished\n");

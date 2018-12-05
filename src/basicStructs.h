@@ -75,8 +75,11 @@ struct ResultNode {
 
 typedef struct HeadResult {
         resultNode * firstNode;
-        
+        resultNode * tail;
         myint_t numbOfNodes;
+        myint_t totalSize;
+        rowTuple * buffTuple;
+        myint_t buffSize;
 } headResult;
 //-->
 

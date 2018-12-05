@@ -6,7 +6,10 @@
  * Στάης Βαλέριος, 1115201500148
                  
  
-
+ ## Best Time
+  
+On the small dataset best time achieved: 1788ms
+  
  ## Compile and Run
 Compile: `make` will compile all the executables (unit tests and main executable)  
 

@@ -25,7 +25,8 @@ void followChain(headResult * resultList, relationIndex * rIndex, tuple t, myint
                         rowTuple * temp = (rowTuple *) malloc(sizeof(rowTuple));
                         temp->rowR = rIndex->rel->tuples[chainPointer].payload;
                         temp->rowS = t.payload;
-                        pushResult(resultList, temp);
+                        //pushResult(resultList, temp);
+                        pushResultVer2(resultList, temp);
                         //counter++;
                         free(temp);
                 }
@@ -78,5 +79,6 @@ headResult * search(indexArray * indArr, reorderedR * s) {
         }
 
         //fprintf(stderr, "PUSHES: %ld\n", counter);
+        cleanListHead(resultList);
         return resultList;
 }

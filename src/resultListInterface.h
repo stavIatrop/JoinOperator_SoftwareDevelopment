@@ -8,7 +8,10 @@
 
 headResult * initialiseResultHead();
 resultNode * initialiseResultNode();
+resultNode * initialiseResultNodeVer2();
 void pushResult(headResult * head, rowTuple * t);
+void pushResultVer2(headResult * head, rowTuple * t);
+void cleanListHead(headResult * head);
 void freeResultList(headResult * head);
 void freeResultNode(resultNode * node);
 myint_t checkResults(headResult * head);
