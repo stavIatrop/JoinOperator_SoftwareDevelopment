@@ -94,23 +94,28 @@ void workerJ(join *pred, headInter * hq)
 		else
 		{
 			headResult *res;
-			myint_t newRel;
+			myint_t newRel, skipped = 0;
 			char switched;
 
-			res = performRHJ(hq,r1,r2,&newRel, &switched);
+			res = performRHJ(hq,r1,r2,&newRel, &skipped, &switched);
 			if (used==0) createInterFromRes(hq,res,rel1,rel2, switched);
 			else if (used==1)
 			{
+				//fprintf(stderr, "AA%ld\n", skipped);
 				if (rel1==newRel) {
-					updateInterFromRes(n2,res,newRel,switched);
+					updateInterFromRes(n2,res,newRel,rel2,skipped,switched);
 					//fprintf(stderr, "REL1 NEW\n");
 				}
 				else{
 					//fprintf(stderr, "REL2 NEW %ld | new rel: %ld | newRelRows: %ld\n", n1->data->numbOfRows, newRel, r2->rows);
-					updateInterFromRes(n1,res,newRel,switched);
+					updateInterFromRes(n1,res,newRel,rel1,skipped,switched);
 				}
 			}
-			else updateInterAndDelete(hq,n1,n2,res,switched);
+			else
+			{
+				//fprintf(stderr, "BBBBBBBB\n");
+				updateInterAndDelete(hq,n1,n2,res,rel1,rel2,skipped,switched);
+			}
 			freeResultList(res);
 		}
 	}
@@ -129,7 +134,7 @@ myint_t findNextRowId(myint_t *rowIds, myint_t i, myint_t rows)
 	return i;
 }
 
-relation *forgeRelationsheep(headInter *hi, colRel *r)
+relation *forgeRelationsheep(headInter *hi, colRel *r, myint_t *skipped)
 {
 	nodeInter *node = findNode(hi,r->rel);
 	relation *rel = malloc(sizeof(relation));
@@ -158,13 +163,14 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 	i=0;
         while(i < rows)
         {
-                next = findNextRowId(rowIds,i,rows);
-		for ( ; i < next; i++)
-		{
-			j = rowIds[i];
-                	t[cur].key = col[j];
-        	        t[cur++].payload = i;
-		}
+				j = rowIds[i];
+		        t[cur].key = col[j];
+		        t[cur++].payload = i;
+
+		        next = findNextRowId(rowIds,i,rows);
+		        (*skipped) += next - i - 1;
+		        //if (next - i - 1 > 0) fprintf(stderr, "%ld, %ld\n", i, next-i-1);
+		        i = next;
         }
 	//fprintf(stderr, "AAA %ld is already in an inter\n", r->rel);
 	rel->size = cur;
@@ -173,12 +179,12 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
 	return rel;
 }
 
-headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, char *switched)
+headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, myint_t *skipped, char *switched)
 {
-	relation *relation1 = forgeRelationsheep(hi,r1);
+	relation *relation1 = forgeRelationsheep(hi,r1, skipped);
 	//fprintf(stderr, "Rel111111111111111111111\n");
 
-	relation *relation2 = forgeRelationsheep(hi,r2);
+	relation *relation2 = forgeRelationsheep(hi,r2, skipped);
 	//fprintf(stderr, "REL1 ROWS: %ld | REL2 ROWS: %ld\n", relation1->size, relation2->size);
 
 	char new1=0, new2=0;
