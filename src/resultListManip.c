@@ -59,6 +59,8 @@ void pushResult(headResult * head, rowTuple * t) {
 
 }
 
+//The head of the list contains a buffer of 1MB of results. When it is filled, it is saved on a node
+//and a new 1MB buffer is created in the head
 resultNode * initialiseResultNodeVer2() {
         resultNode * newNode = (resultNode *) malloc(sizeof(resultNode));
         newNode->nextNode = NULL;
@@ -96,6 +98,8 @@ void pushResultVer2(headResult * head, rowTuple * t) {
         head->totalSize += 1;
 }
 
+//CARE: In case of using the PushVer2 this function must be called when the last result is pushed
+//It saves the not yet full buffer in a node
 void cleanListHead(headResult * head) {
         if(head->buffSize != 0) {
                 if(head->numbOfNodes != 0) {

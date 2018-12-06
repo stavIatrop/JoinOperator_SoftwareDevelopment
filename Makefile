@@ -137,7 +137,7 @@ runValgrind:
 	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_MAIN) -R testTables/r3_10000000_ordered -S testTables/r3_10000000_ordered -r 0 -s 0 -t binary -o testTables/outFile
 
 runValgrindUt:
-	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_SEARCH_LIST_UT)
+	valgrind $(VALGRIND_FLAGS) ./$(NAME_OF_QUERY_EXECUTE_UT)
 
 runHarness:
 	./harness small/small.init small/small.work small/small.result ./ioreceiver

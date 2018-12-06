@@ -3,7 +3,7 @@
 
 #include "queryStructs.h"
 
-//Join results Intermediate manipulation
+//Join results Intermediate manipulation. They are responsible for operations concerning Intermediates
 void createInterFromRes(headInter * headInt, headResult * headRes, myint_t rel1, myint_t rel2, char switched);
 void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t addedRel, char switched);
 void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * node2, headResult * headRes, char switched);
