@@ -12,6 +12,8 @@
 #include "resultListInterface.h"
 #include "checksumInterface.h"
 #include "jointPerformer.h"
+#include "I_O_structs.h"
+#include "queryManip.h"
 
 #define TUPLE_NUMB 1000000
 
@@ -21,6 +23,10 @@ headInter * headInt = NULL;
 myint_t *arr1D, *col;
 relation *rel;
 colRel *cr;
+
+Input * input = NULL;
+relationsheepArray relArray;
+query * newQuery = NULL;
 
 //Test intermediate list accessing, adding, deleting
 int initList() {
@@ -661,6 +667,121 @@ void testFilter()
 	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[0][i]==i);
 }
 
+int initialiseInputStructs() {
+
+        input = InitializeInput();
+        
+        return 0;
+
+}
+
+int freeInputStructs() {
+
+        FreeRelArray(relArray);
+        FreeInput(input);
+        return 0;
+}
+
+void testAddInputNode() {
+
+        char * filename = (char *)malloc( (strlen("./small/r0") + 1) * sizeof(char));
+        memset(filename, '\0', strlen("./small/r0") + 1);
+        strcpy(filename, "./small/r0");
+        strcat(filename, "\0");
+        AddInputNode(input, filename);
+
+        CU_ASSERT(!(strcmp(input->tail->filename, "./small/r0")));
+
+        memset(filename, '\0', strlen("./small/r1") + 1);
+        strcpy(filename, "./small/r1");
+        strcat(filename, "\0");
+        AddInputNode(input, filename);
+
+        CU_ASSERT(!(strcmp(input->tail->filename, "./small/r1")));
+        CU_ASSERT(input->numNodes == 2);
+        CU_ASSERT(!(strcmp(input->head->filename, "./small/r0")));
+        free(filename); 
+        return;       
+
+}
+
+void testConstructInput() {
+
+        char * inputStr = (char *) malloc( ( strlen("./small/r2\n./small/r3\n./small/r4\n./small/r5\n./small/r6\n") + 1) * sizeof(char));
+        memset(inputStr, '\0', strlen("./small/r2\n./small/r3\n./small/r4\n./small/r5\n./small/r6\n") + 1);
+        strcpy(inputStr, "./small/r2\n./small/r3\n./small/r4\n./small/r5\n./small/r6\n");
+        strcat(inputStr, "\0");
+
+        ConstructInput(input, inputStr);
+
+        CU_ASSERT(!(strcmp(input->tail->filename, "./small/r6")));
+
+        InputNode * temp = input->head;
+        temp = temp->next->next;
+
+        CU_ASSERT(!(strcmp(temp->filename, "./small/r2")));
+
+        CU_ASSERT(input->numNodes == 7);
+
+        free(inputStr);
+        return;
+
+}
+
+void testFillRelArray() {
+
+        relArray = InitializeRelSheepArray(input->numNodes);
+        FillRelArray(&relArray, input);
+
+        CU_ASSERT(relArray.rels[6].rows == 26388);
+        CU_ASSERT(relArray.rels[6].cols == 2);
+        CU_ASSERT(relArray.rels[0].rows == 1561);
+        CU_ASSERT(relArray.rels[0].cols == 3);
+        CU_ASSERT(relArray.rels[3].rows == 23038);
+        CU_ASSERT(relArray.rels[3].cols == 4);
+
+        CU_ASSERT(relArray.rels[1].pointToCols[2][301] == 6666);
+        CU_ASSERT(relArray.rels[4].pointToCols[0][228] == 666);
+        CU_ASSERT(relArray.rels[5].pointToCols[1][314] == 8999);
+        return;
+
+}
+
+
+void testConstructQuery() {
+
+        char * queryStr = (char *) malloc( (strlen("3 0 1|0.2=1.0&0.1=2.0&0.2>3499|1.2 0.1") + 1) * sizeof(char));
+        memset(queryStr, '\0', strlen("3 0 1|0.2=1.0&0.1=2.0&0.2>3499|1.2 0.1") + 1 );
+        strcpy(queryStr, "3 0 1|0.2=1.0&0.1=2.0&0.2>3499|1.2 0.1");
+        strcat(queryStr, "\0");
+
+        newQuery = ConstructQuery(queryStr, 3, 2, 2, 1, relArray);
+        CU_ASSERT(newQuery->filters[0].participant.rows == 23038);
+        CU_ASSERT(newQuery->joins[1].participant1.rows == 23038);
+        CU_ASSERT(newQuery->joins[1].participant2.rows == 3754);
+
+        FreeQuery(newQuery);
+        free(queryStr);
+
+        queryStr = (char *) malloc( (strlen("5 0|0.2=1.0&0.3=9881|1.1 0.2 1.0") + 1) * sizeof(char));
+        memset(queryStr, '\0', strlen("5 0|0.2=1.0&0.3=9881|1.1 0.2 1.0") + 1 );
+        strcpy(queryStr, "5 0|0.2=1.0&0.3=9881|1.1 0.2 1.0");
+        strcat(queryStr, "\0");
+
+        newQuery = ConstructQuery(queryStr, 2, 1, 3, 1, relArray);
+        CU_ASSERT(newQuery->filters[0].participant.rows == 4910);
+        CU_ASSERT(newQuery->joins[0].participant2.rows == 1561);
+        CU_ASSERT(newQuery->filters[0].participant.col[4781] == 9064);
+        CU_ASSERT(newQuery->sums[0].col[535] == 10005);
+
+        FreeQuery(newQuery);
+        free(queryStr);
+
+        return;
+
+}
+
+
 int main(void) {
 
 	CU_pSuite pSuite1 = NULL;
@@ -669,6 +790,7 @@ int main(void) {
 	CU_pSuite pSuite4 = NULL;
 	CU_pSuite pSuite5 = NULL;
 	CU_pSuite pSuite6 = NULL;
+	CU_pSuite pSuite7 = NULL;
 
 	//Initialize the CUnit test registry
    if (CUE_SUCCESS != CU_initialize_registry())
@@ -757,7 +879,20 @@ int main(void) {
                 return CU_get_error();
         }
 
+   pSuite7 = CU_add_suite("I_O Suite", initialiseInputStructs, freeInputStructs);
+   if (NULL == pSuite7) {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
 
+   if ((NULL == CU_add_test(pSuite7, "Test Adding Input Node at Input List", testAddInputNode)) ||
+       (NULL == CU_add_test(pSuite7, "Test Constructing Input List", testConstructInput)) ||
+       (NULL == CU_add_test(pSuite7, "Test Filling RelationsheepArray", testFillRelArray)) ||
+       (NULL == CU_add_test(pSuite7, "Test Constructing Query Struct", testConstructQuery)))
+   {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
 
 
    CU_basic_set_mode(CU_BRM_VERBOSE);
