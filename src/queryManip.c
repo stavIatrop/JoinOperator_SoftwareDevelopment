@@ -7,7 +7,6 @@
 myint_t SubStrOccur(char * str, char * subStr) {
 
 	myint_t count = 0;
-	//fprintf(stderr, "%s\n", str );
 	char *tmp = str;
 	while((tmp = strstr(tmp, subStr))) {
    	
@@ -139,7 +138,7 @@ void fillFilterInfo(query * newQuery, char * tempStr, myint_t counterFilters, re
 
 }
 
-query * ConstructQuery( FILE * fp, char * queryStr, myint_t rels, myint_t joins, myint_t sums, myint_t filters, relationsheepArray relArray) {
+query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t sums, myint_t filters, relationsheepArray relArray) {
 
 	query * newQuery = (query *) malloc(sizeof(query));
 	newQuery->numOfFilters = filters;
