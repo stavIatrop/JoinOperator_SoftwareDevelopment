@@ -148,7 +148,7 @@ int main(void) {
                     strcat(queryStr, "\0");
 
                     
-                    query * newQuery = ConstructQuery(stdoutFile, queryStr, rels, joins, sums, filters, relArray);
+                    query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
 
                     //fprintf(stderr, "\n>>>> Executing query %ld\n", whichQuery);
                     //printFilters(newQuery);
@@ -162,7 +162,6 @@ int main(void) {
                     //fprintf(stderr, "    Starting filters...\n ");
                     for(myint_t whichFilter = 0; whichFilter < newQuery->numOfFilters; whichFilter++) {
                         workerF(&(newQuery->filters[whichFilter]), headInt);
-                       // fprintf(stderr, "%ld ", whichFilter);
                         fflush(stdout);
                     }
                     //fprintf(stderr, "Finished\n");

@@ -188,8 +188,9 @@ int createList(void) {
                 temp.rowR = (myint_t) i;
                 temp.rowS = (myint_t) i;
 
-                pushResult(list, &temp);
+                pushResultVer2(list, &temp);
         }
+        cleanListHead(list);
         return 0;
 }
 

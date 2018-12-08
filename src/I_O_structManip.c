@@ -102,7 +102,10 @@ void FillRelArray(relationsheepArray * relArray, Input * input) {
             return;
         }
        
-		FillRel(&(relArray->rels[i]), inputFile );
+		if ( FillRel(&(relArray->rels[i]), inputFile ) == -1) {
+			perror("Failed to read binary metadata");
+			return;
+		}
 		temp = temp->next;
 		fclose(inputFile);
 	}

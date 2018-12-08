@@ -1,3 +1,4 @@
+
  # Ανάπτυξη Λογισμικού Για Πληροφοριακά Συστήματα (Μέρος 1ο)
    
  ## Μέλη Ομάδας:
@@ -6,13 +7,16 @@
  * Στάης Βαλέριος, 1115201500148
                  
  
-
+ ## Task
+ http://sigmod18contest.db.in.tum.de/task.shtml
+ 
+On the small dataset best time achieved: 1788ms
+  
  ## Compile and Run
 Compile: `make` will compile all the executables (unit tests and main executable)  
 
 Run:
- * `./main -R path_of_R -S path_of_S -r col_R -s col_S -t binary/ascii -o outPath`  
- (-R is the path of table R, -r is the column of table R that we want to be joined with column s of table S)
+ * `make runHarness` runs the contest provided harness with the small dataset
  * `make runInputUt` runs the Input unit test
  * `make runReorderingUt`runs the Hash1 and Reordering tests
  * `make runIndexingUt` runs the Indexing unit tests
@@ -21,12 +25,12 @@ Run:
 
 !! In order for input test to be able to pass, `smallTestTables/file3_10, smallTestTables/file3_10ascii` must not be changed` !!  
 
- ## File Creation Script
-
- `gcc -o createTable createTable.c`  
- `./createTable numb_of_cols numb_of_rows  out_file_path bin/ascii` (by deafault the values are random) 
-
- ## Code Comments
+ ## General optimizations
+ * Apply filters before joins
+ * Simple utilization of cache locality (like using arrays of pointers to columns instead of pointers to rows)
+ 
+ ## Radix Hash Join 
+ The alogorithm which we were given to implement for performing the joins of the queries (which is of curse the main bottleneck).
  * ### Reordering 
 	  In the first phase, the h1, we calculate the best n to use, where n is the number of least important bits used as the hash       function. We do this for one of the relations and then use the same n for the other relation.
 

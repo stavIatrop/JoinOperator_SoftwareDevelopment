@@ -8,7 +8,11 @@
 headResult * initialiseResultHead() {
         headResult * newHead = (headResult *) malloc(sizeof(headResult));
         newHead->numbOfNodes = 0;
+        newHead->buffTuple = (rowTuple *) malloc((MB / sizeof(tuple)) * sizeof(rowTuple));
+        newHead->buffSize = 0;
         newHead->firstNode = NULL;
+        newHead->tail = NULL;
+        newHead->totalSize = 0;
         return newHead;
 }
 
@@ -22,11 +26,13 @@ resultNode * initialiseResultNode() {
 
 
 
+
 void pushResult(headResult * head, rowTuple * t) {
         myint_t maxTuples = MB / sizeof(tuple);
         resultNode * finalNode = NULL;
         if(head->numbOfNodes == 0) {
                 head->firstNode = initialiseResultNode();
+                head->tail = head->firstNode;
                 head->numbOfNodes += 1;
                 finalNode = head->firstNode;
         }
@@ -40,6 +46,7 @@ void pushResult(headResult * head, rowTuple * t) {
                 //CASE: Node is full
                 if(finalNode->size == maxTuples) {
                         finalNode->nextNode = initialiseResultNode();
+                        head->tail = finalNode->nextNode;
                         head->numbOfNodes += 1;
                         finalNode = finalNode->nextNode;
                 }
@@ -48,12 +55,76 @@ void pushResult(headResult * head, rowTuple * t) {
         finalNode->tuples[finalNode->size].rowR = t->rowR;
         finalNode->tuples[finalNode->size].rowS = t->rowS;
         finalNode->size += 1;
+        head->totalSize += 1;
 
+}
+
+//The head of the list contains a buffer of 1MB of results. When it is filled, it is saved on a node
+//and a new 1MB buffer is created in the head
+resultNode * initialiseResultNodeVer2() {
+        resultNode * newNode = (resultNode *) malloc(sizeof(resultNode));
+        newNode->nextNode = NULL;
+        return newNode;
+}
+
+void pushResultVer2(headResult * head, rowTuple * t) {
+        myint_t maxTuples = MB / sizeof(tuple);
+        if(head->buffSize != maxTuples) {
+                head->buffTuple[head->buffSize].rowR = t->rowR;
+                head->buffTuple[head->buffSize].rowS = t->rowS;
+                head->buffSize += 1;
+        }
+        else {
+                if(head->numbOfNodes == 0) {
+                        head->firstNode = initialiseResultNodeVer2();
+                        head->tail = head->firstNode;
+                }
+                else {
+                        head->tail->nextNode = initialiseResultNodeVer2();
+                        head->tail = head->tail->nextNode;
+                }
+
+                head->numbOfNodes += 1;
+
+                head->tail->tuples = head->buffTuple;
+                head->tail->size = head->buffSize;
+                head->buffTuple = (rowTuple *) malloc(maxTuples * sizeof(rowTuple));
+                head->buffSize = 0;
+
+                head->buffTuple[head->buffSize].rowR = t->rowR;
+                head->buffTuple[head->buffSize].rowS = t->rowS;
+                head->buffSize += 1;
+        }
+        head->totalSize += 1;
+}
+
+//CARE: In case of using the PushVer2 this function must be called when the last result is pushed
+//It saves the not yet full buffer in a node
+void cleanListHead(headResult * head) {
+        if(head->buffSize != 0) {
+                if(head->numbOfNodes != 0) {
+                        head->tail->nextNode = initialiseResultNodeVer2();
+                        head->tail->nextNode->tuples = head->buffTuple;
+                        head->tail->nextNode->size = head->buffSize;
+                }
+                else {
+                        head->firstNode = initialiseResultNodeVer2();
+                        head->firstNode->tuples = head->buffTuple;
+                        head->firstNode->size = head->buffSize;
+                }
+                
+                head->numbOfNodes += 1;
+        }
+        if(head->buffSize != 0 || head->numbOfNodes != 0)
+                head->buffTuple = NULL;
 }
 
 void freeResultList(headResult * head) {
         if(head->numbOfNodes != 0) {
                 freeResultNode(head->firstNode);
+        }
+        if(head->buffTuple != NULL) {
+                free(head->buffTuple);
         }
         free(head);
 }

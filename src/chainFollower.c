@@ -8,8 +8,7 @@
 #include "hashing.h"
 #include "chainFollowerInterface.h"
 
-//myint_t counter = 0;
-//DO NOT KNOW IF CACHE LOCALITY IS ACHIEVED DUE TO POINTERS
+
 void followChain(headResult * resultList, relationIndex * rIndex, tuple t, myint_t h1) {
         myint_t hashRes = hashing(t.key, h1, rIndex->hash2);
         myint_t chainPointer = rIndex->buckets[hashRes] - 1;
@@ -25,7 +24,8 @@ void followChain(headResult * resultList, relationIndex * rIndex, tuple t, myint
                         rowTuple * temp = (rowTuple *) malloc(sizeof(rowTuple));
                         temp->rowR = rIndex->rel->tuples[chainPointer].payload;
                         temp->rowS = t.payload;
-                        pushResult(resultList, temp);
+                        //pushResult(resultList, temp);
+                        pushResultVer2(resultList, temp);
                         //counter++;
                         free(temp);
                 }
@@ -78,5 +78,6 @@ headResult * search(indexArray * indArr, reorderedR * s) {
         }
 
         //fprintf(stderr, "PUSHES: %ld\n", counter);
+        cleanListHead(resultList);
         return resultList;
 }
