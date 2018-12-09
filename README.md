@@ -8,7 +8,7 @@
  
  ## Best Time
   
-On the small dataset best time achieved: 1788ms
+On the small dataset best time achieved: 1251ms
   
  ## Compile and Run
 Compile: `make` will compile all the executables (unit tests and main executable)  
