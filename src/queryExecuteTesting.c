@@ -15,7 +15,7 @@
 
 #define TUPLE_NUMB 1000000
 
-/*headInter * head = NULL;
+headInter * head = NULL;
 headResult * headRes = NULL;
 headInter * headInt = NULL;
 myint_t *arr1D, *col;
@@ -23,7 +23,7 @@ relation *rel;
 colRel *cr;
 
 //Test intermediate list accessing, adding, deleting
-int initList() {
+/*int initList() {
     head = initialiseHead();
 
     return 0;
@@ -46,7 +46,7 @@ myint_t ** create_2DArray(int cols, int rows) {
         }
     }
     return arr;
-}
+}*/
 
 myint_t * create_1DArray(int rows, int value) {
     myint_t * arr = (myint_t *) malloc(rows * sizeof(myint_t));
@@ -57,7 +57,7 @@ myint_t * create_1DArray(int rows, int value) {
 }
 
 
-void testPushInter() {
+/*void testPushInter() {
     myint_t ** rowIds = create_2DArray(3, 20);
     myint_t * rels = create_1DArray(3, 1);
     
@@ -527,7 +527,7 @@ void checksumTest() {
     free(sums);
     free(csum->checksums);
     free(csum);
-}
+}*/
 
 int initArray()
 {
@@ -596,8 +596,9 @@ int smarterFree()
 void testRelationsheepForging()
 {
 	myint_t rows2 = 2000, rows = 1000;
+    myint_t skipped=0;
 
-	rel = forgeRelationsheep(headInt, cr);
+	rel = forgeRelationsheep(headInt, cr, &skipped);
 
 	CU_ASSERT(rel->size==rows2);
 	for (int i=0; i<rows2; i++)
@@ -608,7 +609,8 @@ void testRelationsheepForging()
 	cr -> rel = 1;
 	free(rel->tuples);
 	free(rel);
-	rel = forgeRelationsheep(headInt, cr);
+    skipped=0;
+	rel = forgeRelationsheep(headInt, cr, &skipped);
 
         CU_ASSERT(rel->size==rows);
         for (int i=0; i<rows; i++)
@@ -620,28 +622,13 @@ void testRelationsheepForging()
 	for (int i=0; i<rows; i++) node->data->rowIds[1][i] = node->data->rowIds[1][i] * 2;
 	free(rel->tuples);
         free(rel);
-        rel = forgeRelationsheep(headInt, cr);
+        skipped=0;
+        rel = forgeRelationsheep(headInt, cr, &skipped);
 
         CU_ASSERT(rel->size==rows);
         for (int i=0; i<rows; i++)
         {
                 CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload*2);
-        }
-
-	for (int i=0; i<rows; i++)
-	{
-		if (i%2==1) node->data->rowIds[1][i] = i - 1;
-		else node->data->rowIds[1][i] = i;
-	}
-        free(rel->tuples);
-        free(rel);
-        rel = forgeRelationsheep(headInt, cr);
-
-        CU_ASSERT(rel->size==rows);
-        for (int i=0; i<rows; i++)
-        {
-		if (i%2==1) {CU_ASSERT(rel->tuples[i].key==rel->tuples[i-1].key)}
-		else {CU_ASSERT(rel->tuples[i].key==rel->tuples[i].payload)}
         }
 
 	free(rel->tuples);
@@ -659,13 +646,13 @@ void testFilter()
 	CU_ASSERT(findNode(headInt,cr->rel)->data->numOfCols==1);
 	CU_ASSERT(findNode(headInt,cr->rel)->data->numbOfRows==filt.value);
 	for (int i =0; i<filt.value; i++) CU_ASSERT(findNode(headInt,cr->rel)->data->rowIds[0][i]==i);
-}*/
+}
 
 int main(void) {
 
 	/*CU_pSuite pSuite1 = NULL;
 	CU_pSuite pSuite2 = NULL;
-	CU_pSuite pSuite3 = NULL;
+	CU_pSuite pSuite3 = NULL;*/
 	CU_pSuite pSuite4 = NULL;
 	CU_pSuite pSuite5 = NULL;
 	CU_pSuite pSuite6 = NULL;
@@ -675,7 +662,7 @@ int main(void) {
       return CU_get_error();
 
   // add a suite to the registry
-   pSuite1 = CU_add_suite("Test Intermediate List", initList, freeList);
+   /*pSuite1 = CU_add_suite("Test Intermediate List", initList, freeList);
    if (NULL == pSuite1) {
       CU_cleanup_registry();
       return CU_get_error();
@@ -722,7 +709,7 @@ int main(void) {
    {
       CU_cleanup_registry();
       return CU_get_error();
-   }
+   }*/
 
   	pSuite4 = CU_add_suite("Test Next Row Id", initArray, freeArray);
         if (NULL == pSuite4) {
@@ -769,6 +756,5 @@ int main(void) {
 
    CU_cleanup_registry();
 
-   return returnValue;*/
-    return 0;
+   return returnValue;
 }

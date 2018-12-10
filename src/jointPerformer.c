@@ -37,8 +37,8 @@ void workerF(filter *pred, headInter *hq)
                 for (i=0; i<rows; i++)
                 {
                         if (ApplyFilter(col[i],op,value)>0) {
-				temp[cur++]=i;
-			}
+							temp[cur++]=i;
+						}
                 }
 		//fprintf(stderr, "Inter after filter =  %ld\n", cur);
 		temp = realloc((void *) temp, cur * sizeof(myint_t));
