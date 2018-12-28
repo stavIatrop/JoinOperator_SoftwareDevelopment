@@ -1,6 +1,11 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#define NUMB_OF_THREADS 16
+
+#define perrorThread(s,e) fprintf(stderr, "%s: %s\n", s, strerror(e))
+
+
 typedef struct JobNode jobNode; 
 
 struct Job {
@@ -35,8 +40,11 @@ struct JobScheduler {
 };
 
 extern struct JobScheduler jobScheduler;
+extern int debugInt;
 
 void initialiseScheduler();
+void shutdownAndFreeScheduler();
+void * jobExecutor();
 
 //Queue synched push/pop
 void writeOnQueue(struct Job * job);

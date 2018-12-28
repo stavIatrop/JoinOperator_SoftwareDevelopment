@@ -2,6 +2,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <math.h>
+
 #include <CUnit/Automated.h>
 #include <CUnit/CUnit.h>
 #include "CUnit/Basic.h"
@@ -14,6 +18,7 @@
 #include "jointPerformer.h"
 #include "I_O_structs.h"
 #include "queryManip.h"
+#include "jobScheduler.h"
 
 #define TUPLE_NUMB 1000000
 
@@ -27,6 +32,10 @@ colRel *cr;
 Input * input = NULL;
 relationsheepArray relArray;
 query * newQuery = NULL;
+
+pthread_mutex_t testMutex;
+uint32_t testSchedulerValue = 0;
+uint64_t calculationIntensive = 0;
 
 //Test intermediate list accessing, adding, deleting
 int initList() {
@@ -781,6 +790,58 @@ void testConstructQuery() {
 
 }
 
+//Test Job Scheduler
+int initialiseSchedulerTest() {
+    pthread_mutex_init(&testMutex, 0);
+    testSchedulerValue = 0;
+    initialiseScheduler();
+    return 0;
+}
+
+int freeSchedulerTest() {
+    shutdownAndFreeScheduler();
+    pthread_mutex_destroy(&testMutex);
+    return 0;
+}
+
+typedef struct ExampleArgs {
+    int a;
+    int b;
+} exampleArgs;
+
+void addFunction(void * args) {
+    pthread_mutex_lock(&testMutex);
+
+    //Typecasting arguments
+    exampleArgs * castedArgs = (exampleArgs *) args;
+
+    //Proccess intensive calculations
+    calculationIntensive += (uint64_t) pow(testSchedulerValue, 3.0) * 3 + sqrt(((double) testSchedulerValue));
+    testSchedulerValue += 1 + castedArgs->a + castedArgs->b;
+
+    pthread_mutex_unlock(&testMutex);
+}
+
+//Does not test the speedup of threads cause of testMutex
+void schedulerAdditionTest() {
+    
+    exampleArgs * args = (exampleArgs *) malloc(sizeof(exampleArgs));
+    args->a = 1;
+    args->b = 1;
+    for(int i = 0; i < 100000; i++) {
+        struct Job * job = (struct Job *) malloc(sizeof(struct Job));
+        job->function = &addFunction;
+        job->argument = (void *) args;
+        writeOnQueue(job);
+    }
+    free(args);
+
+    //Not allowing main process send a shutdown signal to the other threads for 2 seconds
+    sleep(2);
+
+    CU_ASSERT(testSchedulerValue == 3 * 100000);
+    CU_ASSERT(calculationIntensive != 0);
+}
 
 int main(void) {
 
@@ -791,6 +852,7 @@ int main(void) {
 	CU_pSuite pSuite5 = NULL;
 	CU_pSuite pSuite6 = NULL;
 	CU_pSuite pSuite7 = NULL;
+	CU_pSuite pSuite8 = NULL;
 
 	//Initialize the CUnit test registry
    if (CUE_SUCCESS != CU_initialize_registry())
@@ -894,6 +956,18 @@ int main(void) {
       return CU_get_error();
    }
 
+    pSuite8 = CU_add_suite("Test Scheduler", initialiseSchedulerTest, freeSchedulerTest);
+    if (NULL == pSuite8) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    /* add the tests to the suite */
+    if ((NULL == CU_add_test(pSuite8, "Test addition job", schedulerAdditionTest)))
+    {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
 
    CU_basic_set_mode(CU_BRM_VERBOSE);
    CU_basic_run_tests();

@@ -6,8 +6,8 @@ SOURCE_INPUT_UT = src/inputTesting.c src/inputManip.c src/resultListManip.c
 SOURCE_REORDERING_UT = src/viceTests.c src/functions.c
 SOURCE_INDEXING_UT = src/indexTesting.c src/indexManip.c src/hashing.c src/sideFunctions.c
 SOURCE_PROJECT_UT = src/projectUnitTest.c src/radixHashJoin.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/I_O_structManip.c src/queryManip.c
-SOURCE_QUERY_EXECUTE_UT = src/queryExecuteTesting.c src/jointPerformer.c src/radixHashJoin.c src/interList.c src/resultListManip.c src/checksum.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/inputManip.c src/hashing.c src/chainFollower.c src/I_O_structManip.c src/queryManip.c
-SOURCE_I_O_RECEIVER = src/I_O_Receiver.c src/I_O_structManip.c src/pipeI_O.c src/queryManip.c src/jointPerformer.c src/radixHashJoin.c src/interList.c src/resultListManip.c src/checksum.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/inputManip.c src/hashing.c src/chainFollower.c
+SOURCE_QUERY_EXECUTE_UT = src/queryExecuteTesting.c src/jointPerformer.c src/radixHashJoin.c src/interList.c src/resultListManip.c src/checksum.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/inputManip.c src/hashing.c src/chainFollower.c src/I_O_structManip.c src/queryManip.c src/jobScheduler.c
+SOURCE_I_O_RECEIVER = src/I_O_Receiver.c src/I_O_structManip.c src/pipeI_O.c src/queryManip.c src/jointPerformer.c src/radixHashJoin.c src/interList.c src/resultListManip.c src/checksum.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/inputManip.c src/hashing.c src/chainFollower.c src/jobScheduler.c
 
 
 NAME_OF_SEARCH_LIST_UT = searchListUnitTest
@@ -60,7 +60,7 @@ indexingUt: $(SOURCE_INDEXING_UT) $(NAME_OF_INDEXING_UT)
 	@echo 
 
 queryExecuteUtTarget: $(SOURCE_QUERY_EXECUTE_UT) $(NAME_OF_QUERY_EXECUTE_UT)
-	$(CC) -g -O0 -Wall -o  $(NAME_OF_QUERY_EXECUTE_UT) $(SOURCE_QUERY_EXECUTE_UT) -lm -lcunit
+	$(CC) -g -O0 -Wall -o  $(NAME_OF_QUERY_EXECUTE_UT) $(SOURCE_QUERY_EXECUTE_UT) -lm -lcunit -pthread
 	@echo Compiled Indexing Unit Test
 	@echo 
 
@@ -71,7 +71,7 @@ mainTarget: $(SOURCE_MAIN) $(NAME_OF_MAIN)
 	@echo
 
 ioreceiverTarget: $(SOURCE_I_O_RECEIVER) $(NAME_OF_I_O_RECEIVER)
-	$(CC) -g -O0 -Wall -o  $(NAME_OF_I_O_RECEIVER) $(SOURCE_I_O_RECEIVER) -lm
+	$(CC) -g -O0 -Wall -o  $(NAME_OF_I_O_RECEIVER) $(SOURCE_I_O_RECEIVER) -lm -pthread
 	@echo Compiled I_O_Receiver
 	@echo
 
@@ -99,14 +99,14 @@ $(NAME_OF_INDEXING_UT): $(OBJECT_INDEXING_UT)
 	$(CC) -g  -O0 $(OBJECT_INDEXING_UT) -o $@ -lm -lcunit
 
 $(NAME_OF_QUERY_EXECUTE_UT): $(OBJECT_QUERY_EXECUTE_UT)
-	$(CC) -g  -O0 $(OBJECT_QUERY_EXECUTE_UT) -o $@ -lm -lcunit
+	$(CC) -g  -O0 $(OBJECT_QUERY_EXECUTE_UT) -o $@ -lm -lcunit -pthread
 
 $(NAME_OF_I_O_RECEIVER): $(OBJECT_I_O_RECEIVER)
-	$(CC) -g -O0 $(OBJECT_I_O_RECEIVER) -o $@ -lm 
+	$(CC) -g -O0 $(OBJECT_I_O_RECEIVER) -o $@ -lm -pthread
 
 
 .c.o:
-	$(CC) -c $< -o $@ -lm -lcunit
+	$(CC) -c $< -o $@ -lm -lcunit -pthread
 
 
 runProjectUt: projectUt
