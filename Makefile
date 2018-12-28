@@ -142,6 +142,9 @@ runValgrindUt:
 runHarness:
 	./harness small/small.init small/small.work small/small.result ./ioreceiver
 
+runHarnessPublic:
+	./harness public/public.init public/public.work public/public.result ./ioreceiver
+
 runValgrindHarness:
 	valgrind $(VALGRIND_FLAGS) --log-file="valgrindOut" ./harness small/small.init small/small.work small/small.result ./ioreceiver
 
