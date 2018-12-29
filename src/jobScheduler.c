@@ -103,7 +103,6 @@ struct Job * readFromQueue()
 
 void enterWrite()
 {
-    fprintf(stderr, "bbbb\n");
     pthread_mutex_lock(&(jobScheduler.queueMutex));
     while((jobScheduler.writing > 0) || (jobScheduler.reading > 0))
     {
