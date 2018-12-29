@@ -89,15 +89,18 @@ headResult * search(indexArray * indArr, reorderedR * s) {
 }
 
 void connectResultList(headResult * finalResult, headResult * joinedList) {
-        pthread_mutex_lock(&finalResultListLock);
-        if(finalResult->totalSize == 0) {
-                finalResult->firstNode = joinedList->firstNode;
-        }
+        if(joinedList->totalSize != 0) {
+                pthread_mutex_lock(&finalResultListLock);
+                if(finalResult->totalSize == 0) {
+                        finalResult->firstNode = joinedList->firstNode;
+                }
 
-        finalResult->totalSize += joinedList->totalSize;
-        finalResult->numbOfNodes += joinedList->numbOfNodes;
-        pthread_mutex_unlock(&finalResultListLock);
-        finalResult->tail = joinedList->tail;
+                finalResult->totalSize += joinedList->totalSize;
+                finalResult->numbOfNodes += joinedList->numbOfNodes;
+                finalResult->tail = joinedList->tail;
+                pthread_mutex_unlock(&finalResultListLock);
+        }
+        
 }
 
 void joinBucket(void * args) {
