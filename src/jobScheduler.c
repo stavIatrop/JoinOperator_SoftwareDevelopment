@@ -64,6 +64,10 @@ void shutdownAndFreeScheduler(){
     }
 
     free(jobScheduler.threads);
+    pthread_cond_destroy(&(jobScheduler.cond_read));
+    pthread_cond_destroy(&(jobScheduler.cond_write));
+    pthread_mutex_destroy(&(jobScheduler.queueMutex));
+
     deleteQueue();
 }
 
@@ -99,6 +103,7 @@ struct Job * readFromQueue()
 
 void enterWrite()
 {
+    fprintf(stderr, "bbbb\n");
     pthread_mutex_lock(&(jobScheduler.queueMutex));
     while((jobScheduler.writing > 0) || (jobScheduler.reading > 0))
     {

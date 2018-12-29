@@ -1,3 +1,6 @@
+#ifndef JOB_SCHEDULER_H
+#define JOB_SCHEDULER_H
+
 #include <pthread.h>
 #include <unistd.h>
 
@@ -63,3 +66,5 @@ void enterWrite();
 void exitWrite();
 void enterRead();
 void exitRead();
+
+#endif

@@ -11,6 +11,7 @@
 //This way we achieve an O(1) push.
 
 headResult * initialiseResultHead();
+headResult * initialiseResultHeadNoBuff();
 resultNode * initialiseResultNode();
 resultNode * initialiseResultNodeVer2();
 
