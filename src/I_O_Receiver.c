@@ -66,13 +66,15 @@ int main(void) {
     relationsheepArray relArray =  InitializeRelSheepArray(input->numNodes);
     FillRelArray(&relArray, input);
     FreeInput(input);
+
+    fprintf(stderr, "Ready!!\n");
     
-    fprintf(stdoutFile, "Writing Ready...\n");
-    fflush(stdoutFile);
-    write(STDOUT_FILENO, "Ready\n\0", strlen("Ready\n\0")); //Send signal to harness in order to start sending queries 
+    // fprintf(stdoutFile, "Writing Ready...\n");
+    // fflush(stdoutFile);
+    // write(STDOUT_FILENO, "Ready\n\0", strlen("Ready\n\0")); //Send signal to harness in order to start sending queries 
     
-    fprintf(stdoutFile, "Ready\n");
-    fflush(stdoutFile);
+    // fprintf(stdoutFile, "Ready\n");
+    // fflush(stdoutFile);
 
     
     while(1) {
@@ -148,6 +150,7 @@ int main(void) {
                     strcat(queryStr, "\0");
 
                     
+                    
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
                     
 
@@ -173,7 +176,7 @@ int main(void) {
 
                     //Write checksums
                     writePipe(cs);
-
+                    
                     free(cs->checksums);
                     free(cs);
 
