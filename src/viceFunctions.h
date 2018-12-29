@@ -14,7 +14,7 @@ void rSwap(tuple *,myint_t *, myint_t, myint_t); //Swaps two elements in a tuple
 myint_t DoTheHash(relation *, myint_t, myint_t *, myint_t *, myint_t *, char trivial); //Sets the values of hash_values and hist for a
 											    //given relation and number of buckets.
 
-myint_t *Hash1(relation *,myint_t *, myint_t *); //calculates the best number of buckets for a given relation and available cache size,
+myint_t *Hash1(relation *,myint_t, myint_t *); //calculates the best number of buckets for a given relation and available cache size,
 						    //performs the hashing and sets all the appropriate structs.
 
 #endif

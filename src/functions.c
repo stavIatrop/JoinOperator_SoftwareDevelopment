@@ -4,6 +4,7 @@
 #include <time.h>
 #include "basicStructs.h"
 #include "viceFunctions.h"
+#include "jobScheduler.h"
 
 myint_t Hash1_2(myint_t key, myint_t len) {
    return key % len;
@@ -55,9 +56,8 @@ void rSwap(tuple * t,myint_t *hash_values, myint_t i, myint_t j)
 
 myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_values, myint_t *max, char trivial)
 {	//hash1 is the number of buckets in the hashing, hist is the histogram and hash_values the hash value for each key
-	*max = 0;
-	myint_t maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple));
-	myint_t i, size = r->size, value, bad=0;
+	//myint_t maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple));
+	myint_t i, size = r->size, value;
 	for (i = 0; i < hash1; i++) hist[i] = 0;
 
         for (i = 0; i < size; i++)
@@ -66,8 +66,9 @@ myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_value
                 hash_values[i] = value;
                 hist[value] = hist[value] + 1;
         }
+    return 0;
 
-	if (trivial!=0) return 0; //below here is only for calculating the best hash1. If we just want to do the hash, trivial!=0.
+	/*if (trivial!=0) return 0; //below here is only for calculating the best hash1. If we just want to do the hash, trivial!=0.
 
         for (i=0; i<hash1; i++)
         {
@@ -78,23 +79,30 @@ myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_value
 			*max += value;
 		}
         }
-	return bad;
+	return bad;*/
 }
 
 
-myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
+myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
 {
-	myint_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
-	hist = malloc(*hash1 * sizeof(myint_t));
+	myint_t *hist = malloc(hash1 * sizeof(myint_t));
 	if (hist ==NULL)
-        {
-                perror("Wrong arguments");
-                exit(1);
-        }
+    {
+            perror("Simon says: malloc failed");
+            exit(1);
+    }
 
-	double identicality=IdenticalityTest(r);
+	myint_t i, size = r->size, value;
+	for (i = 0; i < hash1; i++) hist[i] = 0;
 
-	myint_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
+    for (i = 0; i < size; i++)
+    {
+            value = Hash1_2(r->tuples[i].key,hash1);
+            hash_values[i] = value;
+            hist[value] = hist[value] + 1;
+    }
+	return hist;
+	/*double identicality=IdenticalityTest(r);
 	beginning = *hash1;
 	prevBad = bad;
 
@@ -129,5 +137,5 @@ myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
                 bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
         }
 
-	return hist;
+	return hist;*/
 }
