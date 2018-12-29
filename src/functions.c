@@ -60,12 +60,12 @@ myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_value
 	myint_t i, size = r->size, value;
 	for (i = 0; i < hash1; i++) hist[i] = 0;
 
-        for (i = 0; i < size; i++)
-        {
-                value = Hash1_2(r->tuples[i].key,hash1);
-                hash_values[i] = value;
-                hist[value] = hist[value] + 1;
-        }
+    for (i = 0; i < size; i++)
+    {
+            value = Hash1_2(r->tuples[i].key,hash1);
+            hash_values[i] = value;
+            hist[value] = hist[value] + 1;
+    }
     return 0;
 
 	/*if (trivial!=0) return 0; //below here is only for calculating the best hash1. If we just want to do the hash, trivial!=0.
@@ -82,25 +82,86 @@ myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_value
 	return bad;*/
 }
 
-
-myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
+void histogramJob(void *limits)
 {
-	myint_t *hist = malloc(hash1 * sizeof(myint_t));
+	myint_t hash1 = ((content *) limits)->hash1;
+	myint_t *hist = malloc(hash1 * sizeof(myint_t)), *hash_values = malloc((((content *) limits)->to - ((content *) limits)->from) * sizeof(myint_t));
 	if (hist ==NULL)
     {
             perror("Simon says: malloc failed");
             exit(1);
     }
-
-	myint_t i, size = r->size, value;
+    tuple *t = ((content *) limits)->t;
+	myint_t i, to = ((content *) limits)->to, value, from = ((content *) limits)->from;
 	for (i = 0; i < hash1; i++) hist[i] = 0;
 
-    for (i = 0; i < size; i++)
+    for (i = from; i < to; i++)
     {
-            value = Hash1_2(r->tuples[i].key,hash1);
-            hash_values[i] = value;
+            value = Hash1_2(t[i].key,hash1);
+            hash_values[i - from] = value;
             hist[value] = hist[value] + 1;
     }
+	((content *) limits)->hist = hist;
+	((content *) limits)->hash_values = hash_values;
+	return;
+}
+
+
+myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
+{
+	initialiseScheduler();
+	content **contents = malloc(NUMB_OF_THREADS * sizeof(content));
+	for (myint_t i=0; i<NUMB_OF_THREADS; i++)
+	{
+		contents[i]=malloc(sizeof(content));
+	}
+	for (myint_t i=0; i<NUMB_OF_THREADS; i++)
+	{
+		contents[i]->from = i*(r->size/NUMB_OF_THREADS);
+		contents[i]->to = (i!=NUMB_OF_THREADS-1 ? (i+1)*(r->size/NUMB_OF_THREADS) : r->size);
+		contents[i]->t = r->tuples;
+		contents[i]->hash1 = hash1;
+		//histogramJob((void *) contents[i]);
+
+		struct Job *job = malloc(sizeof(struct Job));
+		job->function = &histogramJob;
+		job->argument = (void *) contents[i];
+		writeOnQueue(job);
+	}
+
+	Barrier();
+
+	myint_t *hist = malloc(hash1*sizeof(myint_t));
+	myint_t cur = 0, i;
+	
+	for (i=0; i<hash1; i++) hist[i] = contents[0]->hist[i];
+
+	for (i = contents[0]->from; i < contents[0]->to; i++)
+	{
+        hash_values[cur++] = contents[0]->hash_values[i-contents[0]->from];
+	}
+
+	free(contents[0]->hash_values);
+	free(contents[0]->hist);
+	free(contents[0]);
+
+	for (myint_t j=1; j<NUMB_OF_THREADS; j++)
+	{
+		for (i=0; i<hash1; i++)
+		{
+			hist[i]+= contents[j]->hist[i];
+		}
+		for (i = contents[j]->from; i < contents[j]->to; i++)
+    	{
+            hash_values[cur++] = contents[j]->hash_values[i-contents[j]->from];
+    	}
+		free(contents[j]->hash_values);
+		free(contents[j]->hist);
+		free(contents[j]);
+	}
+	free(contents);
+
+	shutdownAndFreeScheduler();
 	return hist;
 	/*double identicality=IdenticalityTest(r);
 	beginning = *hash1;

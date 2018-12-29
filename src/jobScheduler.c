@@ -16,10 +16,14 @@ void initialiseScheduler() {
     
     //Initialise synch mechanics
     pthread_mutex_init(&(jobScheduler.queueMutex), 0);
+    pthread_mutex_init(&(jobScheduler.barrierMutex), 0);
+    pthread_mutex_init(&(jobScheduler.barrierMutex2), 0);
     pthread_cond_init(&(jobScheduler.cond_read), 0);
     pthread_cond_init(&(jobScheduler.cond_write), 0);
+    pthread_cond_init(&(jobScheduler.cond_barrier), 0);
     jobScheduler.writing = 0;
     jobScheduler.reading = 0;
+    jobScheduler.working = 0;
     jobScheduler.shutdown = 0;
 
     //Thread allocation
@@ -67,11 +71,37 @@ void shutdownAndFreeScheduler(){
     deleteQueue();
 }
 
+void Barrier() {
+    pthread_mutex_lock(&(jobScheduler.barrierMutex2));
+    while (jobScheduler.working!=0 || jobScheduler.jobQueue->size!=0)
+    {
+        fprintf(stderr,"SLEEP\n");
+        fflush(stderr);
+        pthread_cond_wait(&(jobScheduler.cond_barrier),&(jobScheduler.barrierMutex2));
+    }
+    fprintf(stderr,"I AM AWAKE\n");
+        fflush(stderr);
+    pthread_mutex_unlock(&(jobScheduler.barrierMutex2));
+}
+
 void * jobExecutor() {
     while(jobScheduler.shutdown == 0) {
         struct Job * job = readFromQueue();
         // fprintf(stderr, "aaaa\n");
+        pthread_mutex_lock(&(jobScheduler.barrierMutex));
+        jobScheduler.working++;
+        pthread_mutex_unlock(&(jobScheduler.barrierMutex));
         (*(job->function))(job->argument);
+        pthread_mutex_lock(&(jobScheduler.barrierMutex));
+        jobScheduler.working--;
+        pthread_mutex_unlock(&(jobScheduler.barrierMutex));
+        if (jobScheduler.working==0 && jobScheduler.jobQueue->size==0)
+        {
+            fprintf(stderr,"AWAKEN\n");
+            fflush(stderr);
+            pthread_cond_signal(&(jobScheduler.cond_barrier));
+        }
+
         free(job);
     }
     pthread_exit(0);
@@ -136,7 +166,7 @@ void enterRead()
             pthread_exit(0);
         }
         if(jobScheduler.jobQueue->size == 0)
-                pthread_cond_signal(&(jobScheduler.cond_write));
+            pthread_cond_signal(&(jobScheduler.cond_write));
         pthread_cond_wait(&(jobScheduler.cond_read), &(jobScheduler.queueMutex));
     }
 

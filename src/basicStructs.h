@@ -19,6 +19,7 @@ typedef struct Tuple {
 typedef struct Relation {
         tuple * tuples;
         myint_t size;
+        myint_t dvalues;
 } relation;
 
 //<-- ReorderedR structs

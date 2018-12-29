@@ -2,6 +2,15 @@
 #define VICE
 #include "basicStructs.h"
 
+typedef struct Content {
+	myint_t to;
+	myint_t from;
+	myint_t hash1;
+	myint_t *hist;
+	myint_t *hash_values;
+	tuple *t;
+} content;
+
 myint_t Hash1_2(myint_t, myint_t); 	//The hash function used. A simple %, only used with powers of 2.
 
 myint_t FindNextPower(myint_t); 	//Given an myint_t, returns the next power of 2.
