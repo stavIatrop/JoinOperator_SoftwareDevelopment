@@ -6,8 +6,8 @@ SOURCE_INPUT_UT = src/inputTesting.c src/inputManip.c src/resultListManip.c
 SOURCE_REORDERING_UT = src/viceTests.c src/functions.c
 SOURCE_INDEXING_UT = src/indexTesting.c src/indexManip.c src/hashing.c src/sideFunctions.c
 SOURCE_PROJECT_UT = src/projectUnitTest.c src/radixHashJoin.c src/inputManip.c src/resultListManip.c src/hashing.c src/chainFollower.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/I_O_structManip.c src/queryManip.c
-SOURCE_QUERY_EXECUTE_UT = src/queryExecuteTesting.c src/jointPerformer.c src/radixHashJoin.c src/interList.c src/resultListManip.c src/checksum.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/inputManip.c src/hashing.c src/chainFollower.c src/I_O_structManip.c src/queryManip.c src/jobScheduler.c src/getStats.c
-SOURCE_I_O_RECEIVER = src/I_O_Receiver.c src/I_O_structManip.c src/pipeI_O.c src/queryManip.c src/jointPerformer.c src/radixHashJoin.c src/interList.c src/resultListManip.c src/checksum.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/inputManip.c src/hashing.c src/chainFollower.c src/jobScheduler.c src/getStats.c
+SOURCE_QUERY_EXECUTE_UT = src/queryExecuteTesting.c src/jointPerformer.c src/radixHashJoin.c src/interList.c src/resultListManip.c src/checksum.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/inputManip.c src/hashing.c src/chainFollower.c src/I_O_structManip.c src/queryManip.c src/jobScheduler.c src/getStats.c src/bitVector.c
+SOURCE_I_O_RECEIVER = src/I_O_Receiver.c src/I_O_structManip.c src/pipeI_O.c src/queryManip.c src/jointPerformer.c src/radixHashJoin.c src/interList.c src/resultListManip.c src/checksum.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/inputManip.c src/hashing.c src/chainFollower.c src/jobScheduler.c src/getStats.c src/bitVector.c
 
 
 NAME_OF_SEARCH_LIST_UT = searchListUnitTest

@@ -3,7 +3,9 @@
 
 #define N 50000000
 
-void FillStatsArray(myint_t * col, stats * statsStruct, myint_t rows );
+#include "queryStructs.h"
 
+void FillStatsArray(myint_t * , stats * , myint_t  );
+void PredicateSequence(query * , relationsheepArray );
 
 #endif

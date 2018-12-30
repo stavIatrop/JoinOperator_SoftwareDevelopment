@@ -153,6 +153,8 @@ int main(void) {
                     
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
                     
+                    //PredicateSequence(newQuery);                //decide best sequence of executing join predicates
+
 
 
                     headInter * headInt = initialiseHead();
@@ -182,7 +184,7 @@ int main(void) {
 
                     
 
-                    FreeQuery(newQuery);
+                    FreeQuery(newQuery, relArray);
                     
                     free(queryStr);
                     

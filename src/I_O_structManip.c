@@ -102,7 +102,7 @@ void FillRelArray(relationsheepArray * relArray, Input * input) {
             perror("Failed to open file2\n");
             return;
         }
-		fprintf(stderr, "Rel%ld\n", i);
+		
 		if ( FillRel(&(relArray->rels[i]), inputFile ) == -1) {
 			perror("Failed to read binary metadata");
 			return;
@@ -125,6 +125,8 @@ myint_t FillRel(relationsheep * rel, FILE * inputFile) {
         return -1;
     }
     rel->statsArray = (stats *) malloc(rel->cols * sizeof(stats));
+	rel->queryStats = NULL;
+	
     rel->pointToCols = (myint_t **) malloc(rel->cols * sizeof(myint_t *));
     for(myint_t i = 0; i < rel->cols; i++) {
 
@@ -135,7 +137,6 @@ myint_t FillRel(relationsheep * rel, FILE * inputFile) {
     	}
 
 		FillStatsArray( rel->pointToCols[i], &(rel->statsArray[i]), rel->rows );
-		fprintf(stderr,"Col%ld { Max: %ld Min: %ld NumElem: %ld DistinctVals: %ld }\n", i, rel->statsArray[i].maxU, rel->statsArray[i].minI, rel->statsArray[i].numElements, rel->statsArray[i].distinctVals);
     }
     return 1;
 
@@ -172,6 +173,7 @@ void FreeRelArray(relationsheepArray relArray) {
 		for(myint_t j = 0; j < relArray.rels[i].cols; j++) {
 
 			free(relArray.rels[i].pointToCols[j]);
+			free(relArray.rels[i].statsArray[j].distinctArray);
 		}
 		free(relArray.rels[i].pointToCols);
 		free(relArray.rels[i].statsArray);
