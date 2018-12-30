@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define NUMB_OF_THREADS 4
+#define NUMB_OF_THREADS 7
 
 #define perrorThread(s,e) fprintf(stderr, "%s: %s\n", s, strerror(e))
 
@@ -31,6 +31,7 @@ struct JobScheduler {
     pthread_t * threads;
     pthread_mutex_t queueMutex;
     pthread_mutex_t barrierMutex;
+    //pthread_mutex_t jobMutex;
 
     //We will only allow one reader or one writer (since we are using a queue)
     pthread_cond_t cond_write;

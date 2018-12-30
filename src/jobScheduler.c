@@ -16,7 +16,7 @@ void initialiseScheduler() {
     
     //Initialise synch mechanics
     pthread_mutex_init(&(jobScheduler.queueMutex), 0);
-    pthread_mutex_init(&(jobScheduler.barrierMutex), 0);
+    //pthread_mutex_init(&(jobScheduler.barrierMutex), 0);
     pthread_cond_init(&(jobScheduler.cond_read), 0);
     pthread_cond_init(&(jobScheduler.cond_write), 0);
     pthread_cond_init(&(jobScheduler.cond_barrier), 0);
@@ -85,13 +85,13 @@ void * jobExecutor() {
         struct Job * job = readFromQueue();
         // fprintf(stderr, "aaaa\n");
         (*(job->function))(job->argument);
-        pthread_mutex_lock(&(jobScheduler.queueMutex));
+        pthread_mutex_lock(&(jobScheduler.barrierMutex));
         jobScheduler.working--;
         if (jobScheduler.working==0 && jobScheduler.jobQueue->size==0)
         {
             pthread_cond_broadcast(&(jobScheduler.cond_barrier));
         }
-        pthread_mutex_unlock(&(jobScheduler.queueMutex));
+        pthread_mutex_unlock(&(jobScheduler.barrierMutex));
 
         free(job);
     }
