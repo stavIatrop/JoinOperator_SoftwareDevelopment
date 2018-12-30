@@ -315,7 +315,7 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 			relArray.rels[ newQuery->rels[i] ].queryStats[c].maxU = relArray.rels[ newQuery->rels[i] ].statsArray[c].maxU;
 			relArray.rels[ newQuery->rels[i] ].queryStats[c].numElements = relArray.rels[ newQuery->rels[i] ].statsArray[c].numElements;
 			relArray.rels[ newQuery->rels[i] ].queryStats[c].distinctVals = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctVals;
-			relArray.rels[ newQuery->rels[i] ].queryStats[c].distincArray = relArray.rels[ newQuery->rels[i] ].statsArray[c].distincArray;
+			relArray.rels[ newQuery->rels[i] ].queryStats[c].distinctArray = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctArray;
 
 		}
 

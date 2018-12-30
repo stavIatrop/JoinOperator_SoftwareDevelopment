@@ -110,7 +110,7 @@ void PredicateSequence(query * newQuery, relationsheepArray relArray ) {
                     if (c != numCol) {
 
                         relArray.rels[ indexRel ].queryStats[c].numElements = relArray.rels[ indexRel ].queryStats[numCol].numElements;
-                        relArray.rels[ indexRel ].queryStats[c].distinctVals = relArray.rels[ indexRel ].queryStats[c].distinctVals * (1 - )
+                       // relArray.rels[ indexRel ].queryStats[c].distinctVals = relArray.rels[ indexRel ].queryStats[c].distinctVals * (1 - )
                     }
                 }
 
