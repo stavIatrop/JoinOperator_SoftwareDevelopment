@@ -72,12 +72,14 @@ void shutdownAndFreeScheduler(){
 }
 
 void Barrier() {
-    pthread_mutex_lock(&(jobScheduler.barrierMutex));
+    //fprintf(stderr, "Waiting\n");
+    pthread_mutex_lock(&(jobScheduler.queueMutex));
     while (jobScheduler.working>0 || jobScheduler.jobQueue->size>0)
     {
-        pthread_cond_wait(&(jobScheduler.cond_barrier),&(jobScheduler.barrierMutex));
+        pthread_cond_wait(&(jobScheduler.cond_barrier),&(jobScheduler.queueMutex));
     }
-    pthread_mutex_unlock(&(jobScheduler.barrierMutex));
+    //fprintf(stderr, "Woke\n");
+    pthread_mutex_unlock(&(jobScheduler.queueMutex));
 }
 
 void * jobExecutor() {
@@ -85,13 +87,16 @@ void * jobExecutor() {
         struct Job * job = readFromQueue();
         // fprintf(stderr, "aaaa\n");
         (*(job->function))(job->argument);
-        pthread_mutex_lock(&(jobScheduler.barrierMutex));
+        // fprintf(stderr, "1JOB_START\n");
+        pthread_mutex_lock(&(jobScheduler.queueMutex));
+        // fprintf(stderr, "2JOB_START\n");
         jobScheduler.working--;
         if (jobScheduler.working==0 && jobScheduler.jobQueue->size==0)
         {
             pthread_cond_broadcast(&(jobScheduler.cond_barrier));
         }
-        pthread_mutex_unlock(&(jobScheduler.barrierMutex));
+        pthread_mutex_unlock(&(jobScheduler.queueMutex));
+        // fprintf(stderr, "2JOB\n");
 
         free(job);
     }
@@ -220,9 +225,9 @@ struct Job * popFromQueue() {
     }
 
     jobScheduler.jobQueue->size -= 1;
-    pthread_mutex_lock(&(jobScheduler.barrierMutex));
+    //pthread_mutex_lock(&(jobScheduler.barrierMutex));
     jobScheduler.working++;
-    pthread_mutex_unlock(&(jobScheduler.barrierMutex));
+    //pthread_mutex_unlock(&(jobScheduler.barrierMutex));
 
     struct Job * retJob = retNode->job;
 
