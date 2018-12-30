@@ -10,7 +10,6 @@
 #include "jobScheduler.h"
 #include "pthread.h"
 
-pthread_mutex_t finalResultListLock;
 int connectedLists;
 pthread_cond_t cond_finished_search;
 pthread_mutex_t finished_search_mutex;
@@ -90,15 +89,15 @@ headResult * search(indexArray * indArr, reorderedR * s) {
 
 void connectResultList(headResult * finalResult, headResult * joinedList) {
         if(joinedList->totalSize != 0) {
-                pthread_mutex_lock(&finalResultListLock);
                 if(finalResult->totalSize == 0) {
                         finalResult->firstNode = joinedList->firstNode;
                 }
-
+                else {
+                        finalResult->tail->nextNode = joinedList->firstNode;
+                }
                 finalResult->totalSize += joinedList->totalSize;
                 finalResult->numbOfNodes += joinedList->numbOfNodes;
                 finalResult->tail = joinedList->tail;
-                pthread_mutex_unlock(&finalResultListLock);
         }
         
 }
@@ -111,15 +110,16 @@ void joinBucket(void * args) {
 
         cleanListHead(resultList);
 
-        connectResultList(funcArgs->finalResult, resultList);
+        funcArgs->resultLists[funcArgs->whichResult] = resultList;
 
-        free(resultList);
+        //connectResultList(funcArgs->finalResult, resultList);
+
+        //free(resultList);
         
 
         pthread_mutex_lock(&finished_search_mutex);
         connectedLists += 1;
         if(connectedLists == funcArgs->sBuckets) {
-                fprintf(stderr, "se xypnao?");
                 pthread_cond_signal(&cond_finished_search);
         }
         pthread_mutex_unlock(&finished_search_mutex);
@@ -127,7 +127,7 @@ void joinBucket(void * args) {
 }
 
 headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
-        pthread_mutex_init(&finalResultListLock, NULL);
+        // pthread_mutex_init(&finalResultListLock, NULL);
         pthread_mutex_init(&finished_search_mutex, 0);
         pthread_cond_init(&cond_finished_search, 0);
         connectedLists = 0;
@@ -135,6 +135,8 @@ headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
         tuple * startTup = NULL;
         myint_t key1;
         headResult * finalResultList = initialiseResultHeadNoBuff();
+        headResult ** jobLists = (headResult **) malloc(s->pSumArr.psumSize * sizeof(headResult *));
+        
         for(myint_t whichKey = 0; whichKey < s->pSumArr.psumSize; whichKey++) {
                 //Variable size is how many values belong in the same h1 key
                 if(whichKey < s->pSumArr.psumSize - 1) {
@@ -149,7 +151,9 @@ headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
                 
                 //Initialise arguments of job
                 searchArgument * sArgs = (searchArgument *) malloc(sizeof(searchArgument));
-                sArgs->finalResult = finalResultList;
+                //sArgs->finalResult = finalResultList;
+                sArgs->resultLists = jobLists;
+                sArgs->whichResult = whichKey;
                 sArgs->indArr = indArr;
                 sArgs->key1 = key1;
                 sArgs->size = size;
@@ -165,18 +169,31 @@ headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
                 writeOnQueue(job);
         }
 
+        //Barrier for all the jobs to finish
         pthread_mutex_lock(&finished_search_mutex);
-        fprintf(stderr, "SIZE = %ld\n", s->pSumArr.psumSize);
         while(connectedLists != s->pSumArr.psumSize) {
-                //fprintf(stderr, "CCCCCC\n");
                 pthread_cond_wait(&cond_finished_search, &finished_search_mutex);
         }
         pthread_mutex_unlock(&finished_search_mutex);
 
-        fprintf(stderr, "AAAAAAAAAAAAA\n");
+        //Connect the job results lists
+        for(myint_t whichList = 0; whichList < s->pSumArr.psumSize; whichList++) {
+                connectResultList(finalResultList, jobLists[whichList]);
+        }
+
+        //Free the job result lists
+        for(myint_t whichList = 0; whichList < s->pSumArr.psumSize; whichList++) {
+                if(jobLists[whichList]->buffTuple != NULL) {
+                        free(jobLists[whichList]->buffTuple);
+                }
+                free(jobLists[whichList]);
+        }
+        free(jobLists);
+
+        // fprintf(stderr, "AAAAAAAAAAAAA\n");
         //fprintf(stderr, "PUSHES: %ld\n", counter);
         //cleanListHead(resultList);
-        pthread_mutex_destroy(&finalResultListLock);
+        // pthread_mutex_destroy(&finalResultListLock);
         pthread_cond_destroy(&cond_finished_search);
         pthread_mutex_destroy(&finished_search_mutex);
 

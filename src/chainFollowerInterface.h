@@ -8,7 +8,6 @@
 
 #define EMPTY_BUCKET -1
 
-extern pthread_mutex_t finalResultListLock;
 extern int connectedLists;
 extern pthread_cond_t cond_finished_search;
 extern pthread_mutex_t finished_search_mutex;
@@ -22,7 +21,8 @@ typedef struct SearchArgument {
     myint_t key1;
     tuple * startTup;
     myint_t size;
-    headResult * finalResult;
+    headResult ** resultLists;
+    myint_t whichResult;
     myint_t sBuckets;
 } searchArgument;
 

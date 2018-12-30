@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define NUMB_OF_THREADS 16
+#define NUMB_OF_THREADS 32
 
 #define perrorThread(s,e) fprintf(stderr, "%s: %s\n", s, strerror(e))
 
