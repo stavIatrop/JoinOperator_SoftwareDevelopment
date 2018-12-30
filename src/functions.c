@@ -88,8 +88,8 @@ void histogramJob(void *limits)
 	myint_t *hist = malloc(hash1 * sizeof(myint_t)), *hash_values = malloc((((content *) limits)->to - ((content *) limits)->from) * sizeof(myint_t));
 	if (hist ==NULL)
     {
-            perror("Simon says: malloc failed");
-            exit(1);
+    	perror("Simon says: malloc failed");
+        exit(1);
     }
     tuple *t = ((content *) limits)->t;
 	myint_t i, to = ((content *) limits)->to, value, from = ((content *) limits)->from;
@@ -130,7 +130,6 @@ myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
 	}
 
 	Barrier();
-
 	myint_t *hist = malloc(hash1*sizeof(myint_t));
 	myint_t cur = 0, i;
 	
