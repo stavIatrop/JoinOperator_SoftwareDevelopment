@@ -6,6 +6,10 @@
 #include "viceFunctions.h"
 #include "jobScheduler.h"
 
+pthread_mutex_t histMutex;
+pthread_cond_t histCond;
+int histsCompleted = 0;
+
 myint_t Hash1_2(myint_t key, myint_t len) {
    return key % len;
 }
@@ -103,13 +107,24 @@ void histogramJob(void *limits)
     }
 	((content *) limits)->hist = hist;
 	((content *) limits)->hash_values = hash_values;
+
+	pthread_mutex_lock(&histMutex);
+        histsCompleted += 1;
+        if(histsCompleted == NUMB_OF_THREADS) {
+                pthread_cond_signal(&histCond);
+        }
+        pthread_mutex_unlock(&histMutex);
+
 	return;
 }
 
 
 myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
 {
-	initialiseScheduler();
+	//initialiseScheduler();
+	pthread_mutex_init(&histMutex, 0);
+	pthread_cond_init(&histCond, 0);
+	histsCompleted = 0;
 	content **contents = malloc(NUMB_OF_THREADS * sizeof(content));
 	for (myint_t i=0; i<NUMB_OF_THREADS; i++)
 	{
@@ -129,7 +144,13 @@ myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
 		writeOnQueue(job);
 	}
 
-	Barrier();
+	//Barrier for all the jobs to finish
+        pthread_mutex_lock(&histMutex);
+        while(histsCompleted != NUMB_OF_THREADS) {
+                pthread_cond_wait(&histCond, &histMutex);
+        }
+        pthread_mutex_unlock(&histMutex);
+
 	myint_t *hist = malloc(hash1*sizeof(myint_t));
 	myint_t cur = 0, i;
 	
@@ -160,7 +181,10 @@ myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
 	}
 	free(contents);
 
-	shutdownAndFreeScheduler();
+	//shutdownAndFreeScheduler();
+
+	pthread_mutex_destroy(&histMutex);
+	pthread_cond_destroy(&histCond);
 	return hist;
 	/*double identicality=IdenticalityTest(r);
 	beginning = *hash1;
