@@ -16,11 +16,15 @@ void initialiseScheduler() {
     
     //Initialise synch mechanics
     pthread_mutex_init(&(jobScheduler.queueMutex), 0);
+    //pthread_mutex_init(&(jobScheduler.barrierMutex), 0);
     pthread_cond_init(&(jobScheduler.cond_read), 0);
     pthread_cond_init(&(jobScheduler.cond_write), 0);
+    //pthread_cond_init(&(jobScheduler.cond_barrier), 0);
     jobScheduler.writing = 0;
     jobScheduler.reading = 0;
+    jobScheduler.working = 0;
     jobScheduler.shutdown = 0;
+
 
     //Thread allocation
     if ((jobScheduler.threads = malloc(jobScheduler.numbOfThreads * sizeof(pthread_t))) == NULL) 
@@ -71,11 +75,33 @@ void shutdownAndFreeScheduler(){
     deleteQueue();
 }
 
+void Barrier() {
+    //fprintf(stderr, "Waiting\n");
+    pthread_mutex_lock(&(jobScheduler.queueMutex));
+    while (jobScheduler.working>0 || jobScheduler.jobQueue->size>0)
+    {
+        pthread_cond_wait(&(jobScheduler.cond_barrier),&(jobScheduler.queueMutex));
+    }
+    //fprintf(stderr, "Woke\n");
+    pthread_mutex_unlock(&(jobScheduler.queueMutex));
+}
+
 void * jobExecutor() {
     while(jobScheduler.shutdown == 0) {
         struct Job * job = readFromQueue();
         // fprintf(stderr, "aaaa\n");
         (*(job->function))(job->argument);
+        // fprintf(stderr, "1JOB_START\n");
+        // pthread_mutex_lock(&(jobScheduler.queueMutex));
+        // // fprintf(stderr, "2JOB_START\n");
+        // jobScheduler.working--;
+        // if (jobScheduler.working==0 && jobScheduler.jobQueue->size==0)
+        // {
+        //     pthread_cond_broadcast(&(jobScheduler.cond_barrier));
+        // }
+        // pthread_mutex_unlock(&(jobScheduler.queueMutex));
+        // // fprintf(stderr, "2JOB\n");
+
         free(job);
     }
     pthread_exit(0);
@@ -140,7 +166,7 @@ void enterRead()
             pthread_exit(0);
         }
         if(jobScheduler.jobQueue->size == 0)
-                pthread_cond_signal(&(jobScheduler.cond_write));
+            pthread_cond_signal(&(jobScheduler.cond_write));
         pthread_cond_wait(&(jobScheduler.cond_read), &(jobScheduler.queueMutex));
     }
 
@@ -187,9 +213,12 @@ void insertInQueue(struct Job * job) {
 }
 
 struct Job * popFromQueue() {
+
     if(jobScheduler.jobQueue->size == 0) {
+        pthread_mutex_unlock(&(jobScheduler.queueMutex));
         return NULL;
     }
+
     jobNode * retNode = jobScheduler.jobQueue->firstNode;
     if(jobScheduler.jobQueue->size == 1) {
         jobScheduler.jobQueue->firstNode = NULL;
@@ -198,9 +227,14 @@ struct Job * popFromQueue() {
     else {
         jobScheduler.jobQueue->firstNode = retNode->next;
     }
+
     jobScheduler.jobQueue->size -= 1;
+    //pthread_mutex_lock(&(jobScheduler.barrierMutex));
+    //jobScheduler.working++;
+    //pthread_mutex_unlock(&(jobScheduler.barrierMutex));
 
     struct Job * retJob = retNode->job;
+
     free(retNode);
 
     return retJob;

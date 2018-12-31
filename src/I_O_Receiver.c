@@ -76,7 +76,6 @@ int main(void) {
     fflush(stdoutFile);
 
     initialiseScheduler();
-
     while(1) {
 
 
@@ -206,7 +205,6 @@ int main(void) {
     FreeRelArray(relArray);
 	
     shutdownAndFreeScheduler();
-
 	return 0;
 
 }

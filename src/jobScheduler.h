@@ -31,11 +31,15 @@ struct JobScheduler {
     int numbOfThreads;
     pthread_t * threads;
     pthread_mutex_t queueMutex;
+    pthread_mutex_t barrierMutex;
+    //pthread_mutex_t jobMutex;
 
     //We will only allow one reader or one writer (since we are using a queue)
     pthread_cond_t cond_write;
     pthread_cond_t cond_read;
+    pthread_cond_t cond_barrier;
     int writing;
+    int working;
     int reading;
     int shutdown;
 
@@ -47,6 +51,7 @@ extern int debugInt;
 
 void initialiseScheduler();
 void shutdownAndFreeScheduler();
+void Barrier();
 void * jobExecutor();
 
 //Queue synched push/pop
