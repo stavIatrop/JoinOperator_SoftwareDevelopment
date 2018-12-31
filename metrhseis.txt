@@ -1,6 +1,17 @@
 CPU: Intel Core i5 7thGEN 7200U 2.5GHz 4 cores
 RAM: 8gb DDR4
 
+
+Metrhseis pou prepei na ginoun:
+	-No scheduler, no query optimization	DONE
+	-Search threading	DONE
+	-Hist threading
+	-To allo threading tou val
+	-Ta parapano threadings syndyasmena
+	-query optimization
+	-Threading kai query optimization
+	-Oti allo kanoume
+
 No scheduler:
 
 1 Process, small : 1700ms (i5 7th gen)
