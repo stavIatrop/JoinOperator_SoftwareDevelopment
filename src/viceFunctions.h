@@ -1,5 +1,8 @@
 #ifndef VICE
 #define VICE
+
+#include <pthread.h>
+
 #include "basicStructs.h"
 
 typedef struct Content {
