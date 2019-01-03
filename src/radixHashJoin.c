@@ -55,12 +55,14 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 		if ((rRel->size)*(1-sqrt(rIdenticality)) <= (sRel->size)*(1-sqrt(sIdenticality)))
 		{
 			RoR = reorderRelation(rRel, &h1);
+                        //fprintf(stderr, "MMM\n");
 			RoS = reorderRelation(sRel, &h1);
                         *switched = 0;
 		}
 		else
 		{
 			RoR = reorderRelation(sRel, &h1);
+                        //fprintf(stderr, "MMM\n");
         	        RoS = reorderRelation(rRel, &h1);
                         *switched = 1;
 		}
@@ -70,17 +72,20 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 		if ((rRel->size)*(1-sqrt(sIdenticality)) >= (sRel->size)*(1-sqrt(rIdenticality)))
                 {
                         RoR = reorderRelation(rRel, &h1);
+                        //fprintf(stderr, "MMM\n");
                         RoS = reorderRelation(sRel, &h1);
                         *switched = 0;
                 }
                 else
                 {
                         RoR = reorderRelation(sRel, &h1);
+                        //fprintf(stderr, "MMM\n");
                         RoS = reorderRelation(rRel, &h1);
                         *switched = 1;
                 }
 
 	}
+        //fprintf(stderr, "LLL\n");
 
         clock_t end = clock();
         radixTotalTime += (double)(end - begin) / CLOCKS_PER_SEC;
@@ -93,6 +98,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         end = clock();
         radixTotalTime += (double)(end - begin) / CLOCKS_PER_SEC;
         //printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
+        //fprintf(stderr, "NNN\n");
 
         //Searching
         //printf(">>> Starting Searching... ");

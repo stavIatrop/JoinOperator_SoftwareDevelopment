@@ -14,6 +14,18 @@ typedef struct Content {
 	tuple *t;
 } content;
 
+typedef struct Blueprints {
+	myint_t to;
+	myint_t from;
+	myint_t hash1;
+	myint_t size;
+	tuple *newR;
+	myint_t *helpPsum;
+	myint_t *hist;
+	myint_t *hash_values;
+	tuple *tuples;
+} blueprints;
+
 extern pthread_mutex_t histMutex;
 extern pthread_cond_t histCond;
 extern int histsCompleted;
