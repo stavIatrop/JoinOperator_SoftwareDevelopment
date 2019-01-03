@@ -68,6 +68,10 @@ void shutdownAndFreeScheduler(){
     }
 
     free(jobScheduler.threads);
+    pthread_cond_destroy(&(jobScheduler.cond_read));
+    pthread_cond_destroy(&(jobScheduler.cond_write));
+    pthread_mutex_destroy(&(jobScheduler.queueMutex));
+
     deleteQueue();
 }
 

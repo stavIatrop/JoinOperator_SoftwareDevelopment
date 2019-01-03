@@ -834,8 +834,10 @@ void schedulerAdditionTest() {
         job->argument = (void *) args;
         writeOnQueue(job);
     }
-    //Not allowing main process send a shutdown signal to the other threads for 5 seconds
-    sleep(5);
+
+    //Not allowing main process send a shutdown signal to the other threads for 2 seconds
+    sleep(2);
+
     free(args);
 
     CU_ASSERT(testSchedulerValue == 3 * 100000);

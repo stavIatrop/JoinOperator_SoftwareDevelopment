@@ -150,7 +150,7 @@ int main(void) {
 
                     
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
-                    
+                    // printJoins(newQuery);
 
 
                     headInter * headInt = initialiseHead();
