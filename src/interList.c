@@ -337,7 +337,7 @@ myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes
 
                         //Add the rowIds of the second Intermediate
                         for(myint_t whichCol = node1->data->numOfCols; whichCol < node1->data->numOfCols + node2->data->numOfCols; whichCol++) {
-                            retArr[whichCol][counter] = node2->data->rowIds[whichCol - node1->data->numOfCols][p1];
+                            retArr[whichCol][counter] = node2->data->rowIds[whichCol - node1->data->numOfCols][p2];
                         }
 
                         counter += 1;
