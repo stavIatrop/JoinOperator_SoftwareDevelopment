@@ -7,9 +7,8 @@
  * Στάης Βαλέριος, 1115201500148
                  
  
- ## Task
- http://sigmod18contest.db.in.tum.de/task.shtml
- 
+ ## Best Time
+  
 On the small dataset best time achieved: 1788ms
   
  ## Compile and Run
