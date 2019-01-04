@@ -784,7 +784,7 @@ void testConstructQuery() {
 
 }
 
-
+*/
 int main(void) {
 
 	/*CU_pSuite pSuite1 = NULL;

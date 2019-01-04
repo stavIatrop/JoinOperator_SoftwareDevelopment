@@ -110,7 +110,6 @@ void deleteInterNode(headInter * head, nodeInter * node) {
     head->numOfIntermediates -= 1;
 }
 
-//Creates a new Intermediate array containing 2 columns from the radixHashJoin results
 myint_t ** createResultArray(headResult * head, myint_t * size, char switched) {
 
     myint_t numbOfResults = countSizeOfList(head);
@@ -161,8 +160,7 @@ void createInterFromRes(headInter * headInt, headResult * headRes, myint_t rel1,
 
 }
 
-//Keeps the rows that passed the join and adds a new column from the results
-myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t results, char switched) {
+myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t *results, myint_t existingRel, char switched) {
 
     //Memory Allocations
     myint_t cursize = *results;
@@ -264,7 +262,7 @@ void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t added
 
 }
 
-myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t results, char switched) {
+myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t *results, myint_t existingRel1, myint_t existingRel2, char switched) {
 
     //Memory Allocations
     myint_t cursize = *results;
