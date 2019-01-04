@@ -110,10 +110,10 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 
         //printf(">>> Radix Hash Join completed in %f seconds.\n", radixTotalTime);
 
-        free(rRel->tuples);
-        free(sRel->tuples);
-        free(rRel);
-        free(sRel);
+        free(RoR->rel->tuples);
+        free(RoR->rel);
+        free(RoS->rel->tuples);
+        free(RoS->rel);
         free(RoR->pSumArr.psum);
         free(RoR);
         free(RoS->pSumArr.psum);

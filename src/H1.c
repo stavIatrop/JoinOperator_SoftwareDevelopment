@@ -224,6 +224,8 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
     pthread_mutex_unlock(&constructionMutex);
 
     free(blues);
+    free(r->tuples);
+    free(r);
 
     //fprintf(stderr, "KKK\n");
 
