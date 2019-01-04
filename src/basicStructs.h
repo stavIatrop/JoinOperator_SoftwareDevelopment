@@ -19,6 +19,7 @@ typedef struct Tuple {
 typedef struct Relation {
         tuple * tuples;
         myint_t size;
+        myint_t dvalues;
 } relation;
 
 //<-- ReorderedR structs
@@ -91,5 +92,6 @@ indexArray * indexing(reorderedR * ror, myint_t hash1);
 
 //Mixalhs
 headResult * search(indexArray * indArr, reorderedR * s);
+headResult * searchThreadVer(indexArray * indArr, reorderedR * s);
 
 #endif

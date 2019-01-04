@@ -11,6 +11,7 @@
 #include "checksumInterface.h"
 #include "jointPerformer.h"
 #include "interListInterface.h"
+#include "jobScheduler.h"
 
 void printJoins(query * newQuery) {
     fprintf(stderr, "    Printing Joins of Query\n");
@@ -74,7 +75,7 @@ int main(void) {
     fprintf(stdoutFile, "Ready\n");
     fflush(stdoutFile);
 
-    
+    initialiseScheduler();
     while(1) {
 
 
@@ -149,7 +150,7 @@ int main(void) {
 
                     
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
-                    
+                    // printJoins(newQuery);
 
 
                     headInter * headInt = initialiseHead();
@@ -203,6 +204,7 @@ int main(void) {
     }
     FreeRelArray(relArray);
 	
+    shutdownAndFreeScheduler();
 	return 0;
 
 }

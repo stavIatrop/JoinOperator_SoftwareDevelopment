@@ -168,6 +168,7 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t *resu
     for(myint_t i = 0; i < intNode->data->numOfCols + 1; i++) {
         retArr[i] = (myint_t *) malloc(cursize * sizeof(myint_t));
     }
+    // fprintf(stderr, "RESULTS: %ld\n", headRes->numbOfNodes);
 
     myint_t existingRelPlace;
     for(myint_t whichRel = 0; whichRel < intNode->data->numOfCols; whichRel++) {

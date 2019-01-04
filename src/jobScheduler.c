@@ -68,6 +68,10 @@ void shutdownAndFreeScheduler(){
     }
 
     free(jobScheduler.threads);
+    pthread_cond_destroy(&(jobScheduler.cond_read));
+    pthread_cond_destroy(&(jobScheduler.cond_write));
+    pthread_mutex_destroy(&(jobScheduler.queueMutex));
+
     deleteQueue();
 }
 
@@ -209,6 +213,7 @@ void insertInQueue(struct Job * job) {
 }
 
 struct Job * popFromQueue() {
+
     if(jobScheduler.jobQueue->size == 0) {
         pthread_mutex_unlock(&(jobScheduler.queueMutex));
         return NULL;

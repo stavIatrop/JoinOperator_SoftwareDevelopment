@@ -4,6 +4,11 @@
 #include <time.h>
 #include "basicStructs.h"
 #include "viceFunctions.h"
+#include "jobScheduler.h"
+
+pthread_mutex_t histMutex;
+pthread_cond_t histCond;
+int histsCompleted = 0;
 
 myint_t Hash1_2(myint_t key, myint_t len) {
    return key % len;
@@ -55,19 +60,19 @@ void rSwap(tuple * t,myint_t *hash_values, myint_t i, myint_t j)
 
 myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_values, myint_t *max, char trivial)
 {	//hash1 is the number of buckets in the hashing, hist is the histogram and hash_values the hash value for each key
-	*max = 0;
-	myint_t maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple));
-	myint_t i, size = r->size, value, bad=0;
+	//myint_t maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple));
+	myint_t i, size = r->size, value;
 	for (i = 0; i < hash1; i++) hist[i] = 0;
 
-        for (i = 0; i < size; i++)
-        {
-                value = Hash1_2(r->tuples[i].key,hash1);
-                hash_values[i] = value;
-                hist[value] = hist[value] + 1;
-        }
+    for (i = 0; i < size; i++)
+    {
+            value = Hash1_2(r->tuples[i].key,hash1);
+            hash_values[i] = value;
+            hist[value] = hist[value] + 1;
+    }
+    return 0;
 
-	if (trivial!=0) return 0; //below here is only for calculating the best hash1. If we just want to do the hash, trivial!=0.
+	/*if (trivial!=0) return 0; //below here is only for calculating the best hash1. If we just want to do the hash, trivial!=0.
 
         for (i=0; i<hash1; i++)
         {
@@ -78,23 +83,110 @@ myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_value
 			*max += value;
 		}
         }
-	return bad;
+	return bad;*/
+}
+
+void histogramJob(void *limits)
+{
+	myint_t hash1 = ((content *) limits)->hash1;
+	myint_t *hist = malloc(hash1 * sizeof(myint_t)), *hash_values = malloc((((content *) limits)->to - ((content *) limits)->from) * sizeof(myint_t));
+	if (hist ==NULL)
+    {
+    	perror("Simon says: malloc failed");
+        exit(1);
+    }
+    tuple *t = ((content *) limits)->t;
+	myint_t i, to = ((content *) limits)->to, value, from = ((content *) limits)->from;
+	for (i = 0; i < hash1; i++) hist[i] = 0;
+
+    for (i = from; i < to; i++)
+    {
+            value = Hash1_2(t[i].key,hash1);
+            hash_values[i - from] = value;
+            hist[value] = hist[value] + 1;
+    }
+	((content *) limits)->hist = hist;
+	((content *) limits)->hash_values = hash_values;
+
+	pthread_mutex_lock(&histMutex);
+        histsCompleted += 1;
+        if(histsCompleted == NUMB_OF_THREADS) {
+                pthread_cond_signal(&histCond);
+        }
+        pthread_mutex_unlock(&histMutex);
+
+	return;
 }
 
 
-myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
+myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
 {
-	myint_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
-	hist = malloc(*hash1 * sizeof(myint_t));
-	if (hist ==NULL)
-        {
-                perror("Wrong arguments");
-                exit(1);
+	//initialiseScheduler();
+	pthread_mutex_init(&histMutex, 0);
+	pthread_cond_init(&histCond, 0);
+	histsCompleted = 0;
+	content **contents = malloc(NUMB_OF_THREADS * sizeof(content));
+	for (myint_t i=0; i<NUMB_OF_THREADS; i++)
+	{
+		contents[i]=malloc(sizeof(content));
+	}
+	for (myint_t i=0; i<NUMB_OF_THREADS; i++)
+	{
+		contents[i]->from = i*(r->size/NUMB_OF_THREADS);
+		contents[i]->to = (i!=NUMB_OF_THREADS-1 ? (i+1)*(r->size/NUMB_OF_THREADS) : r->size);
+		contents[i]->t = r->tuples;
+		contents[i]->hash1 = hash1;
+		//histogramJob((void *) contents[i]);
+
+		struct Job *job = malloc(sizeof(struct Job));
+		job->function = &histogramJob;
+		job->argument = (void *) contents[i];
+		writeOnQueue(job);
+	}
+
+	//Barrier for all the jobs to finish
+        pthread_mutex_lock(&histMutex);
+        while(histsCompleted != NUMB_OF_THREADS) {
+                pthread_cond_wait(&histCond, &histMutex);
         }
+        pthread_mutex_unlock(&histMutex);
 
-	double identicality=IdenticalityTest(r);
+	myint_t *hist = malloc(hash1*sizeof(myint_t));
+	myint_t cur = 0, i;
+	
+	for (i=0; i<hash1; i++) hist[i] = contents[0]->hist[i];
 
-	myint_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
+	for (i = contents[0]->from; i < contents[0]->to; i++)
+	{
+        hash_values[cur++] = contents[0]->hash_values[i-contents[0]->from];
+	}
+
+	free(contents[0]->hash_values);
+	free(contents[0]->hist);
+	free(contents[0]);
+
+	for (myint_t j=1; j<NUMB_OF_THREADS; j++)
+	{
+		for (i=0; i<hash1; i++)
+		{
+			hist[i]+= contents[j]->hist[i];
+		}
+		for (i = contents[j]->from; i < contents[j]->to; i++)
+    	{
+            hash_values[cur++] = contents[j]->hash_values[i-contents[j]->from];
+    	}
+		free(contents[j]->hash_values);
+		free(contents[j]->hist);
+		free(contents[j]);
+	}
+	free(contents);
+
+	//shutdownAndFreeScheduler();
+
+	pthread_mutex_destroy(&histMutex);
+	pthread_cond_destroy(&histCond);
+	return hist;
+	/*double identicality=IdenticalityTest(r);
 	beginning = *hash1;
 	prevBad = bad;
 
@@ -129,5 +221,5 @@ myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
                 bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
         }
 
-	return hist;
+	return hist;*/
 }

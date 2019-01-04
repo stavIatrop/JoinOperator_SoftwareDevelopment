@@ -16,7 +16,7 @@
 #define HASH1 3
 #define HASH2 5
 #define PSUMSIZE 3
-#define TUPLE_NUMB 10000000
+#define TUPLE_NUMB 10000005
 
 myint_t * chain = NULL;
 myint_t * buckets = NULL;
@@ -202,6 +202,7 @@ int freeList(void) {
 void testNumbOfNodes(void) {
         
         unsigned long int targetNodes = (TUPLE_NUMB * sizeof(tuple)) / MB + 1;
+        printf("EXPECTED = %ld | RESULT = %ld\n", targetNodes, list->numbOfNodes);
         CU_ASSERT(targetNodes == list->numbOfNodes);
 }
 

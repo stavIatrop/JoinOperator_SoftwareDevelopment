@@ -16,6 +16,17 @@ headResult * initialiseResultHead() {
         return newHead;
 }
 
+headResult * initialiseResultHeadNoBuff() {
+        headResult * newHead = (headResult *) malloc(sizeof(headResult));
+        newHead->numbOfNodes = 0;
+        newHead->buffSize = 0;
+        newHead->firstNode = NULL;
+        newHead->tail = NULL;
+        newHead->totalSize = 0;
+        newHead->buffTuple = NULL;
+        return newHead;
+}
+
 resultNode * initialiseResultNode() {
         resultNode * newNode = (resultNode *) malloc(sizeof(resultNode));
         newNode->tuples = (rowTuple *) calloc(MB, sizeof(char));
@@ -104,13 +115,15 @@ void cleanListHead(headResult * head) {
         if(head->buffSize != 0) {
                 if(head->numbOfNodes != 0) {
                         head->tail->nextNode = initialiseResultNodeVer2();
-                        head->tail->nextNode->tuples = head->buffTuple;
-                        head->tail->nextNode->size = head->buffSize;
+                        head->tail = head->tail->nextNode;
+                        head->tail->tuples = head->buffTuple;
+                        head->tail->size = head->buffSize;
                 }
                 else {
                         head->firstNode = initialiseResultNodeVer2();
                         head->firstNode->tuples = head->buffTuple;
                         head->firstNode->size = head->buffSize;
+                        head->tail = head->firstNode;
                 }
                 
                 head->numbOfNodes += 1;

@@ -145,6 +145,7 @@ relation *forgeRelationsheep(headInter *hi, colRel *r, myint_t *skipped)
 		myint_t rows = r->rows;
         	t = malloc(rows*sizeof(tuple));
         	rel->size = rows;
+        	rel->dvalues = rows; //EDW THA TO ALLAKSOUMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
         	for (i=0 ; i<rows ; i++)
         	{
         		t[i].key = col[i];

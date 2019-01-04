@@ -1,0 +1,56 @@
+CPU: Intel Core i5 7thGEN 7200U 2.5GHz 4 cores
+RAM: 8gb DDR4
+
+
+Metrhseis pou prepei na ginoun:
+	-No scheduler, no query optimization	DONE
+	-Search threading	DONE
+	-Hist threading
+	-To allo threading tou val
+	-Ta parapano threadings syndyasmena
+	-query optimization
+	-Threading kai query optimization
+	-Oti allo kanoume
+
+No scheduler:
+
+1 Process, small : 1700ms (i5 7th gen)
+1 Process, public : 156519ms (i5 7th gen)
+
+With scheduler: 
+	-threading result list creation
+		1 thread small: 1744
+		1 thread public: 153190
+		
+		2 thread small: 1480
+		2 thread public: 129716
+
+		3 thread small: 1450
+		3 thread public: 127975
+
+		4 thread small: 1470
+		4 thread public: 122532
+
+		7 thread small: 1447
+		7 thread public: 122198
+
+		8 thread small: 1459
+		8 thread public: 122699
+
+		11 thread small: 1482
+		11 thread public: 126254
+
+		12 thread small: 1460
+		12 thread public: 123801
+
+		16 thread small: 1452
+		16 thread public: 127514
+
+		20 thread small: 1475
+		20 thread public: 124929
+
+		32 thread small: 1471
+		32 thread public: 128015
+
+
+
