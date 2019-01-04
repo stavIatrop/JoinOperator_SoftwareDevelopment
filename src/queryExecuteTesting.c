@@ -845,7 +845,7 @@ void schedulerAdditionTest() {
 
     CU_ASSERT(testSchedulerValue == 3 * 100000);
     CU_ASSERT(calculationIntensive != 0);
-}
+}*/
 
 int main(void) {
 
@@ -960,7 +960,6 @@ int main(void) {
         return CU_get_error();
     }
 
-    /* add the tests to the suite */
     if ((NULL == CU_add_test(pSuite8, "Test addition job", schedulerAdditionTest)))
     {
         CU_cleanup_registry();
