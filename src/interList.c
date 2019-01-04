@@ -168,9 +168,11 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
     for(myint_t i = 0; i < intNode->data->numOfCols + 1; i++) {
         retArr[i] = (myint_t *) malloc(results * sizeof(myint_t));
     }
+    // fprintf(stderr, "RESULTS: %ld\n", headRes->numbOfNodes);
 
     //Copy the rows of the inter that where joined and add them the row of the new relationship
-    resultNode * currentNode = headRes->firstNode;    
+    resultNode * currentNode = headRes->firstNode;
+    //fprintf(stderr, "Results = %ld\n", headRes->tail->tuples[headRes->tail->size - 1].rowR);
     myint_t base = 0;
     if(switched == 0) {
         for(myint_t whichNode = 0; whichNode < headRes->numbOfNodes; whichNode++) {
@@ -207,7 +209,6 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
         }
     }
     
-
     return retArr;
 }
 
