@@ -24,8 +24,7 @@ typedef struct Relationsheep {
         myint_t cols;
         myint_t **pointToCols;
         stats * statsArray;             //permanent struct for query statistics for each column
-        stats * queryStats;             //temporary struct for query statistics for each column for each query
-        
+                
 } relationsheep;
 
 typedef struct RelationsheepArray {
@@ -72,6 +71,7 @@ typedef struct Join {
 
 typedef struct Query {
         myint_t *rels;
+        stats ** queryStats;             //temporary struct for query statistics for each column for each query
         myint_t numOfFilters;
         myint_t numOfJoins;
         myint_t numOfSums;

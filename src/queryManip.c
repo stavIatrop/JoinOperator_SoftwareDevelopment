@@ -305,17 +305,18 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
     free(tempStr);
 	counterSums++;
 
+	newQuery->queryStats = (stats **) malloc(newQuery->numOfRels * sizeof(stats *));
 	for(i = 0; i < newQuery->numOfRels; i++) {
 
-		relArray.rels[ newQuery->rels[i] ].queryStats = (stats *) malloc(relArray.rels[ newQuery->rels[i] ].cols * sizeof(stats));
+		newQuery->queryStats[i] = (stats *) malloc(relArray.rels[ newQuery->rels[i] ].cols * sizeof(stats));
 
 		for(int c = 0; c < relArray.rels[ newQuery->rels[i] ].cols; c++) {
 
-			relArray.rels[ newQuery->rels[i] ].queryStats[c].minI = relArray.rels[ newQuery->rels[i] ].statsArray[c].minI;
-			relArray.rels[ newQuery->rels[i] ].queryStats[c].maxU = relArray.rels[ newQuery->rels[i] ].statsArray[c].maxU;
-			relArray.rels[ newQuery->rels[i] ].queryStats[c].numElements = relArray.rels[ newQuery->rels[i] ].statsArray[c].numElements;
-			relArray.rels[ newQuery->rels[i] ].queryStats[c].distinctVals = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctVals;
-			relArray.rels[ newQuery->rels[i] ].queryStats[c].distinctArray = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctArray;
+			newQuery->queryStats[i][c].minI = relArray.rels[ newQuery->rels[i] ].statsArray[c].minI;
+			newQuery->queryStats[i][c].maxU = relArray.rels[ newQuery->rels[i] ].statsArray[c].maxU;
+			newQuery->queryStats[i][c].numElements = relArray.rels[ newQuery->rels[i] ].statsArray[c].numElements;
+			newQuery->queryStats[i][c].distinctVals = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctVals;
+			newQuery->queryStats[i][c].distinctArray = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctArray;
 
 		}
 
@@ -329,11 +330,10 @@ void FreeQuery(query * newQuery, relationsheepArray relArray) {
 
 	for(myint_t i = 0; i < newQuery->numOfRels; i++) {
 
-		free(relArray.rels[ newQuery->rels[i] ].queryStats);
-		relArray.rels[ newQuery->rels[i] ].queryStats = NULL;
-
+		free(newQuery->queryStats[i]);
 	}
-	
+
+	free(newQuery->queryStats);	
 	free(newQuery->rels);
 	free(newQuery->filters);
 	free(newQuery->joins);

@@ -81,33 +81,38 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
         for(myint_t i = 0; i < newQuery->numOfFilters; i++) {
 
             myint_t  numCol = newQuery->filters[i].participant.numCol;
-            myint_t indexRel = newQuery->rels[newQuery->filters[i].participant.rel];
-            
+            myint_t indexRel = newQuery->filters[i].participant.rel;                        //rel that participates in particular query
+
+            myint_t originalRel = newQuery->rels[newQuery->filters[i].participant.rel];     //original rel stored in relArray
+
+            myint_t cols = relArray.rels[ originalRel ].cols;
+            myint_t fA =  newQuery->queryStats[indexRel][numCol].numElements;  //store fA
+
             if (newQuery->filters[i].op == 1) {         //less operator
                 
                 myint_t k2 = newQuery->filters[i].op - 1;
 
-                if (k2 < relArray.rels[ indexRel ].queryStats[numCol].maxU) {
+                if (k2 < newQuery->queryStats[indexRel][numCol].maxU) {
 
-                    if( k2 < relArray.rels[ indexRel ].queryStats[numCol].minI) {
+                    if( k2 < newQuery->queryStats[indexRel][numCol].minI) {
 
-                        relArray.rels[ indexRel ].queryStats[numCol].minI = 0;
-                        relArray.rels[ indexRel ].queryStats[numCol].maxU = 0;
-                        relArray.rels[ indexRel ].queryStats[numCol].numElements = 0;
-                        relArray.rels[ indexRel ].queryStats[numCol].distinctVals = 0;
+                        newQuery->queryStats[indexRel][numCol].minI = 0;
+                        newQuery->queryStats[indexRel][numCol].maxU = 0;
+                        newQuery->queryStats[indexRel][numCol].numElements = 0;
+                        newQuery->queryStats[indexRel][numCol].distinctVals = 0;
 
-                    } else if (k2 == relArray.rels[ indexRel ].queryStats[numCol].minI) {
+                    } else if (k2 == newQuery->queryStats[indexRel][numCol].minI) {
 
-                        relArray.rels[ indexRel ].queryStats[numCol].maxU = k2;
-                        relArray.rels[ indexRel ].queryStats[numCol].numElements = (myint_t) ((double)(relArray.rels[ indexRel ].queryStats[numCol].numElements) / (double)(relArray.rels[ indexRel ].queryStats[numCol].distinctVals));
-                        relArray.rels[ indexRel ].queryStats[numCol].distinctVals = 1;
+                        newQuery->queryStats[indexRel][numCol].maxU = k2;
+                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) ((double)(newQuery->queryStats[indexRel][numCol].numElements) / (double)(newQuery->queryStats[indexRel][numCol].distinctVals));
+                        newQuery->queryStats[indexRel][numCol].distinctVals = 1;
                     } else {
 
-                        myint_t prevMax = relArray.rels[ indexRel ].queryStats[numCol].maxU;
-                        relArray.rels[ indexRel ].queryStats[numCol].maxU = k2;
-                        myint_t min = relArray.rels[ indexRel ].queryStats[numCol].minI;
-                        relArray.rels[ indexRel ].queryStats[numCol].distinctVals = (myint_t) (((double)(k2-min)/(double)(prevMax-min)) *  relArray.rels[ indexRel ].queryStats[numCol].distinctVals);
-                        relArray.rels[ indexRel ].queryStats[numCol].numElements = (myint_t) (((double)(k2-min)/(double)(prevMax-min)) *  relArray.rels[ indexRel ].queryStats[numCol].numElements);
+                        myint_t prevMax = newQuery->queryStats[indexRel][numCol].maxU;
+                        newQuery->queryStats[indexRel][numCol].maxU = k2;
+                        myint_t min = newQuery->queryStats[indexRel][numCol].minI;
+                        newQuery->queryStats[indexRel][numCol].distinctVals = (myint_t) (((double)(k2-min)/(double)(prevMax-min)) *  newQuery->queryStats[indexRel][numCol].distinctVals);
+                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) (((double)(k2-min)/(double)(prevMax-min)) *  newQuery->queryStats[indexRel][numCol].numElements);
                         
                     }
                 }
@@ -115,29 +120,29 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
             }else if(newQuery->filters[i].op == 2) {    //greater operator
 
                 myint_t k1 = newQuery->filters[i].op + 1;
-                if ( k1 > relArray.rels[ indexRel ].queryStats[numCol].minI ) {
+                if ( k1 > newQuery->queryStats[indexRel][numCol].minI ) {
 
-                    if (k1 > relArray.rels[ indexRel ].queryStats[numCol].maxU) {
+                    if (k1 > newQuery->queryStats[indexRel][numCol].maxU) {
                         
-                        relArray.rels[ indexRel ].queryStats[numCol].minI = 0;
-                        relArray.rels[ indexRel ].queryStats[numCol].maxU = 0;
-                        relArray.rels[ indexRel ].queryStats[numCol].numElements = 0;
-                        relArray.rels[ indexRel ].queryStats[numCol].distinctVals = 0;
+                        newQuery->queryStats[indexRel][numCol].minI = 0;
+                        newQuery->queryStats[indexRel][numCol].maxU = 0;
+                        newQuery->queryStats[indexRel][numCol].numElements = 0;
+                        newQuery->queryStats[indexRel][numCol].distinctVals = 0;
 
-                    }else if( k1 == relArray.rels[ indexRel ].queryStats[numCol].maxU){
+                    }else if( k1 == newQuery->queryStats[indexRel][numCol].maxU){
                         
-                        relArray.rels[ indexRel ].queryStats[numCol].minI = k1;
-                        relArray.rels[ indexRel ].queryStats[numCol].numElements = (myint_t) ((double)(relArray.rels[ indexRel ].queryStats[numCol].numElements) / (double)(relArray.rels[ indexRel ].queryStats[numCol].distinctVals));
-                        relArray.rels[ indexRel ].queryStats[numCol].distinctVals = 1;
+                        newQuery->queryStats[indexRel][numCol].minI = k1;
+                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) ((double)(newQuery->queryStats[indexRel][numCol].numElements) / (double)(newQuery->queryStats[indexRel][numCol].distinctVals));
+                        newQuery->queryStats[indexRel][numCol].distinctVals = 1;
                         
 
                     } else {
 
-                        myint_t prevMin = relArray.rels[ indexRel ].queryStats[numCol].minI;
-                        relArray.rels[ indexRel ].queryStats[numCol].minI = k1;
-                        myint_t max = relArray.rels[ indexRel ].queryStats[numCol].maxU;
-                        relArray.rels[ indexRel ].queryStats[numCol].distinctVals = (myint_t) (((double)(max-k1)/(double)(max-prevMin)) *  relArray.rels[ indexRel ].queryStats[numCol].distinctVals);
-                        relArray.rels[ indexRel ].queryStats[numCol].numElements = (myint_t) (((double)(max-k1)/(double)(max-prevMin)) *  relArray.rels[ indexRel ].queryStats[numCol].numElements);
+                        myint_t prevMin = newQuery->queryStats[indexRel][numCol].minI;
+                        newQuery->queryStats[indexRel][numCol].minI = k1;
+                        myint_t max = newQuery->queryStats[indexRel][numCol].maxU;
+                        newQuery->queryStats[indexRel][numCol].distinctVals = (myint_t) (((double)(max-k1)/(double)(max-prevMin)) *  newQuery->queryStats[indexRel][numCol].distinctVals);
+                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) (((double)(max-k1)/(double)(max-prevMin)) *  newQuery->queryStats[indexRel][numCol].numElements);
                         
                     }                   
 
@@ -147,38 +152,94 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
             }else if(newQuery->filters[i].op == 3) {       //equal operator
 
                 
-                relArray.rels[ indexRel ].queryStats[numCol].minI = newQuery->filters[i].value;
-                relArray.rels[ indexRel ].queryStats[numCol].maxU = newQuery->filters[i].value;
-
-                myint_t fA =  relArray.rels[ indexRel ].queryStats[numCol].numElements;  //store fA
+                newQuery->queryStats[indexRel][numCol].minI = newQuery->filters[i].value;
+                newQuery->queryStats[indexRel][numCol].maxU = newQuery->filters[i].value;
 
                 //check if value exists in distinct values bit vector
-                if( TestBit(relArray.rels[ indexRel ].queryStats[numCol].distinctArray, relArray.rels[ indexRel ].queryStats[numCol].maxU - newQuery->filters[i].value ) == 1) {
+                if( TestBit(newQuery->queryStats[indexRel][numCol].distinctArray, newQuery->queryStats[indexRel][numCol].maxU - newQuery->filters[i].value ) == 1) {
 
-                    relArray.rels[ indexRel ].queryStats[numCol].distinctVals = 1;
-                    relArray.rels[ indexRel ].queryStats[numCol].numElements = relArray.rels[ indexRel ].queryStats[numCol].numElements / relArray.rels[ indexRel ].queryStats[numCol].distinctVals;
+                    newQuery->queryStats[indexRel][numCol].distinctVals = 1;
+                    newQuery->queryStats[indexRel][numCol].numElements = newQuery->queryStats[indexRel][numCol].numElements / newQuery->queryStats[indexRel][numCol].distinctVals;
                 } else {
 
-                    relArray.rels[ indexRel ].queryStats[numCol].distinctVals = 0;
-                    relArray.rels[ indexRel ].queryStats[numCol].numElements = 0;
-                }
-
-                myint_t cols = relArray.rels[ indexRel ].cols;
-                for( int c = 0; c < cols; c++) {
-
-                    if (c != numCol) {
-
-                        myint_t fANew = relArray.rels[ indexRel ].queryStats[numCol].numElements;
-                        myint_t fC = relArray.rels[ indexRel ].queryStats[c].numElements;
-                        myint_t dC = relArray.rels[ indexRel ].queryStats[c].distinctVals;
-                        relArray.rels[ indexRel ].queryStats[c].numElements = relArray.rels[ indexRel ].queryStats[numCol].numElements;
-                        relArray.rels[ indexRel ].queryStats[c].distinctVals = (myint_t) (relArray.rels[ indexRel ].queryStats[c].distinctVals * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC )));
-                    }
+                    newQuery->queryStats[indexRel][numCol].distinctVals = 0;
+                    newQuery->queryStats[indexRel][numCol].numElements = 0;
                 }
 
             }
 
+            for( int c = 0; c < cols; c++) {
+
+                    if (c != numCol) {
+
+                        myint_t fANew = newQuery->queryStats[indexRel][numCol].numElements;
+                        myint_t fC = newQuery->queryStats[indexRel][c].numElements;
+                        myint_t dC = newQuery->queryStats[indexRel][c].distinctVals;
+                        newQuery->queryStats[indexRel][c].numElements = newQuery->queryStats[indexRel][numCol].numElements;
+                        newQuery->queryStats[indexRel][c].distinctVals = (myint_t) (dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC )));
+                    }
+            }
+
         }
+    }if (newQuery->numOfJoins != 0  ) {
+
+        for(myint_t i = 0; i < newQuery->numOfJoins; i++) {
+
+            myint_t rel1 = newQuery->joins[i].participant1.rel;
+            myint_t rel2 = newQuery->joins[i].participant2.rel;
+            myint_t col1 = newQuery->joins[i].participant1.numCol;
+            myint_t col2 = newQuery->joins[i].participant2.numCol;
+
+            
+            if( rel1 == rel2 && col1 != col2) {     //second type of filter predicate
+
+                myint_t cols = relArray.rels[newQuery->rels[rel1]].cols;
+                
+                if( newQuery->queryStats[rel1][col1].minI > newQuery->queryStats[rel2][col2].minI) {
+
+                    newQuery->queryStats[rel2][col2].minI = newQuery->queryStats[rel1][col1].minI;
+    
+                }else {
+
+                    newQuery->queryStats[rel1][col1].minI = newQuery->queryStats[rel2][col2].minI;
+
+                }
+                if( newQuery->queryStats[rel1][col1].maxU < newQuery->queryStats[rel2][col2].maxU) {
+
+                    newQuery->queryStats[rel2][col2].maxU = newQuery->queryStats[rel1][col1].maxU;
+
+                } else {
+
+                    newQuery->queryStats[rel1][col1].maxU = newQuery->queryStats[rel2][col2].maxU;
+                }
+
+                myint_t lANew = newQuery->queryStats[rel1][col1].minI;
+                myint_t uANew = newQuery->queryStats[rel1][col1].maxU;
+                myint_t n = uANew - lANew + 1;
+                myint_t fA = newQuery->queryStats[rel1][col1].numElements;
+                newQuery->queryStats[rel1][col1].numElements = (myint_t) ((double)fA/(double)n);
+                newQuery->queryStats[rel2][col2].numElements = newQuery->queryStats[rel1][col1].numElements;
+
+                myint_t fANew = newQuery->queryStats[rel1][col1].numElements;
+                myint_t dA = newQuery->queryStats[rel1][col1].distinctVals;
+                newQuery->queryStats[rel1][col1].distinctVals = (myint_t) (dA * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fA/ (double)dA )));
+
+
+                for( int c = 0; c < cols; c++) {
+
+                    if (c != col1 && c != col2) {
+
+                        myint_t fANew = newQuery->queryStats[rel1][col1].numElements;
+                        myint_t fC = newQuery->queryStats[rel1][c].numElements;
+                        myint_t dC = newQuery->queryStats[rel1][c].distinctVals;
+                        newQuery->queryStats[rel1][c].numElements = fANew;
+                        newQuery->queryStats[rel1][c].distinctVals = (myint_t) (dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC )));
+                    }
+                }   
+
+            }
+        }
+
     }
     
 
