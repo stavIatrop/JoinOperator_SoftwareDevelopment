@@ -11,6 +11,7 @@
 #include "checksumInterface.h"
 #include "jointPerformer.h"
 #include "interListInterface.h"
+#include "graph.h"
 
 void printJoins(query * newQuery) {
     fprintf(stderr, "    Printing Joins of Query\n");
@@ -154,7 +155,8 @@ int main(void) {
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
                     
                     //executeFilterPredicates(newQuery, relArray);                //decide best sequence of executing join predicates
-
+                    //graph * joinGraph = InitialiseGraph(newQuery->numOfRels);
+                    //ConstructGraph(joinGraph, newQuery);
 
 
                     headInter * headInt = initialiseHead();

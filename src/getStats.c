@@ -183,6 +183,8 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
         }
     }if (newQuery->numOfJoins != 0  ) {
 
+        myint_t p = 0;      //index for updating priorities table
+
         for(myint_t i = 0; i < newQuery->numOfJoins; i++) {
 
             myint_t rel1 = newQuery->joins[i].participant1.rel;
@@ -193,6 +195,9 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
             
             if( rel1 == rel2 && col1 != col2) {     //second type of filter predicate
 
+                newQuery->priorities[p] = i;
+                p++;
+                
                 myint_t cols = relArray.rels[newQuery->rels[rel1]].cols;
                 
                 if( newQuery->queryStats[rel1][col1].minI > newQuery->queryStats[rel2][col2].minI) {

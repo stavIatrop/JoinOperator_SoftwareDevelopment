@@ -125,7 +125,7 @@ myint_t FillRel(relationsheep * rel, FILE * inputFile) {
         return -1;
     }
     rel->statsArray = (stats *) malloc(rel->cols * sizeof(stats));
-	rel->queryStats = NULL;
+	
 	
     rel->pointToCols = (myint_t **) malloc(rel->cols * sizeof(myint_t *));
     for(myint_t i = 0; i < rel->cols; i++) {

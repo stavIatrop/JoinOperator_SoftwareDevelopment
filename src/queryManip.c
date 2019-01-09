@@ -319,7 +319,10 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 			newQuery->queryStats[i][c].distinctArray = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctArray;
 
 		}
-
+	}
+	newQuery->priorities = (myint_t *) malloc(newQuery->numOfJoins * sizeof(myint_t));
+	for(i = 0; i < newQuery->numOfJoins; i++) {
+		newQuery->priorities[i] = -1;
 	}
 
 	return newQuery;
@@ -332,7 +335,7 @@ void FreeQuery(query * newQuery, relationsheepArray relArray) {
 
 		free(newQuery->queryStats[i]);
 	}
-
+	free(newQuery->priorities);
 	free(newQuery->queryStats);	
 	free(newQuery->rels);
 	free(newQuery->filters);
