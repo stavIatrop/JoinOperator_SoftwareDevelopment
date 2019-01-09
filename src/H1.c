@@ -76,24 +76,25 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
                 exit(1);
 	}
 
-    if (*hash1==FIRST_REORDERED) //hash1 contains the bucket size, or FIRST_REORDERED if it has to be calculated
+        if (*hash1==FIRST_REORDERED) //hash1 contains the bucket size, or FIRST_REORDERED if it has to be calculated
 	{
-		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
-		hist = Hash1(r,hash1,hash_values); //hist contains the histogram
+		*hash1 = FindNextPower(floor(ERROR_MARGIN * (r->size * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
+		//fprintf(stderr, "1: Hash 1 is %lu\n",*hash1);
 	}
 	else
 	{
 		*hash1 = pow(2,*hash1);
-		myint_t max;
+		//fprintf(stderr, "2: Hash 1 is %lu, size is %lu\n",*hash1, size);
+		/*myint_t max;
 		hist = malloc(*hash1 * sizeof(myint_t));
 		if (hist ==NULL)
 		{
 			perror("Wrong arguments");
                 	exit(1);
 		}
-		DoTheHash(r,*hash1,hist,hash_values,&max,1);
+		DoTheHash(r,*hash1,hist,hash_values,&max,1);*/
 	}
-
+	hist = Hash1(r,*hash1,hash_values);
 	workMutex = malloc((*hash1) * sizeof(pthread_mutex_t));
 	for (myint_t i=0; i<*hash1; i++)
 	{
