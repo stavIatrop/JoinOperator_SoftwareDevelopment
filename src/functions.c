@@ -58,34 +58,6 @@ void rSwap(tuple * t,myint_t *hash_values, myint_t i, myint_t j)
         hash_values[j] = tempu;
 }
 
-myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_values, myint_t *max, char trivial)
-{	//hash1 is the number of buckets in the hashing, hist is the histogram and hash_values the hash value for each key
-	//myint_t maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple));
-	myint_t i, size = r->size, value;
-	for (i = 0; i < hash1; i++) hist[i] = 0;
-
-    for (i = 0; i < size; i++)
-    {
-            value = Hash1_2(r->tuples[i].key,hash1);
-            hash_values[i] = value;
-            hist[value] = hist[value] + 1;
-    }
-    return 0;
-
-	/*if (trivial!=0) return 0; //below here is only for calculating the best hash1. If we just want to do the hash, trivial!=0.
-
-        for (i=0; i<hash1; i++)
-        {
-		value = hist[i];
-		if (value > maxBucketSize)
-		{
-			bad++;
-			*max += value;
-		}
-        }
-	return bad;*/
-}
-
 void histogramJob(void *limits)
 {
 	myint_t hash1 = ((content *) limits)->hash1;
@@ -118,10 +90,12 @@ void histogramJob(void *limits)
 	return;
 }
 
+myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_values, myint_t *max, char trivial)
+{	//hash1 is the number of buckets in the hashing, hist is the histogram and hash_values the hash value for each key
+	
+	*max = 0;
+	myint_t maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), bad=0;
 
-myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
-{
-	//initialiseScheduler();
 	pthread_mutex_init(&histMutex, 0);
 	pthread_cond_init(&histCond, 0);
 	histsCompleted = 0;
@@ -136,7 +110,6 @@ myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
 		contents[i]->to = (i!=NUMB_OF_THREADS-1 ? (i+1)*(r->size/NUMB_OF_THREADS) : r->size);
 		contents[i]->t = r->tuples;
 		contents[i]->hash1 = hash1;
-		//histogramJob((void *) contents[i]);
 
 		struct Job *job = malloc(sizeof(struct Job));
 		job->function = &histogramJob;
@@ -145,13 +118,13 @@ myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
 	}
 
 	//Barrier for all the jobs to finish
-        pthread_mutex_lock(&histMutex);
-        while(histsCompleted != NUMB_OF_THREADS) {
-                pthread_cond_wait(&histCond, &histMutex);
-        }
-        pthread_mutex_unlock(&histMutex);
+    pthread_mutex_lock(&histMutex);
+    while(histsCompleted != NUMB_OF_THREADS)
+    {
+            pthread_cond_wait(&histCond, &histMutex);
+    }
+    pthread_mutex_unlock(&histMutex);
 
-	myint_t *hist = malloc(hash1*sizeof(myint_t));
 	myint_t cur = 0, i;
 	
 	for (i=0; i<hash1; i++) hist[i] = contents[0]->hist[i];
@@ -181,45 +154,72 @@ myint_t *Hash1(relation *r,myint_t hash1, myint_t *hash_values)
 	}
 	free(contents);
 
-	//shutdownAndFreeScheduler();
-
 	pthread_mutex_destroy(&histMutex);
 	pthread_cond_destroy(&histCond);
-	return hist;
-	/*double identicality=IdenticalityTest(r);
+
+	if (trivial!=0) return 0; //below here is only for calculating the best hash1. If we just want to do the hash, trivial!=0.
+
+	myint_t value;
+
+    for (i=0; i<hash1; i++)
+    {
+		value = hist[i];
+		if (value > maxBucketSize)
+		{
+			bad++;
+			*max += value;
+		}
+    }
+	return bad;
+}
+
+
+myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
+{
+	myint_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
+	hist = malloc(*hash1 * sizeof(myint_t));
+	if (hist ==NULL)
+    {
+            perror("Wrong arguments");
+            exit(1);
+    }
+
+	double identicality=IdenticalityTest(r);
+
+	myint_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
 	beginning = *hash1;
 	prevBad = bad;
 
 	while (bad > 0)
-        {
+    {
 		nextPower = (myint_t)log2(FindNextPower(max/maxBucketSize)+1);
 		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * identicality * size)
 		{		
 			//the last check in the f is because identical keys cannot be separated.
 			if (*hash1==beginning) return hist;
 			*hash1 = beginning;
-        	        hist = realloc(hist,*hash1 * sizeof(myint_t));
+        	hist = realloc(hist,*hash1 * sizeof(myint_t));
 			if (hist ==NULL)
-       			{
-        		        perror("Wrong arguments");
-		                exit(1);
-		        }
-
-	                DoTheHash(r,*hash1,hist,hash_values,&max,1);
-			return hist;
-		}
-		*hash1 = (*hash1) << nextPower;
-                if (bad != prevBad) beginning = *hash1;
-		prevBad = bad;
-                hist = realloc(hist,*hash1 * sizeof(myint_t));
-		if (hist ==NULL)
-        	{
-	                perror("Wrong arguments");
+   			{
+    		        perror("Wrong arguments");
 	                exit(1);
 	        }
 
-                bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
+	        DoTheHash(r,*hash1,hist,hash_values,&max,1);
+			return hist;
+		}
+		*hash1 = (*hash1) << nextPower;
+        if (bad != prevBad) beginning = *hash1;
+		prevBad = bad;
+        hist = realloc(hist,*hash1 * sizeof(myint_t));
+		if (hist ==NULL)
+    	{
+                perror("Wrong arguments");
+                exit(1);
         }
+        bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
+    }
 
-	return hist;*/
+	return hist;
 }
+
