@@ -24,7 +24,7 @@ myint_t FindNextPower(myint_t number)
 double IdenticalityTest(relation *r) //described in viceFunctions.h
 {
 	
-	myint_t size = r->size, limit = size/10, sames=0;
+	myint_t size = r->size, limit = size/100, sames=0;
 	if (size==0) return 0.0;
                 fflush(stderr);
 	myint_t value = r->tuples[0].key, newValue;
