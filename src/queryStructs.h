@@ -8,6 +8,16 @@
 #define GREATER 2
 #define EQUAL 3
 
+typedef struct StatisticsStruct {
+
+        myint_t minI;
+        myint_t maxU;
+        myint_t numElements;
+        myint_t distinctVals;
+        myint_t * distinctArray;
+
+} stats;
+
 
 typedef struct Relationsheep {
         myint_t rows;

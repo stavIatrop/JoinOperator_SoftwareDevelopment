@@ -4,12 +4,89 @@
 #include "basicStructs.h"
 #include "viceFunctions.h"
 #include "jobScheduler.h"
+#include "getStats.h"
+#include "bitVector.h"
+
+#define BETTERER 100
 
 pthread_mutex_t *workMutex;
 
 pthread_mutex_t constructionMutex;
 pthread_cond_t constructionCond;
 int constructionsCompleted = 0;
+
+myint_t distValues(relation *r)
+{
+	tuple *col = r->tuples;
+	myint_t rows = r->size;
+
+	stats * statsStruct = malloc(sizeof(stats));
+    statsStruct->minI = col[0].key;
+    statsStruct->maxU = col[0].key;
+    statsStruct->numElements = rows;
+    statsStruct->distinctVals = 0;
+       
+
+    myint_t i;
+    for( i = 0; i < rows; i++) {
+
+        if (statsStruct->minI > col[i].key ) {
+            statsStruct->minI = col[i].key;
+        }
+
+        if ( statsStruct->maxU < col[i].key ) {
+            statsStruct->maxU = col[i].key;
+        }
+
+    }
+
+
+    if ( statsStruct->maxU - statsStruct->minI + 1 > N ) {
+        
+        myint_t size = (myint_t) ceil( (double)N / (double)(sizeof(myint_t) * 8) );
+        statsStruct->distinctArray = (myint_t *) malloc( size * sizeof(myint_t) );
+
+        for( i = 0; i < size; i ++)
+            statsStruct->distinctArray[i] = 0;
+
+        for( i = 0; i < rows/BETTERER; i++) {
+
+            if ( TestBit(statsStruct->distinctArray, (col[i].key - statsStruct->minI) % N) == 0) {     //check if it is the first occurence of col[i] value and increment distinctVals
+                statsStruct->distinctVals++;
+            }
+ 
+            SetBit(statsStruct->distinctArray, (col[i].key - statsStruct->minI) % N );             //set ((col[i] - statsStruct->minI) % N)-th bit to True
+            
+        }
+        
+    } else {
+
+        myint_t size = (myint_t) ceil( (double) (statsStruct->maxU - statsStruct->minI + 1)  / (double)(sizeof(myint_t) * 8) );
+        statsStruct->distinctArray = (myint_t *) malloc(size * sizeof(myint_t));
+        
+
+        for( i = 0; i < size; i ++)
+            statsStruct->distinctArray[i] = 0;
+        
+
+        for( i = 0; i < rows/BETTERER; i++) {
+
+            if ( TestBit(statsStruct->distinctArray, col[i].key - statsStruct->minI) == 0) {     //check if it is the first occurence of col[i] value and increment distinctVals
+                
+                statsStruct->distinctVals++;
+            }
+ 
+            SetBit(statsStruct->distinctArray, col[i].key - statsStruct->minI );             //set (col[i] - statsStruct->minI)-th bit to True
+            
+        }
+    }
+
+    free(statsStruct->distinctArray);
+    myint_t dv = statsStruct->distinctVals;
+    free(statsStruct);
+
+    return dv*BETTERER;
+}
 
 void constructionJob(void *Blues)
 {
@@ -78,7 +155,7 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
 
         if (*hash1==FIRST_REORDERED) //hash1 contains the bucket size, or FIRST_REORDERED if it has to be calculated
 	{
-		*hash1 = FindNextPower(floor(ERROR_MARGIN * (r->size * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
+		*hash1 = FindNextPower(floor(ERROR_MARGIN * (distValues(r) * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
 		//fprintf(stderr, "1: Hash 1 is %lu\n",*hash1);
 	}
 	else
