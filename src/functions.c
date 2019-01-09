@@ -37,7 +37,7 @@ double IdenticalityTest(relation *r) //described in viceFunctions.h
 		if (newValue == value) sames++;
 		else value = newValue;
 	}
-	return sqrt((double)sames / limit);
+	return 1/((double)sames*100);
 }
 
 
