@@ -183,7 +183,7 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
 	for (i=0;i<buckets;i++) fprintf(stderr, "%lu - %lu, ", psum->psum[i].h1Res, psum->psum[i].offset);
 	fprintf(stderr, "\n\n");
 	for (i=0;i<*hash1;i++) fprintf(stderr, "%lu, ", hist[i]);
-	fprintf(stderr, "\n\n");*/
+	fprintf(stderr, "\n");*/
 
 
 	//fprintf(stderr,"DDD\n");
@@ -224,6 +224,8 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
     pthread_mutex_unlock(&constructionMutex);
 
     free(blues);
+    free(r->tuples);
+    free(r);
 
     //fprintf(stderr, "KKK\n");
 
