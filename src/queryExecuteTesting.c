@@ -608,7 +608,7 @@ int smarterFree()
 	return 0;
 }
 
-void testRelationsheepForging()
+/*void testRelationsheepForging()
 {
 	myint_t rows2 = 2000, rows = 1000;
 
@@ -661,7 +661,7 @@ void testRelationsheepForging()
 
 	free(rel->tuples);
 	free(rel);
-}
+}*/
 
 void testFilter()
 {
@@ -850,7 +850,7 @@ int main(void) {
 	CU_pSuite pSuite2 = NULL;
 	CU_pSuite pSuite3 = NULL;
 	CU_pSuite pSuite4 = NULL;
-	CU_pSuite pSuite5 = NULL;
+	//CU_pSuite pSuite5 = NULL;
 	CU_pSuite pSuite6 = NULL;
 	CU_pSuite pSuite7 = NULL;
 	CU_pSuite pSuite8 = NULL;
@@ -920,7 +920,7 @@ int main(void) {
                 return CU_get_error();
         }
 
-	pSuite5 = CU_add_suite("Test Forging Operations", smarterInit, smarterFree);
+	/*pSuite5 = CU_add_suite("Test Forging Operations", smarterInit, smarterFree);
         if (NULL == pSuite5) {
                 CU_cleanup_registry();
                 return CU_get_error();
@@ -929,7 +929,7 @@ int main(void) {
         {
                 CU_cleanup_registry();
                 return CU_get_error();
-        }
+        }*/
 
 	pSuite6 = CU_add_suite("Test Filtering", smarterInit, smarterFree);
         if (NULL == pSuite6) {

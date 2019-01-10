@@ -202,7 +202,6 @@ int freeList(void) {
 void testNumbOfNodes(void) {
         
         unsigned long int targetNodes = (TUPLE_NUMB * sizeof(tuple)) / MB + 1;
-        printf("EXPECTED = %ld | RESULT = %ld\n", targetNodes, list->numbOfNodes);
         CU_ASSERT(targetNodes == list->numbOfNodes);
 }
 
@@ -243,7 +242,7 @@ int main(void) {
 	// CU_pSuite pSuite2 = NULL;
 	// CU_pSuite pSuite3 = NULL;
 	CU_pSuite pSuite4 = NULL;
-   	CU_pSuite pSuite5 = NULL;
+   	//CU_pSuite pSuite5 = NULL;
 
 
 	//Initialize the CUnit test registry
@@ -266,20 +265,20 @@ int main(void) {
    }
 
 /* add a suite to the registry */
-   pSuite5 = CU_add_suite("Search Suite", initialiseRelations, freeRelations);
-   if (NULL == pSuite5) {
-      CU_cleanup_registry();
-      return CU_get_error();
-   }
+//    pSuite5 = CU_add_suite("Search Suite", initialiseRelations, freeRelations);
+//    if (NULL == pSuite5) {
+//       CU_cleanup_registry();
+//       return CU_get_error();
+//    }
 
-    /* add the tests to the suite */
-   if ((NULL == CU_add_test(pSuite5, "Test No Matching Values", testZeroResults)) ||
-       (NULL == CU_add_test(pSuite5, "Test All Matching Values Ordered", testOrderedResults)) ||
-       (NULL == CU_add_test(pSuite5, "Test All Matching Values Inversed Ordered", testInversedOrderedResults)))
-   {
-      CU_cleanup_registry();
-      return CU_get_error();
-   }
+//     /* add the tests to the suite */
+//    if ((NULL == CU_add_test(pSuite5, "Test No Matching Values", testZeroResults)) ||
+//        (NULL == CU_add_test(pSuite5, "Test All Matching Values Ordered", testOrderedResults)) ||
+//        (NULL == CU_add_test(pSuite5, "Test All Matching Values Inversed Ordered", testInversedOrderedResults)))
+//    {
+//       CU_cleanup_registry();
+//       return CU_get_error();
+//    }
    // CU_set_output_filename("Chain_Test");
    // CU_automated_run_tests();
    // CU_list_tests_to_file();

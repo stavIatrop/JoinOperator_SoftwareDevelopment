@@ -52,5 +52,40 @@ With scheduler:
 		32 thread small: 1471
 		32 thread public: 128015
 
+	-threading combined (fake results)
+		1 thread small: 1553ms
+		1 thread public: 122432
+		
+		2 thread small: 1330
+		2 thread public: 116967
+
+		3 thread small: 1357
+		3 thread public: 113453
+
+		4 thread small: 1350
+		4 thread public: 111386
+
+		7 thread small: 1348
+		7 thread public: 110432
+
+		8 thread small: 1353
+		8 thread public: 110441
+
+		11 thread small: 1365
+		11 thread public: 110567
+
+		12 thread small: 1379
+		12 thread public: 112332
+
+		16 thread small: 1368
+		16 thread public: 115089
+
+		20 thread small: 1371
+		20 thread public: 117997
+
+		32 thread small: 1375
+		32 thread public: 116983
+
+
 
 
