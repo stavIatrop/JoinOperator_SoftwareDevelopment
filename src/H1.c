@@ -62,7 +62,9 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
 	if (r->size==0)
 	{
 		reorderedR *R = malloc(sizeof(reorderedR));
-		R->rel = r;
+		R->rel = malloc(sizeof(relation));
+		R->rel->size=0;
+		R->rel->tuples=NULL;
 		R->pSumArr.psumSize = 0;
 		R->pSumArr.psum = NULL;
 		return R;
@@ -120,7 +122,6 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
                 exit(1);
         }
 	R->rel->size = r->size;
-	R->rel->dvalues = r->dvalues;
 
 	//fprintf(stderr,"EEE\n");
 
@@ -222,9 +223,6 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
     pthread_mutex_unlock(&constructionMutex);
 
     free(blues);
-    free(r->tuples);
-    free(r);
-
     //fprintf(stderr, "KKK\n");
 
 	pthread_mutex_destroy(&constructionMutex);

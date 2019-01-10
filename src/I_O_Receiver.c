@@ -8,6 +8,7 @@
 #include "queryStructs.h"
 #include "pipeI_O.h"
 #include "queryManip.h"
+#include "indexManip.h"
 #include "checksumInterface.h"
 #include "jointPerformer.h"
 #include "interListInterface.h"
@@ -203,6 +204,15 @@ int main(void) {
         return -1;
     }
     FreeRelArray(relArray);
+    if (Warehouse)
+    {
+        for (myint_t i=0; i<Warehouse->size;i++) freeIndexArray(Warehouse->indexes[i]);
+        free(Warehouse->rel);
+        free(Warehouse->col);
+        free(Warehouse->hash1);
+        free(Warehouse->indexes);
+        free(Warehouse);
+    }
 	
     shutdownAndFreeScheduler();
 	return 0;

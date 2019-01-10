@@ -30,6 +30,10 @@ extern pthread_mutex_t histMutex;
 extern pthread_cond_t histCond;
 extern int histsCompleted;
 
+indexArray *FetchFromWarehouse(myint_t rel, myint_t col, myint_t *hash1);
+
+void AddToWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *indexes);
+
 myint_t distValues(relation *);
 
 myint_t Hash1_2(myint_t, myint_t); 	//The hash function used. A simple %, only used with powers of 2.

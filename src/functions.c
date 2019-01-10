@@ -7,12 +7,66 @@
 #include "jobScheduler.h"
 #include "bitVector.h"
 #include "getStats.h"
+#include "queryStructs.h"
 
 #define BETTERER 100
 
 pthread_mutex_t histMutex;
 pthread_cond_t histCond;
 int histsCompleted = 0;
+
+indexArray *FetchFromWarehouse(myint_t rel, myint_t col, myint_t *hash1)
+{
+	//fprintf(stderr,"Fetching %lu, %lu\n\n",rel,col);
+
+	if (Warehouse == NULL)
+	{
+		Warehouse = malloc(sizeof(wares));
+		Warehouse ->size = 0;
+		Warehouse->rel = malloc(500*sizeof(myint_t));
+		Warehouse->col = malloc(500*sizeof(myint_t));
+		Warehouse->hash1 = malloc(500*sizeof(myint_t));
+		Warehouse->indexes = malloc(500*sizeof(indexArray *));
+		return NULL;
+	}
+
+	for (myint_t i=0; i<Warehouse->size; i++)
+	{
+		if (Warehouse->rel[i]==rel && Warehouse->col[i]==col)
+		{
+			*hash1 = Warehouse->hash1[i];
+			//fprintf(stderr,"FETCHED! %lu, %lu\n\n",rel,col);
+			return Warehouse->indexes[i];
+		}
+	}
+	return NULL;
+}
+
+void AddToWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *indexes)
+{
+	if (Warehouse == NULL)
+	{
+		Warehouse = malloc(sizeof(wares));
+		Warehouse ->size = 0;
+		Warehouse->rel = malloc(500*sizeof(myint_t));
+		Warehouse->col = malloc(500*sizeof(myint_t));
+		Warehouse->hash1 = malloc(500*sizeof(myint_t));
+		Warehouse->indexes = malloc(500*sizeof(reorderedR*));
+		return;
+	}
+
+	//fprintf(stderr,"Adding %lu, %lu\n\n", rel,col);
+
+	Warehouse->rel[Warehouse->size] = rel;
+	Warehouse->col[Warehouse->size] = col;
+	Warehouse->hash1[Warehouse->size] = hash1;
+	Warehouse->indexes[Warehouse->size] = indexes;
+	(Warehouse->size)++;
+
+	//fprintf(stderr,"Size is %lu\n\n", Warehouse->size);
+
+	return;
+}
 
 myint_t distValues(relation *r)
 {

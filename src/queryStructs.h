@@ -19,6 +19,16 @@ typedef struct StatisticsStruct {
 } stats;
 
 
+typedef struct Wares {
+        myint_t *rel;
+        myint_t *col;
+        myint_t *hash1;
+        indexArray **indexes;
+        myint_t size;
+} wares;
+
+wares *Warehouse;
+
 typedef struct Relationsheep {
         myint_t rows;
         myint_t cols;
@@ -49,6 +59,8 @@ typedef struct HeadInter {
 } headInter;
 
 typedef struct ColRel {
+        myint_t realRel;
+        myint_t realCol;
         myint_t rel;
         myint_t* col;
         myint_t rows;

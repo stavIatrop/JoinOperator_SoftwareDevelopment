@@ -36,11 +36,13 @@ void fillJoinInfo(query * newQuery, char * tempStr, myint_t counterJoins, relati
 			if( dots == 1) {	//1st participant of join operation
 
 				newQuery->joins[counterJoins].participant1.rel = atoi(part);
+				newQuery->joins[counterJoins].participant1.realRel = newQuery->rels[atoi(part)];
 				newQuery->joins[counterJoins].participant1.rows = relArray.rels[ newQuery->rels[atoi(part)] ].rows ;
 
 			}else {
 
 				newQuery->joins[counterJoins].participant2.rel = atoi(part);
+				newQuery->joins[counterJoins].participant2.realRel = newQuery->rels[atoi(part)];
 				newQuery->joins[counterJoins].participant2.rows = relArray.rels[ newQuery->rels[atoi(part)] ].rows ;
 			}
 			free(part);
@@ -55,6 +57,7 @@ void fillJoinInfo(query * newQuery, char * tempStr, myint_t counterJoins, relati
 			strncpy(part, tempStr + start, i - start);
             strcat(part, "\0");
             myint_t indexRel = newQuery->joins[counterJoins].participant1.rel;
+            newQuery->joins[counterJoins].participant1.realCol = atoi(part);
             newQuery->joins[counterJoins].participant1.col = relArray.rels[ newQuery->rels[indexRel] ].pointToCols[atoi(part)];
             free(part);
 
@@ -71,6 +74,7 @@ void fillJoinInfo(query * newQuery, char * tempStr, myint_t counterJoins, relati
     strcat(part, "\0");
 
     myint_t indexRel = newQuery->joins[counterJoins].participant2.rel;
+    newQuery->joins[counterJoins].participant2.realCol = atoi(part);
     newQuery->joins[counterJoins].participant2.col = relArray.rels[ newQuery->rels[indexRel] ].pointToCols[atoi(part)];
     free(part);
 

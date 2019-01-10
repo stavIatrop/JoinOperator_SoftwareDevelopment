@@ -58,10 +58,11 @@ void workerJ(join *pred, headInter * hq)
 {
 	char self = 0;
 	colRel *r1 = &(pred->participant1), *r2 = &(pred->participant2);
+	//fprintf(stderr, "%lu - %lu, %lu - %lu\n\n", r1->realRel, r1->realCol, r2->realRel, r2->realCol);
 	myint_t rel1 = r1->rel, rel2=r2->rel;
 	if (rel1 == rel2) self = 1;
 	nodeInter *n1 = findNode(hq,rel1);
-        nodeInter *n2 = findNode(hq,rel2);
+    nodeInter *n2 = findNode(hq,rel2);
 	char used;
 	if (n1 && n2) used=2;
 	else if (n1==NULL && n2==NULL) used=0;
@@ -97,14 +98,19 @@ void workerJ(join *pred, headInter * hq)
 			myint_t newRel, skipped = 0;
 			char switched;
 
-			res = performRHJ(hq,r1,r2,&newRel, &skipped, &switched);
-			if (used==0) createInterFromRes(hq,res,rel1,rel2, switched);
+			if (used==0)
+			{
+				switched = 0;
+				res = performRHJ(hq,r1,r2,&newRel, &skipped, &switched);
+				createInterFromRes(hq,res,rel1,rel2, switched);
+			}
 			else if (used==1)
 			{
 				//fprintf(stderr, "AA%ld\n", skipped);
+				res = performRHJ(hq,r1,r2,&newRel, &skipped, &switched);
 				if (rel1==newRel) {
-					updateInterFromRes(n2,res,newRel,rel2,skipped,switched);
 					//fprintf(stderr, "REL1 NEW\n");
+					updateInterFromRes(n2,res,newRel,rel2,skipped,switched);
 				}
 				else{
 					//fprintf(stderr, "REL2 NEW %ld | new rel: %ld | newRelRows: %ld\n", n1->data->numbOfRows, newRel, r2->rows);
@@ -113,6 +119,8 @@ void workerJ(join *pred, headInter * hq)
 			}
 			else
 			{
+				switched = 2;
+				res = performRHJ(hq,r1,r2,&newRel, &skipped, &switched);
 				//fprintf(stderr, "BBBBBBBB\n");
 				updateInterAndDelete(hq,n1,n2,res,rel1,rel2,skipped,switched);
 			}
@@ -138,6 +146,8 @@ relation *forgeRelationsheep(headInter *hi, colRel *r, myint_t *skipped)
 {
 	nodeInter *node = findNode(hi,r->rel);
 	relation *rel = malloc(sizeof(relation));
+	rel->realRel = r->realRel;
+	rel->realCol = r->realCol;
         tuple *t;
 	myint_t *col = r->col, i;
 	if (node==NULL)
@@ -145,7 +155,6 @@ relation *forgeRelationsheep(headInter *hi, colRel *r, myint_t *skipped)
 		myint_t rows = r->rows;
         	t = malloc(rows*sizeof(tuple));
         	rel->size = rows;
-        	rel->dvalues = rows; //EDW THA TO ALLAKSOUMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
         	for (i=0 ; i<rows ; i++)
         	{
         		t[i].key = col[i];
@@ -194,11 +203,13 @@ headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, m
 	if (new1==1 && new2==0)
 	{
 		*newRel = r1->rel;
+		*switched = 1;
 		return radixHashJoin(relation2,relation1, switched);
 	}
 	if (new1==0 && new2==1)
 	{
 		*newRel = r2->rel;
+		*switched = 1;
 		return radixHashJoin(relation1,relation2, switched);
 	}
 	else return radixHashJoin(relation1,relation2, switched);
