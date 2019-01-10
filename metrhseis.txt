@@ -7,7 +7,7 @@ Metrhseis pou prepei na ginoun:
 	-Search threading	DONE
 	-Hist threading
 	-To allo threading tou val
-	-Ta parapano threadings syndyasmena
+	-Ta parapano threadings syndyasmena DONE
 	-query optimization
 	-Threading kai query optimization
 	-Oti allo kanoume
@@ -52,39 +52,39 @@ With scheduler:
 		32 thread small: 1471
 		32 thread public: 128015
 
-	-threading combined (fake results)
-		1 thread small: 1553ms
-		1 thread public: 122432
+	-threading combined
+		1 thread small: 1833ms
+		1 thread public: 157323
 		
-		2 thread small: 1330
-		2 thread public: 116967
+		2 thread small: 1591
+		2 thread public: 116529
 
-		3 thread small: 1357
-		3 thread public: 113453
+		3 thread small: 1563
+		3 thread public: 111537
 
-		4 thread small: 1350
-		4 thread public: 111386
+		4 thread small: 1542
+		4 thread public: 114547
 
-		7 thread small: 1348
-		7 thread public: 110432
+		7 thread small: 1542
+		7 thread public: 115985
 
-		8 thread small: 1353
-		8 thread public: 110441
+		8 thread small: 1549
+		8 thread public: 114150
 
-		11 thread small: 1365
-		11 thread public: 110567
+		11 thread small: 1551
+		11 thread public: 112424
 
-		12 thread small: 1379
-		12 thread public: 112332
+		12 thread small: 1573
+		12 thread public: 114077
 
-		16 thread small: 1368
-		16 thread public: 115089
+		16 thread small: 1563
+		16 thread public: 112431
 
-		20 thread small: 1371
-		20 thread public: 117997
+		20 thread small: 1577
+		20 thread public: 116322
 
-		32 thread small: 1375
-		32 thread public: 116983
+		32 thread small: 1605
+		32 thread public: 161124
 
 
 
