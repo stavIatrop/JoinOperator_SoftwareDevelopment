@@ -9,6 +9,7 @@ typedef struct EdgeStruct {
     myint_t parentCol;
     myint_t nodeCol;
     myint_t node;
+    myint_t joinId;
     struct EdgeStruct *nextEdge;
 
 }edge;
@@ -29,7 +30,7 @@ typedef struct GraphStruct {
 }graph;
 
 graph * InitialiseGraph(myint_t );
-void InsertGraph(vertex *, myint_t, myint_t, myint_t);
+void InsertGraph(vertex *, myint_t, myint_t, myint_t, myint_t);
 void ConstructGraph(graph *, query *);
 int Connected(myint_t , myint_t  );
 void FreeVertex(edge * );

@@ -308,7 +308,7 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 	newQuery->queryStats = (stats **) malloc(newQuery->numOfRels * sizeof(stats *));
 	for(i = 0; i < newQuery->numOfRels; i++) {
 
-		newQuery->queryStats[i] = (stats *) malloc(relArray.rels[ newQuery->rels[i] ].cols * sizeof(stats));
+		newQuery->queryStats[i] = (stats *) malloc(relArray.rels[ newQuery->rels[i] ].cols * sizeof(stats));		//initialisation of queryStats array
 
 		for(int c = 0; c < relArray.rels[ newQuery->rels[i] ].cols; c++) {
 
@@ -317,7 +317,6 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 			newQuery->queryStats[i][c].numElements = relArray.rels[ newQuery->rels[i] ].statsArray[c].numElements;
 			newQuery->queryStats[i][c].distinctVals = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctVals;
 			newQuery->queryStats[i][c].distinctArray = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctArray;
-
 		}
 	}
 	newQuery->priorities = (myint_t *) malloc(newQuery->numOfJoins * sizeof(myint_t));

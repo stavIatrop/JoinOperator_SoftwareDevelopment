@@ -12,6 +12,7 @@
 #include "jointPerformer.h"
 #include "interListInterface.h"
 #include "graph.h"
+#include "hashTreeManip.h"
 
 void printJoins(query * newQuery) {
     fprintf(stderr, "    Printing Joins of Query\n");
@@ -157,6 +158,7 @@ int main(void) {
                     //executeFilterPredicates(newQuery, relArray);                //decide best sequence of executing join predicates
                     //graph * joinGraph = InitialiseGraph(newQuery->numOfRels);
                     //ConstructGraph(joinGraph, newQuery);
+                    HTNode ** hashTree = InitialiseHashTree(pow(2, newQuery->numOfRels), newQuery, relArray);
 
 
                     headInter * headInt = initialiseHead();

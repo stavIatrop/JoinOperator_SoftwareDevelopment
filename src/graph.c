@@ -18,7 +18,7 @@ graph * InitialiseGraph( myint_t rels) {
     return newGraph;
 }
 
-void InsertGraph(vertex * parent, myint_t parentCol, myint_t edgeRel, myint_t edgeCol) {
+void InsertGraph(vertex * parent, myint_t parentCol, myint_t edgeRel, myint_t edgeCol, myint_t joinId) {
 
     if( parent->firstEdge == NULL) {        //no previous connections
 
@@ -28,6 +28,7 @@ void InsertGraph(vertex * parent, myint_t parentCol, myint_t edgeRel, myint_t ed
         parent->firstEdge->parentCol = parentCol;
         parent->firstEdge->node = edgeRel;
         parent->firstEdge->nodeCol = edgeCol;
+        parent->firstEdge->joinId = joinId;
         return;
     }
 
@@ -43,6 +44,7 @@ void InsertGraph(vertex * parent, myint_t parentCol, myint_t edgeRel, myint_t ed
     temp->parentCol = parentCol;
     temp->node = edgeRel;
     temp->nodeCol = edgeCol;
+    temp->joinId = joinId;
     return;
 }
 
@@ -59,8 +61,8 @@ void ConstructGraph(graph * joinGraph, query * newQuery) {
             continue;
         }
 
-        InsertGraph(&(joinGraph->graphArray[rel1]), col1, rel2, col2 );     //undirected graph
-        InsertGraph(&(joinGraph->graphArray[rel2]), col2, rel1, col1 );
+        InsertGraph(&(joinGraph->graphArray[rel1]), col1, rel2, col2, i );     //undirected graph
+        InsertGraph(&(joinGraph->graphArray[rel2]), col2, rel1, col1, i );
     }
     return;
 

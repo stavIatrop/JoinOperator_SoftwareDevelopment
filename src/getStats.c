@@ -195,7 +195,7 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
             
             if( rel1 == rel2 && col1 != col2) {     //second type of filter predicate
 
-                newQuery->priorities[p] = i;
+                newQuery->priorities[p] = i;           //update priorities table, rest of indexes are initialized to -1
                 p++;
                 
                 myint_t cols = relArray.rels[newQuery->rels[rel1]].cols;
