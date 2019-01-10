@@ -17,40 +17,19 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 	double sIdenticality = IdenticalityTest(sRel);
                 
         //Reordering (Choosing best relationship to create the index)
-	if (abs(rRel->size - sRel->size) < 100000 || abs(rRel->size - sRel->size) > 10000000)
+	if ((rRel->size)*rIdenticality <= (sRel->size)*sIdenticality)
 	{
-		if ((rRel->size)*(1-sqrt(rIdenticality)) <= (sRel->size)*(1-sqrt(sIdenticality)))
-		{
-			RoR = reorderRelation(rRel, &h1);
-                        //fprintf(stderr, "MMM\n");
-			RoS = reorderRelation(sRel, &h1);
-                        *switched = 0;
-		}
-		else
-		{
-			RoR = reorderRelation(sRel, &h1);
-                        //fprintf(stderr, "MMM\n");
-        	        RoS = reorderRelation(rRel, &h1);
-                        *switched = 1;
-		}
+		RoR = reorderRelation(rRel, &h1);
+                //fprintf(stderr, "MMM\n");
+		RoS = reorderRelation(sRel, &h1);
+                *switched = 0;
 	}
 	else
 	{
-		if ((rRel->size)*(1-sqrt(sIdenticality)) >= (sRel->size)*(1-sqrt(rIdenticality)))
-                {
-                        RoR = reorderRelation(rRel, &h1);
-                        //fprintf(stderr, "MMM\n");
-                        RoS = reorderRelation(sRel, &h1);
-                        *switched = 0;
-                }
-                else
-                {
-                        RoR = reorderRelation(sRel, &h1);
-                        //fprintf(stderr, "MMM\n");
-                        RoS = reorderRelation(rRel, &h1);
-                        *switched = 1;
-                }
-
+		RoR = reorderRelation(sRel, &h1);
+                //fprintf(stderr, "MMM\n");
+	        RoS = reorderRelation(rRel, &h1);
+                *switched = 1;
 	}
         //fprintf(stderr, "LLL\n");
 

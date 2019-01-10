@@ -78,7 +78,6 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
 
     if (*hash1==FIRST_REORDERED) //hash1 contains the bucket size, or FIRST_REORDERED if it has to be calculated
 	{
-		*hash1 = FindNextPower(floor(ERROR_MARGIN * (size * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
 		hist = Hash1(r,hash1,hash_values); //hist contains the histogram
 	}
 	else

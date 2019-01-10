@@ -5,10 +5,88 @@
 #include "basicStructs.h"
 #include "viceFunctions.h"
 #include "jobScheduler.h"
+#include "bitVector.h"
+#include "getStats.h"
+
+#define BETTERER 100
 
 pthread_mutex_t histMutex;
 pthread_cond_t histCond;
 int histsCompleted = 0;
+
+myint_t distValues(relation *r)
+{
+	if (r->size==0) return 0;
+	tuple *col = r->tuples;
+	myint_t rows = r->size;
+
+	stats * statsStruct = malloc(sizeof(stats));
+    statsStruct->minI = col[0].key;
+    statsStruct->maxU = col[0].key;
+    statsStruct->numElements = rows;
+    statsStruct->distinctVals = 0;
+       
+
+    myint_t i;
+    for( i = 0; i < rows; i++) {
+
+        if (statsStruct->minI > col[i].key ) {
+            statsStruct->minI = col[i].key;
+        }
+
+        else if ( statsStruct->maxU < col[i].key ) {
+            statsStruct->maxU = col[i].key;
+        }
+
+    }
+
+
+    if ( statsStruct->maxU - statsStruct->minI + 1 > N ) {
+        
+        myint_t size = (myint_t) ceil( (double)N / (double)(sizeof(myint_t) * 8) );
+        statsStruct->distinctArray = (myint_t *) malloc( size * sizeof(myint_t) );
+
+        for( i = 0; i < size; i ++)
+            statsStruct->distinctArray[i] = 0;
+
+        for( i = 0; i < rows/BETTERER; i++) {
+
+            if ( TestBit(statsStruct->distinctArray, (col[i].key - statsStruct->minI) % N) == 0) {     //check if it is the first occurence of col[i] value and increment distinctVals
+                statsStruct->distinctVals++;
+            }
+ 
+            SetBit(statsStruct->distinctArray, (col[i].key - statsStruct->minI) % N );             //set ((col[i] - statsStruct->minI) % N)-th bit to True
+            
+        }
+        
+    } else {
+
+        myint_t size = (myint_t) ceil( (double) (statsStruct->maxU - statsStruct->minI + 1)  / (double)(sizeof(myint_t) * 8) );
+        statsStruct->distinctArray = (myint_t *) malloc(size * sizeof(myint_t));
+        
+
+        for( i = 0; i < size; i ++)
+            statsStruct->distinctArray[i] = 0;
+        
+
+        for( i = 0; i < rows/BETTERER; i++) {
+
+            if ( TestBit(statsStruct->distinctArray, col[i].key - statsStruct->minI) == 0) {     //check if it is the first occurence of col[i] value and increment distinctVals
+                
+                statsStruct->distinctVals++;
+            }
+ 
+            SetBit(statsStruct->distinctArray, col[i].key - statsStruct->minI );             //set (col[i] - statsStruct->minI)-th bit to True
+            
+        }
+    }
+
+    free(statsStruct->distinctArray);
+    myint_t dv = statsStruct->distinctVals;
+    free(statsStruct);
+
+    return dv*BETTERER;
+}
 
 myint_t Hash1_2(myint_t key, myint_t len) {
    return key % len;
@@ -176,6 +254,10 @@ myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_value
 
 myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
 {
+	myint_t dvalues=distValues(r);
+	//double identicality = IdenticalityTest(r);
+	*hash1 = FindNextPower(floor(ERROR_MARGIN * (dvalues * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
+
 	myint_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
 	hist = malloc(*hash1 * sizeof(myint_t));
 	if (hist ==NULL)
@@ -184,8 +266,6 @@ myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
             exit(1);
     }
 
-	double identicality=IdenticalityTest(r);
-
 	myint_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
 	beginning = *hash1;
 	prevBad = bad;
@@ -193,7 +273,7 @@ myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
 	while (bad > 0)
     {
 		nextPower = (myint_t)log2(FindNextPower(max/maxBucketSize)+1);
-		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * identicality * size)
+		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * dvalues)
 		{		
 			//the last check in the f is because identical keys cannot be separated.
 			if (*hash1==beginning) return hist;
