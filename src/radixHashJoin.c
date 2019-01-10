@@ -34,11 +34,9 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                 }       
                 else
                 {
-                        double rIdenticality = IdenticalityTest(rRel);
-                        double sIdenticality = IdenticalityTest(sRel);
                                 
                         //Reordering (Choosing best relationship to create the index)
-                        if ((rRel->size)*rIdenticality < (sRel->size)*sIdenticality)
+                        if ((rRel->size) < (sRel->size))
                         {
                                 RoR = reorderRelation(rRel, &h1);
                                 RoS = reorderRelation(sRel, &h1);

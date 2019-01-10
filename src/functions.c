@@ -15,6 +15,8 @@ pthread_mutex_t histMutex;
 pthread_cond_t histCond;
 int histsCompleted = 0;
 
+myint_t curmem=0;
+
 indexArray *FetchFromWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 {
 	//fprintf(stderr,"Fetching %lu, %lu\n\n",rel,col);
@@ -63,8 +65,15 @@ void AddToWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *indexes
 	Warehouse->indexes[Warehouse->size] = indexes;
 	(Warehouse->size)++;
 
-	//fprintf(stderr,"Size is %lu\n\n", Warehouse->size);
+	/*relationIndex *a= indexes->indexes;
+	while (a)
+	{
+		curmem+=a->rel->size;
+		a = a->next;
 
+	}
+	fprintf(stderr,"Current memory usage for the warehouse is %lu\n\n", (myint_t) (curmem * sizeof(tuple) *1.5));
+	*/
 	return;
 }
 
