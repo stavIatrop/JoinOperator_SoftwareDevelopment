@@ -21,7 +21,7 @@
 #include "jobScheduler.h"
 #include "getStats.h"
 #include "hashTreeManip.h"
-
+#include "joinEnumeration.h"
 
 #define TUPLE_NUMB 1000000
 #define ROWS 64
@@ -940,6 +940,22 @@ void testCombToIndexFunc() {
     return;
 }
 
+void testExistsInComb() {
+
+    myint_t retVal = existsInComb("1234", 3);
+    CU_ASSERT(retVal == 1);
+
+    retVal = existsInComb("1", 3);
+    CU_ASSERT(retVal == 0);
+
+    retVal = existsInComb("2", 2);
+    CU_ASSERT(retVal == 1);
+
+    retVal = existsInComb("01234", 4);
+    CU_ASSERT(retVal == 1);
+    return; 
+}
+
 int main(void) {
 
 	CU_pSuite pSuite1 = NULL;
@@ -1075,7 +1091,8 @@ int main(void) {
 
     /* add the tests to the suite */
     if ((NULL == CU_add_test(pSuite9, "Test fillStats", fillStatsTest)) ||
-       (NULL == CU_add_test(pSuite9, "Test CombToIndex", testCombToIndexFunc)))
+       (NULL == CU_add_test(pSuite9, "Test CombToIndex", testCombToIndexFunc)) ||
+       (NULL == CU_add_test(pSuite9, "Test existsInComb", testExistsInComb)) )
     {
         CU_cleanup_registry();
         return CU_get_error();

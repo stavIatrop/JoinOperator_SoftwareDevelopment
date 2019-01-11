@@ -5,7 +5,7 @@
 #include "basicStructs.h"
 #include "pipeI_O.h"
 
-static int indexComb = 0;
+int indexComb;
 
 void combinationUtil(int * arr , int data[], int start, int end, int index, int r, char ** combs) 
 { 
@@ -22,12 +22,13 @@ void combinationUtil(int * arr , int data[], int start, int end, int index, int 
             char * str = (char *) malloc( (numDigits(data[j]) + 1) * sizeof(char) );
             memset(str, '\0', numDigits(data[j]) + 1);
             sprintf(str, "%d", data[j]);
+           
             strcat(combs[indexComb], str);
-            //strcat(combs[indexComb], " ");
+            
             free(str);
         }
-        strcat(combs[indexComb], "\0"); 
-            //printf("%d ", data[j]); 
+        strcat(combs[indexComb], "\0");
+
         
         indexComb++;
         return; 
@@ -54,7 +55,7 @@ void getCombination( int n, int r, char ** combs)
     arr = (int *) malloc(n * sizeof(int));
     for( int i = 0; i < n; i++)
         arr[i] = i;
-
+    indexComb = 0;
     // Print all combination using temprary array 'data[]' 
     combinationUtil(arr, data, 0, n-1, 0, r, combs); 
     free(arr);
@@ -74,10 +75,4 @@ myint_t Factorial(myint_t n)
         return n*Factorial(n-1);
     else
         return 1;
-}
-
-
-int main(void) {
-
-    
 }

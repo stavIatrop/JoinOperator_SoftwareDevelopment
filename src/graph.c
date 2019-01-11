@@ -62,7 +62,7 @@ void ConstructGraph(graph * joinGraph, query * newQuery) {
         }
 
         InsertGraph(&(joinGraph->graphArray[rel1]), col1, rel2, col2, i );     //undirected graph
-        InsertGraph(&(joinGraph->graphArray[rel2]), col2, rel1, col1, i );
+        //InsertGraph(&(joinGraph->graphArray[rel2]), col2, rel1, col1, i );
     }
     return;
 
@@ -87,7 +87,7 @@ void printGraph(graph * joinGraph) {
 }
 
 
-int connected(graph * joinGraph, myint_t vertex1, myint_t vertex2 ) {
+int Connected(graph * joinGraph, myint_t vertex1, myint_t vertex2, myint_t * col1 ,myint_t * col2 ) {
 
     if(joinGraph->graphArray[vertex1].firstEdge == NULL) {
         return 0;
@@ -96,6 +96,9 @@ int connected(graph * joinGraph, myint_t vertex1, myint_t vertex2 ) {
     while(temp != NULL) {
 
         if(temp->node == vertex2) {
+            
+            *col1 = temp->parentCol;
+            *col2 = temp->nodeCol;
             return 1;
         }
         temp = temp->nextEdge;

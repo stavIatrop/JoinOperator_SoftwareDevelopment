@@ -99,14 +99,7 @@ myint_t combToIndex(char * comb) {
     return index;
 }
 
-// myint_t hashFunction(char *comb) {
 
-//     //calc binary index of combination comb
-//     myint_t index;
-
-//     return index;
-
-// }
 
 
 myint_t countSetBits(myint_t  n) {

@@ -15,6 +15,7 @@
 #include "graph.h"
 #include "hashTreeManip.h"
 #include "getStats.h"
+#include "joinEnumeration.h"
 
 void printJoins(query * newQuery) {
     fprintf(stderr, "    Printing Joins of Query\n");
@@ -163,7 +164,8 @@ int main(void) {
                     ConstructGraph(joinGraph, newQuery);
 
                     HTNode ** hashTree = InitialiseHashTree(pow(2, newQuery->numOfRels), newQuery, relArray);
-                    
+                    joinEnumeration(hashTree, newQuery, relArray, joinGraph );
+
                     FreeHashTree(hashTree, newQuery->numOfRels);
                     FreeGraph(joinGraph);
                     headInter * headInt = initialiseHead();
