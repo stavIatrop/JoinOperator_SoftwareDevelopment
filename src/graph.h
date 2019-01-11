@@ -31,6 +31,7 @@ typedef struct GraphStruct {
 
 graph * InitialiseGraph(myint_t );
 void InsertGraph(vertex *, myint_t, myint_t, myint_t, myint_t);
+void printGraph(graph * );
 void ConstructGraph(graph *, query *);
 int Connected(myint_t , myint_t  );
 void FreeVertex(edge * );

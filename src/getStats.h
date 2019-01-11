@@ -6,6 +6,7 @@
 #include "queryStructs.h"
 
 void FillStatsArray(myint_t * , stats * , myint_t  );
-void PredicateSequence(query * , relationsheepArray );
+void executeFilterPredicates(query * , relationsheepArray  );
+void printStats(query * , relationsheepArray );
 
 #endif

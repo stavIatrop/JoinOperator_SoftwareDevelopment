@@ -13,16 +13,20 @@ void combinationUtil(int * arr , int data[], int start, int end, int index, int 
     if (index == r) 
     { 
 
-        combs[indexComb] = (char *)malloc((2 * r + 1) * sizeof(char));
-        memset(combs[indexComb], '\0', 2 * r + 1 );
+        //combs[indexComb] = (char *)malloc((2 * r + 1) * sizeof(char));
+        //memset(combs[indexComb], '\0', 2 * r + 1 );
+        combs[indexComb] = (char *)malloc((r + 1) * sizeof(char));
+        memset(combs[indexComb], '\0', r + 1 );
+
         for (int j=0; j<r; j++) {
             char * str = (char *) malloc( (numDigits(data[j]) + 1) * sizeof(char) );
             memset(str, '\0', numDigits(data[j]) + 1);
             sprintf(str, "%d", data[j]);
             strcat(combs[indexComb], str);
-            strcat(combs[indexComb], " ");
+            //strcat(combs[indexComb], " ");
             free(str);
-        } 
+        }
+        strcat(combs[indexComb], "\0"); 
             //printf("%d ", data[j]); 
         
         indexComb++;
@@ -70,4 +74,10 @@ myint_t Factorial(myint_t n)
         return n*Factorial(n-1);
     else
         return 1;
+}
+
+
+int main(void) {
+
+    
 }

@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <math.h>
 
 #include "I_O_structs.h"
 #include "queryStructs.h"
@@ -13,6 +14,7 @@
 #include "interListInterface.h"
 #include "graph.h"
 #include "hashTreeManip.h"
+#include "getStats.h"
 
 void printJoins(query * newQuery) {
     fprintf(stderr, "    Printing Joins of Query\n");
@@ -155,12 +157,15 @@ int main(void) {
                     
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
                     
-                    //executeFilterPredicates(newQuery, relArray);                //decide best sequence of executing join predicates
-                    //graph * joinGraph = InitialiseGraph(newQuery->numOfRels);
-                    //ConstructGraph(joinGraph, newQuery);
+                    executeFilterPredicates(newQuery, relArray); 
+                      
+                    graph * joinGraph = InitialiseGraph(newQuery->numOfRels);
+                    ConstructGraph(joinGraph, newQuery);
+
                     HTNode ** hashTree = InitialiseHashTree(pow(2, newQuery->numOfRels), newQuery, relArray);
-
-
+                    
+                    FreeHashTree(hashTree, newQuery->numOfRels);
+                    FreeGraph(joinGraph);
                     headInter * headInt = initialiseHead();
 
                     //Perform filters

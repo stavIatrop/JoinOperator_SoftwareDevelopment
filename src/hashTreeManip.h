@@ -24,6 +24,9 @@ typedef struct hashTreeNode {
 HTNode * InitialiseHTNode(query *, myint_t , myint_t  );
 HTNode ** InitialiseHashTree(myint_t , query *, relationsheepArray);
 myint_t countSetBits(myint_t );
-myint_t TestBit(myint_t , myint_t );
+myint_t TestBitPos(myint_t , myint_t );
+void FreeHashTree(HTNode ** , myint_t );
+myint_t charToInteger(char );
+myint_t combToIndex(char *);
 
 #endif

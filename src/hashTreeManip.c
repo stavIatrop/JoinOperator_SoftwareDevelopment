@@ -31,7 +31,7 @@ HTNode * InitialiseHTNode(query *newQuery, myint_t rel, myint_t numCols) {
     HTNode * newHTNode = (HTNode *) malloc(sizeof(HTNode));
     newHTNode->comb = (char *)malloc((numDigits(rel) + sizeof(" ") + sizeof("\0")) * sizeof(char));
     memset(newHTNode->comb, '\0', numDigits(rel) + sizeof(" ") + sizeof("\0") );
-    sprintf(newHTNode->comb, "%d", rel);
+    sprintf(newHTNode->comb, "%ld", rel);
     strcat(newHTNode->comb, " ");
     strcat(newHTNode->comb, "\0");
 
@@ -82,14 +82,33 @@ myint_t charToInteger(char c) {
 
 }
 
-myint_t hashFunction(char *comb) {
+myint_t combToIndex(char * comb) {
 
-    //calc binary index of combination comb
-    myint_t index;
+    myint_t stringLen = strlen(comb);
+    myint_t flag = 1;
+    myint_t index = 0;
 
+    for(int i = 0; i < stringLen; i++ ) {
+
+        char c = comb[i];
+        myint_t shift = charToInteger(c);
+
+        index = index | (flag << shift);
+    }
+    
     return index;
-
 }
+
+// myint_t hashFunction(char *comb) {
+
+//     //calc binary index of combination comb
+//     myint_t index;
+
+//     return index;
+
+// }
+
+
 myint_t countSetBits(myint_t  n) {
 
   myint_t  count = 0; 
@@ -103,7 +122,7 @@ myint_t countSetBits(myint_t  n) {
 
 
 
-myint_t TestBit(myint_t n, myint_t pos) {
+myint_t TestBitPos(myint_t n, myint_t pos) {
 
     myint_t flag = 1; 
 

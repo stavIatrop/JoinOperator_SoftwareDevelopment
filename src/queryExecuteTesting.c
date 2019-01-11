@@ -20,6 +20,8 @@
 #include "queryManip.h"
 #include "jobScheduler.h"
 #include "getStats.h"
+#include "hashTreeManip.h"
+
 
 #define TUPLE_NUMB 1000000
 #define ROWS 64
@@ -921,6 +923,23 @@ void fillStatsTest() {
 
 }
 
+void testCombToIndexFunc() {
+
+    myint_t index = combToIndex("102");
+
+    CU_ASSERT(index == 7);
+
+    index = combToIndex("032");
+
+    CU_ASSERT(index == 13);
+
+    index = combToIndex("03");
+
+    CU_ASSERT(index == 9);
+
+    return;
+}
+
 int main(void) {
 
 	CU_pSuite pSuite1 = NULL;
@@ -1055,7 +1074,8 @@ int main(void) {
     }
 
     /* add the tests to the suite */
-    if ((NULL == CU_add_test(pSuite9, "Test fillStats", fillStatsTest)))
+    if ((NULL == CU_add_test(pSuite9, "Test fillStats", fillStatsTest)) ||
+       (NULL == CU_add_test(pSuite9, "Test CombToIndex", testCombToIndexFunc)))
     {
         CU_cleanup_registry();
         return CU_get_error();

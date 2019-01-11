@@ -328,6 +328,7 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 }
 
 
+
 void FreeQuery(query * newQuery, relationsheepArray relArray) {
 
 	for(myint_t i = 0; i < newQuery->numOfRels; i++) {

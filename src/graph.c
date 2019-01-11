@@ -67,6 +67,26 @@ void ConstructGraph(graph * joinGraph, query * newQuery) {
     return;
 
 }
+
+void printGraph(graph * joinGraph) {
+
+    for( int v = 0; v < joinGraph->numVertices; v++){
+
+        fprintf(stderr,"R%ld-->" , joinGraph->graphArray[v].vertexId );
+        edge * temp = joinGraph->graphArray[v].firstEdge;
+        while(temp != NULL) {
+
+            fprintf(stderr, "R%ld", temp->node);
+            temp = temp->nextEdge;
+        }
+        fprintf(stderr, "\n");
+
+    }
+    return;
+
+}
+
+
 int connected(graph * joinGraph, myint_t vertex1, myint_t vertex2 ) {
 
     if(joinGraph->graphArray[vertex1].firstEdge == NULL) {

@@ -73,6 +73,21 @@ void FillStatsArray(myint_t * col, stats * statsStruct, myint_t rows ) {
     return;
 }
 
+void printStats(query * newQuery, relationsheepArray relArray) {
+
+    for(int i = 0; i < newQuery->numOfRels; i++) {
+
+        myint_t cols = relArray.rels[newQuery->rels[i]].cols;
+        for(int j = 0; j < cols; j++) {
+
+            fprintf(stderr,"Rel%d Col%d\n", i, j);
+            fprintf(stderr,"Min:%ld Max:%ld DistVals:%ld NumElem:%ld\n", relArray.rels[newQuery->rels[i]].statsArray[j].minI, relArray.rels[newQuery->rels[i]].statsArray[j].maxU, relArray.rels[newQuery->rels[i]].statsArray[j].distinctVals, relArray.rels[newQuery->rels[i]].statsArray[j].numElements);
+            fprintf(stderr,"Min:%ld Max:%ld DistVals:%ld NumElem:%ld\n", newQuery->queryStats[i][j].minI, newQuery->queryStats[i][j].maxU, newQuery->queryStats[i][j].distinctVals, newQuery->queryStats[i][j].numElements);
+
+        }
+    }
+
+}
 
 void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
 
@@ -90,7 +105,7 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
 
             if (newQuery->filters[i].op == 1) {         //less operator
                 
-                myint_t k2 = newQuery->filters[i].op - 1;
+                myint_t k2 = newQuery->filters[i].value - 1;
 
                 if (k2 < newQuery->queryStats[indexRel][numCol].maxU) {
 
@@ -119,7 +134,7 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
 
             }else if(newQuery->filters[i].op == 2) {    //greater operator
 
-                myint_t k1 = newQuery->filters[i].op + 1;
+                myint_t k1 = newQuery->filters[i].value + 1;
                 if ( k1 > newQuery->queryStats[indexRel][numCol].minI ) {
 
                     if (k1 > newQuery->queryStats[indexRel][numCol].maxU) {
@@ -158,8 +173,9 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
                 //check if value exists in distinct values bit vector
                 if( TestBit(newQuery->queryStats[indexRel][numCol].distinctArray, newQuery->queryStats[indexRel][numCol].maxU - newQuery->filters[i].value ) == 1) {
 
-                    newQuery->queryStats[indexRel][numCol].distinctVals = 1;
                     newQuery->queryStats[indexRel][numCol].numElements = newQuery->queryStats[indexRel][numCol].numElements / newQuery->queryStats[indexRel][numCol].distinctVals;
+                    newQuery->queryStats[indexRel][numCol].distinctVals = 1;
+                    
                 } else {
 
                     newQuery->queryStats[indexRel][numCol].distinctVals = 0;
@@ -176,7 +192,8 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
                         myint_t fC = newQuery->queryStats[indexRel][c].numElements;
                         myint_t dC = newQuery->queryStats[indexRel][c].distinctVals;
                         newQuery->queryStats[indexRel][c].numElements = newQuery->queryStats[indexRel][numCol].numElements;
-                        newQuery->queryStats[indexRel][c].distinctVals = (myint_t) (dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC )));
+                        
+                        newQuery->queryStats[indexRel][c].distinctVals =  1 + (dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC )));
                     }
             }
 
