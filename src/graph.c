@@ -87,7 +87,7 @@ void printGraph(graph * joinGraph) {
 }
 
 
-int Connected(graph * joinGraph, myint_t vertex1, myint_t vertex2, myint_t * col1 ,myint_t * col2 ) {
+int Connected(graph * joinGraph, myint_t vertex1, myint_t vertex2, myint_t * col1 ,myint_t * col2, myint_t * joinId ) {
 
     if(joinGraph->graphArray[vertex1].firstEdge == NULL) {
         return 0;
@@ -97,6 +97,7 @@ int Connected(graph * joinGraph, myint_t vertex1, myint_t vertex2, myint_t * col
 
         if(temp->node == vertex2) {
             
+            *joinId = temp->joinId;
             *col1 = temp->parentCol;
             *col2 = temp->nodeCol;
             return 1;

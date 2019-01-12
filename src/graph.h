@@ -33,7 +33,7 @@ graph * InitialiseGraph(myint_t );
 void InsertGraph(vertex *, myint_t, myint_t, myint_t, myint_t);
 void printGraph(graph * );
 void ConstructGraph(graph *, query *);
-int Connected(graph *, myint_t , myint_t, myint_t *, myint_t *  );
+int Connected(graph *, myint_t , myint_t, myint_t *, myint_t *, myint_t *  );
 void FreeVertex(edge * );
 void FreeGraph(graph *);
 

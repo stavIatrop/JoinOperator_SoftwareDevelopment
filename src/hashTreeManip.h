@@ -18,6 +18,7 @@ typedef struct hashTreeNode {
     myint_t numRels;
     char * comb;
     myint_t cost;
+    char *joinSeq;
 
 }HTNode;
 

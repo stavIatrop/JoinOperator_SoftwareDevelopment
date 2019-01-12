@@ -35,6 +35,7 @@ HTNode * InitialiseHTNode(query *newQuery, myint_t rel, myint_t numCols) {
     strcat(newHTNode->comb, " ");
     strcat(newHTNode->comb, "\0");
 
+    newHTNode->joinSeq = NULL;
     newHTNode->numRels = 1;
     newHTNode->htstats = (HTStats *) malloc(newHTNode->numRels * sizeof(HTStats));
     newHTNode->htstats[0].cols = numCols;
@@ -59,6 +60,7 @@ void FreeHashTree(HTNode ** hashTree, myint_t queryRels) {
     for(int i = 0; i < pow(2, queryRels); i++) {
 
         if(hashTree[i] != NULL) {
+
             for(int j = 0; j < hashTree[i]->numRels; j++) {
 
                 free(hashTree[i]->htstats[j].relStats);
@@ -66,6 +68,9 @@ void FreeHashTree(HTNode ** hashTree, myint_t queryRels) {
             free(hashTree[i]->htstats);
             free(hashTree[i]->comb);
             
+            if(hashTree[i]->joinSeq != NULL)
+                free(hashTree[i]->joinSeq);
+                         
             free(hashTree[i]);
         }
         

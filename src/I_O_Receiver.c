@@ -155,7 +155,6 @@ int main(void) {
                     strcat(queryStr, "\0");
 
                     
-                    
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
                     
                     executeFilterPredicates(newQuery, relArray); 
@@ -165,6 +164,13 @@ int main(void) {
 
                     HTNode ** hashTree = InitialiseHashTree(pow(2, newQuery->numOfRels), newQuery, relArray);
                     joinEnumeration(hashTree, newQuery, relArray, joinGraph );
+
+                    SetPriorities(hashTree[(int)pow(2, newQuery->numOfRels) - 1]->joinSeq , newQuery);
+
+                    for(int i = 0; i < newQuery->numOfJoins; i++) {
+                        fprintf(stderr, "%ld", newQuery->priorities[i]);
+                    }
+                    fprintf(stderr,"\n");
 
                     FreeHashTree(hashTree, newQuery->numOfRels);
                     FreeGraph(joinGraph);
