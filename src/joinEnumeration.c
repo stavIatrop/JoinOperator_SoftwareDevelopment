@@ -328,8 +328,11 @@ void joinEnumeration(HTNode ** hashTree, query *newQuery, relationsheepArray rel
 
                         free(newHTNode->htstats[j].relStats);
                     }
+
                     free(newHTNode->htstats);
                     free(newHTNode->comb);
+                    if(newHTNode->joinSeq != NULL)
+                        free(newHTNode->joinSeq);
                     
                     free(newHTNode);
                     
