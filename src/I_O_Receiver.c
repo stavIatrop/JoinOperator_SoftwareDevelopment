@@ -167,10 +167,10 @@ int main(void) {
 
                     SetPriorities(hashTree[(int)pow(2, newQuery->numOfRels) - 1]->joinSeq , newQuery);
 
-                    for(int i = 0; i < newQuery->numOfJoins; i++) {
-                        fprintf(stderr, "%ld", newQuery->priorities[i]);
-                    }
-                    fprintf(stderr,"\n");
+                    // for(int i = 0; i < newQuery->numOfJoins; i++) {
+                    //     fprintf(stderr, "%ld", newQuery->priorities[i]);
+                    // }
+                    // fprintf(stderr,"\n");
 
                     FreeHashTree(hashTree, newQuery->numOfRels);
                     FreeGraph(joinGraph);
@@ -182,10 +182,16 @@ int main(void) {
                         fflush(stdout);
                     }
 
-                    //Perform joins
+                    // //Perform joins
+                    // for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
+                    //     workerJ(&(newQuery->joins[whichJoin]), headInt);
+                    // }
+
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
-                        workerJ(&(newQuery->joins[whichJoin]), headInt);
+
+                        workerJ(&(newQuery->joins[newQuery->priorities[whichJoin]]), headInt);
                     }
+
 
 
                     //Perform checksums

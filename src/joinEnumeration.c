@@ -366,6 +366,7 @@ void SetPriorities(char * sequence, query * newQuery){
         newQuery->priorities[i] = joinId;
         i++;
     }
+    myint_t alreadyPrioritized = i;
 
     //it will change(filter joins)
     if( i < newQuery->numOfJoins) {
@@ -376,7 +377,33 @@ void SetPriorities(char * sequence, query * newQuery){
                 if(existsInComb(sequence, k)) {
                     continue;
                 }
-                newQuery->priorities[j] = k;
+
+                int p;
+                for(p = 0; p < alreadyPrioritized - 1; p++) {
+                    
+                    myint_t partA1 = newQuery->joins[newQuery->priorities[p]].participant1.rel;
+                    myint_t partB1 = newQuery->joins[p].participant1.rel;
+                    myint_t partA2 = newQuery->joins[newQuery->priorities[p]].participant2.rel;
+                    myint_t partB2 = newQuery->joins[p].participant2.rel;
+                    if( partA1 == partB1 && partA2 == partB2 ) {
+                        break;
+                    }else if( partA1 == partB2 && partA2 == partB1) {
+                        break;
+                    }
+                }
+                if(p != alreadyPrioritized - 1) {       //break condition
+                    int a;
+                    alreadyPrioritized++;
+                    
+                    for( a = j; a > p + 1; a--) {
+
+                        newQuery->priorities[a] = newQuery->priorities[a - 1];
+                    }
+                    newQuery->priorities[a] = k;
+                } else {
+                    newQuery->priorities[j] = k;
+                }
+                
             }
         }
     }
