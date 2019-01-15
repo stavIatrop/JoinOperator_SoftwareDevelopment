@@ -151,7 +151,7 @@ int main(void) {
 
                     
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
-                    // printJoins(newQuery);
+                    printJoins(newQuery);
 
 
                     headInter * headInt = initialiseHead();
@@ -164,6 +164,7 @@ int main(void) {
 
                     //Perform joins
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
+                        fprintf(stderr,"LLL\n");
                         workerJ(&(newQuery->joins[whichJoin]), headInt);
                     }
 
@@ -204,14 +205,14 @@ int main(void) {
         return -1;
     }
     FreeRelArray(relArray);
-    if (Warehouse)
+    if (indexWarehouse)
     {
-        for (myint_t i=0; i<Warehouse->size;i++) freeIndexArray(Warehouse->indexes[i]);
-        free(Warehouse->rel);
-        free(Warehouse->col);
-        free(Warehouse->hash1);
-        free(Warehouse->indexes);
-        free(Warehouse);
+        for (myint_t i=0; i<indexWarehouse->size;i++) freeIndexArray(indexWarehouse->indexes[i]);
+        free(indexWarehouse->rel);
+        free(indexWarehouse->col);
+        free(indexWarehouse->hash1);
+        free(indexWarehouse->indexes);
+        free(indexWarehouse);
     }
 	
     shutdownAndFreeScheduler();

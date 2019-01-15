@@ -58,15 +58,16 @@ void workerJ(join *pred, headInter * hq)
 {
 	char self = 0;
 	colRel *r1 = &(pred->participant1), *r2 = &(pred->participant2);
-	//fprintf(stderr, "%lu - %lu, %lu - %lu\n\n", r1->realRel, r1->realCol, r2->realRel, r2->realCol);
+	fprintf(stderr, "%lu - %lu, %lu - %lu\n\n", r1->realRel, r1->realCol, r2->realRel, r2->realCol);
 	myint_t rel1 = r1->rel, rel2=r2->rel;
 	if (rel1 == rel2) self = 1;
 	nodeInter *n1 = findNode(hq,rel1);
-    nodeInter *n2 = findNode(hq,rel2);
+    	nodeInter *n2 = findNode(hq,rel2);
 	char used;
 	if (n1 && n2) used=2;
 	else if (n1==NULL && n2==NULL) used=0;
 	else used = 1;
+	fprintf(stderr,"MMM\n");
 	if (self==1)
 	{
 		myint_t *res, survivors;
@@ -121,12 +122,16 @@ void workerJ(join *pred, headInter * hq)
 			{
 				switched = 2;
 				res = performRHJ(hq,r1,r2,&newRel, &skipped, &switched);
-				//fprintf(stderr, "BBBBBBBB\n");
+				fprintf(stderr, "III\n");
 				updateInterAndDelete(hq,n1,n2,res,rel1,rel2,skipped,switched);
+				fprintf(stderr,"JJJ\n");
 			}
+			fprintf(stderr, "NODES: %lu | SIZE: %lu\n", res->numbOfNodes, res->totalSize);
 			freeResultList(res);
 		}
 	}
+	fprintf(stderr,"KKK\n");
+	fflush(stderr);
 	return;
 }
 

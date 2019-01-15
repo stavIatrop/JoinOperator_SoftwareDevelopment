@@ -13,64 +13,106 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 
         myint_t h1 = FIRST_REORDERED;
         reorderedR * RoR = NULL;
-        reorderedR * RoS;
+        reorderedR * RoS = NULL;
         char freedomFlag;
         indexArray * indArr = NULL;
+
+        fprintf(stderr,"NNN\n");
 
         //fprintf(stderr,"rel1 is %lu, rel2 is %lu, switched is %d\n",rRel->realRel,sRel->realRel,*switched);
         if (*switched==0)
         {
                 freedomFlag=0;
-                indArr = FetchFromWarehouse(rRel->realRel, rRel->realCol, &h1);
+                indArr = FetchFromIndexWarehouse(rRel->realRel, rRel->realCol, &h1);
                 if (indArr==NULL)
                 {
-                        indArr = FetchFromWarehouse(sRel->realRel, sRel->realCol, &h1);
+                        indArr = FetchFromIndexWarehouse(sRel->realRel, sRel->realCol, &h1);
                         if (indArr) *switched=1;
                 }
                 if (indArr)
                 {
-                        if (*switched==0) RoS = reorderRelation(sRel, &h1);
-                        else RoS = reorderRelation(rRel, &h1);
-                }       
-                else
-                {
-                                
-                        //Reordering (Choosing best relationship to create the index)
-                        if ((rRel->size) < (sRel->size))
+                        if (*switched==0)
                         {
-                                RoR = reorderRelation(rRel, &h1);
-                                RoS = reorderRelation(sRel, &h1);
-                                *switched = 0;
+                                RoS = FetchFromReWarehouse(sRel->realRel, sRel->realCol, &h1);
+                                if (RoS==NULL)
+                                {
+                                        RoS = reorderRelation(sRel, &h1);
+                                        AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoS);
+                                }
                         }
                         else
                         {
-                                RoR = reorderRelation(sRel, &h1);
-                                RoS = reorderRelation(rRel, &h1);
-                                *switched = 1;
+                                RoS = FetchFromReWarehouse(rRel->realRel, rRel->realCol, &h1);
+                                if (RoS==NULL)
+                                {
+                                        RoS = reorderRelation(rRel, &h1);
+                                        AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoS);
+                                }
+                        }
+                }       
+                else
+                {
+                        RoR = FetchFromReWarehouse(rRel->realRel, rRel->realCol, &h1);
+                        if (RoR==NULL)
+                        {
+                                RoR = FetchFromReWarehouse(sRel->realRel, sRel->realCol, &h1);
+                                if (RoR==NULL)
+                                {
+                                       if ((rRel->size) < (sRel->size))
+                                        {
+                                                RoR = reorderRelation(rRel, &h1);
+                                                AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoR);
+                                                RoS = reorderRelation(sRel, &h1);
+                                                AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoS);
+                                                *switched = 0;
+                                        }
+                                        else
+                                        {
+                                                RoR = reorderRelation(sRel, &h1);
+                                                AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoR);
+                                                RoS = reorderRelation(rRel, &h1);
+                                                AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoS);
+                                                *switched = 1;
+                                        } 
+                                }
+                                else
+                                {
+                                        RoS = reorderRelation(rRel, &h1);
+                                        AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoS);
+                                }
+                        }
+                        else
+                        {
+                                RoS = FetchFromReWarehouse(sRel->realRel, sRel->realCol, &h1);
+                                if (RoR==NULL)
+                                {
+                                        RoS = reorderRelation(sRel, &h1);
+                                        AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoS);
+                                }
                         }
                 } 
         }
         else if (*switched==1)
         {
                 freedomFlag=1;
-                indArr = FetchFromWarehouse(sRel->realRel, sRel->realCol, &h1);
+                indArr = FetchFromIndexWarehouse(sRel->realRel, sRel->realCol, &h1);
                 if (indArr==NULL) RoR = reorderRelation(sRel, &h1);
                 RoS = reorderRelation(rRel, &h1);
         }
         else
         {
                 freedomFlag=2;
-                double rIdenticality = IdenticalityTest(rRel);
-                double sIdenticality = IdenticalityTest(sRel);
                         
-                if ((rRel->size)*rIdenticality <= (sRel->size)*sIdenticality)
+                if (rRel->size <= sRel->size)
                 {
+                        fprintf(stderr,"CCC\n");
                         RoR = reorderRelation(rRel, &h1);
                         RoS = reorderRelation(sRel, &h1);
                         *switched = 0;
                 }
                 else
                 {
+                        fprintf(stderr,"DDD\n");
                         RoR = reorderRelation(sRel, &h1);
                         RoS = reorderRelation(rRel, &h1);
                         *switched = 1;
@@ -82,27 +124,37 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         //Indexing
         if (indArr==NULL)
         {
+                fprintf(stderr,"BBB\n");
                 indArr = indexing(RoR, h1);
-                if (freedomFlag==1) AddToWarehouse(sRel->realRel, sRel->realCol, h1, indArr);
+                if (freedomFlag==1) AddToIndexWarehouse(sRel->realRel, sRel->realCol, h1, indArr);
                 else if (freedomFlag==0)
                 {
-                        if (*switched==0) AddToWarehouse(rRel->realRel, rRel->realCol, h1, indArr);
-                        else AddToWarehouse(sRel->realRel, sRel->realCol, h1, indArr);
+                        if (*switched==0) AddToIndexWarehouse(rRel->realRel, rRel->realCol, h1, indArr);
+                        else AddToIndexWarehouse(sRel->realRel, sRel->realCol, h1, indArr);
                 }
         }
+        fprintf(stderr,"AAA\n");
         results = searchThreadVer(indArr, RoS);
+        fprintf(stderr,"EEE\n");
 
         free(rRel->tuples);
         free(sRel->tuples);
         free(rRel);
         free(sRel);
 
+        fprintf(stderr,"HHH\n");
+
         //Searching
         
-        free(RoS->rel->tuples);
-        free(RoS->rel);
-        free(RoS->pSumArr.psum);
-        free(RoS);
+        if (freedomFlag>0)
+        {
+                free(RoS->rel->tuples);
+                free(RoS->rel);
+                free(RoS->pSumArr.psum);
+                free(RoS);
+        }
+
+        fprintf(stderr,"GGG\n");
         
         if (freedomFlag==2)
         {
@@ -113,5 +165,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                 freeIndexArray(indArr);
         }
         
+        fprintf(stderr,"FFF\n");
+
         return results;
 }

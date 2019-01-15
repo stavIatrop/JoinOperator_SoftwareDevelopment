@@ -17,63 +17,128 @@ int histsCompleted = 0;
 
 myint_t curmem=0;
 
-indexArray *FetchFromWarehouse(myint_t rel, myint_t col, myint_t *hash1)
+indexArray *FetchFromIndexWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 {
-	//fprintf(stderr,"Fetching %lu, %lu\n\n",rel,col);
+	fprintf(stderr,"Fetching %lu, %lu\n\n",rel,col);
 
-	if (Warehouse == NULL)
+	if (indexWarehouse == NULL)
 	{
-		Warehouse = malloc(sizeof(wares));
-		Warehouse ->size = 0;
-		Warehouse->rel = malloc(500*sizeof(myint_t));
-		Warehouse->col = malloc(500*sizeof(myint_t));
-		Warehouse->hash1 = malloc(500*sizeof(myint_t));
-		Warehouse->indexes = malloc(500*sizeof(indexArray *));
+		indexWarehouse = malloc(sizeof(wares));
+		indexWarehouse ->size = 0;
+		indexWarehouse->rel = malloc(500*sizeof(myint_t));
+		indexWarehouse->col = malloc(500*sizeof(myint_t));
+		indexWarehouse->hash1 = malloc(500*sizeof(myint_t));
+		indexWarehouse->indexes = malloc(500*sizeof(indexArray *));
 		return NULL;
 	}
 
-	for (myint_t i=0; i<Warehouse->size; i++)
+	for (myint_t i=0; i<indexWarehouse->size; i++)
 	{
-		if (Warehouse->rel[i]==rel && Warehouse->col[i]==col)
+		if (indexWarehouse->rel[i]==rel && indexWarehouse->col[i]==col)
 		{
-			*hash1 = Warehouse->hash1[i];
-			//fprintf(stderr,"FETCHED! %lu, %lu\n\n",rel,col);
-			return Warehouse->indexes[i];
+			*hash1 = indexWarehouse->hash1[i];
+			fprintf(stderr,"FETCHED! %lu, %lu\n\n",rel,col);
+			return indexWarehouse->indexes[i];
 		}
 	}
 	return NULL;
 }
 
-void AddToWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *indexes)
+reorderedR *FetchFromReWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 {
-	if (Warehouse == NULL)
+	fprintf(stderr,"Fetching ror %lu, %lu\n\n",rel,col);
+
+	if (reWarehouse == NULL)
 	{
-		Warehouse = malloc(sizeof(wares));
-		Warehouse ->size = 0;
-		Warehouse->rel = malloc(500*sizeof(myint_t));
-		Warehouse->col = malloc(500*sizeof(myint_t));
-		Warehouse->hash1 = malloc(500*sizeof(myint_t));
-		Warehouse->indexes = malloc(500*sizeof(reorderedR*));
+		reWarehouse = malloc(sizeof(reWares));
+		reWarehouse ->size = 0;
+		reWarehouse->rel = malloc(500*sizeof(myint_t));
+		reWarehouse->col = malloc(500*sizeof(myint_t));
+		reWarehouse->hash1 = malloc(500*sizeof(myint_t));
+		reWarehouse->arrays = malloc(500*sizeof(reorderedR *));
+		return NULL;
+	}
+
+	if (*hash1==FIRST_REORDERED)
+	{
+		for (myint_t i=0; i<reWarehouse->size; i++)
+		{
+			if (reWarehouse->rel[i]==rel && reWarehouse->col[i]==col)
+			{
+				*hash1 = reWarehouse->hash1[i];
+				fprintf(stderr,"FETCHED ror! %lu, %lu\n\n",rel,col);
+				return reWarehouse->arrays[i];
+			}
+		}
+	}
+	else
+	{
+		for (myint_t i=0; i<reWarehouse->size; i++)
+		{
+			if (reWarehouse->rel[i]==rel && reWarehouse->col[i]==col && reWarehouse->hash1[i]==*hash1)
+			{
+				fprintf(stderr,"FETCHED ror! %lu, %lu\n\n",rel,col);
+				return reWarehouse->arrays[i];
+			}
+		}
+	}
+	return NULL;
+}
+
+void AddToIndexWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *indexes)
+{
+	if (indexWarehouse == NULL)
+	{
+		indexWarehouse = malloc(sizeof(wares));
+		indexWarehouse ->size = 0;
+		indexWarehouse->rel = malloc(500*sizeof(myint_t));
+		indexWarehouse->col = malloc(500*sizeof(myint_t));
+		indexWarehouse->hash1 = malloc(500*sizeof(myint_t));
+		indexWarehouse->indexes = malloc(500*sizeof(reorderedR*));
 		return;
 	}
 
-	//fprintf(stderr,"Adding %lu, %lu\n\n", rel,col);
+	fprintf(stderr,"Adding %lu, %lu\n\n", rel,col);
 
-	Warehouse->rel[Warehouse->size] = rel;
-	Warehouse->col[Warehouse->size] = col;
-	Warehouse->hash1[Warehouse->size] = hash1;
-	Warehouse->indexes[Warehouse->size] = indexes;
-	(Warehouse->size)++;
+	indexWarehouse->rel[indexWarehouse->size] = rel;
+	indexWarehouse->col[indexWarehouse->size] = col;
+	indexWarehouse->hash1[indexWarehouse->size] = hash1;
+	indexWarehouse->indexes[indexWarehouse->size] = indexes;
+	(indexWarehouse->size)++;
 
-	/*relationIndex *a= indexes->indexes;
+	relationIndex *a= indexes->indexes;
 	while (a)
 	{
 		curmem+=a->rel->size;
 		a = a->next;
 
 	}
-	fprintf(stderr,"Current memory usage for the warehouse is %lu\n\n", (myint_t) (curmem * sizeof(tuple) *1.5));
-	*/
+	fprintf(stderr,"Current memory usage for the indexWarehouse is %lu\n\n", (myint_t) (curmem * sizeof(tuple) *1.5));
+	
+	return;
+}
+
+void AddToReWarehouse(myint_t rel, myint_t col, myint_t hash1, reorderedR *array)
+{
+	if (reWarehouse == NULL)
+	{
+		reWarehouse = malloc(sizeof(wares));
+		reWarehouse ->size = 0;
+		reWarehouse->rel = malloc(5000*sizeof(myint_t));
+		reWarehouse->col = malloc(5000*sizeof(myint_t));
+		reWarehouse->hash1 = malloc(5000*sizeof(myint_t));
+		reWarehouse->arrays = malloc(5000*sizeof(reorderedR*));
+		return;
+	}
+
+	fprintf(stderr,"Adding ror %lu, %lu\n\n", rel,col);
+
+	reWarehouse->rel[reWarehouse->size] = rel;
+	reWarehouse->col[reWarehouse->size] = col;
+	reWarehouse->hash1[reWarehouse->size] = hash1;
+	reWarehouse->arrays[reWarehouse->size] = array;
+	(reWarehouse->size)++;
+	
 	return;
 }
 
@@ -320,7 +385,7 @@ myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
 	myint_t dvalues=distValues(r);
 	//double identicality = IdenticalityTest(r);
 	*hash1 = FindNextPower(floor(ERROR_MARGIN * (dvalues * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
-
+	fprintf(stderr, "hash1 = %lu\n", *hash1);
 	myint_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
 	hist = malloc(*hash1 * sizeof(myint_t));
 	if (hist ==NULL)
@@ -333,7 +398,7 @@ myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
 	beginning = *hash1;
 	prevBad = bad;
 
-	while (bad > 0)
+	/*while (bad > 0)
     {
 		nextPower = (myint_t)log2(FindNextPower(max/maxBucketSize)+1);
 		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * dvalues)
@@ -361,7 +426,7 @@ myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
                 exit(1);
         }
         bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
-    }
+    }*/
 
 	return hist;
 }

@@ -16,7 +16,7 @@
 #define HASH1 3
 #define HASH2 5
 #define PSUMSIZE 3
-#define TUPLE_NUMB 10000005
+#define TUPLE_NUMB 10000000
 
 myint_t * chain = NULL;
 myint_t * buckets = NULL;
@@ -78,7 +78,7 @@ void testZeroResults() {
 
         indexA = indexing(RoR, h1);
 
-        list = search(indexA, RoS);
+        list = searchThreadVer(indexA, RoS);
 
         CU_ASSERT(list->numbOfNodes == 0);
 
@@ -201,7 +201,7 @@ int freeList(void) {
 
 void testNumbOfNodes(void) {
         
-        unsigned long int targetNodes = (TUPLE_NUMB * sizeof(tuple)) / MB + 1;
+        unsigned long int targetNodes = (TUPLE_NUMB * sizeof(tuple)) / MB;
         printf("EXPECTED = %ld | RESULT = %ld\n", targetNodes, list->numbOfNodes);
         CU_ASSERT(targetNodes == list->numbOfNodes);
 }

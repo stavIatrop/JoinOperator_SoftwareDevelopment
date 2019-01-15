@@ -30,9 +30,13 @@ extern pthread_mutex_t histMutex;
 extern pthread_cond_t histCond;
 extern int histsCompleted;
 
-indexArray *FetchFromWarehouse(myint_t rel, myint_t col, myint_t *hash1);
+indexArray *FetchFromIndexWarehouse(myint_t rel, myint_t col, myint_t *hash1);
 
-void AddToWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *indexes);
+void AddToIndexWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *indexes);
+
+reorderedR *FetchFromReWarehouse(myint_t rel, myint_t col, myint_t *hash1);
+
+void AddToReWarehouse(myint_t rel, myint_t col, myint_t hash1, reorderedR *);
 
 myint_t distValues(relation *);
 

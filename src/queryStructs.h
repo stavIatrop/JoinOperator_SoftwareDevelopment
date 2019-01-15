@@ -27,7 +27,16 @@ typedef struct Wares {
         myint_t size;
 } wares;
 
-wares *Warehouse;
+typedef struct ReorderedWares {
+        myint_t *rel;
+        myint_t *col;
+        myint_t *hash1;
+        reorderedR **arrays;
+        myint_t size;
+} reWares;
+
+wares *indexWarehouse;
+reWares *reWarehouse;
 
 typedef struct Relationsheep {
         myint_t rows;
