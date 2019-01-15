@@ -352,6 +352,65 @@ void joinEnumeration(HTNode ** hashTree, query *newQuery, relationsheepArray rel
     return;
 }
 
+// void SetPriorities(char * sequence, query * newQuery){
+
+//     myint_t i = 0;
+//     while( newQuery->priorities[i] != -1) {
+//         i++;
+//     }
+
+//     for(int j = 0; j < strlen(sequence); j++) {
+
+//         char c = sequence[j];
+//         myint_t joinId = charToInteger(c);
+//         newQuery->priorities[i] = joinId;
+//         i++;
+//     }
+//     myint_t alreadyPrioritized = i;
+
+//     //it will change(filter joins)
+//     if( i < newQuery->numOfJoins) {
+
+//         for(int j = i; j < newQuery->numOfJoins; j++) {
+
+//             for(myint_t k = 0; k < newQuery->numOfJoins; k++) {  //iterate through joins in order to set priority to those who
+//                if(existsInComb(sequence, k)) {                     //are done between rels that have already participate to previous joins
+//                 if(existsInComb(sequence, k)) {
+//                     continue;
+//                 }
+
+//                 int p;
+//                 for(p = 0; p < alreadyPrioritized - 1; p++) {
+                    
+//                     myint_t partA1 = newQuery->joins[newQuery->priorities[p]].participant1.rel;
+//                     myint_t partB1 = newQuery->joins[p].participant1.rel;
+//                     myint_t partA2 = newQuery->joins[newQuery->priorities[p]].participant2.rel;
+//                     myint_t partB2 = newQuery->joins[p].participant2.rel;
+//                     if( partA1 == partB1 && partA2 == partB2 ) {
+//                         break;
+//                     }else if( partA1 == partB2 && partA2 == partB1) {
+//                         break;
+//                     }
+//                 }
+//                 if(p != alreadyPrioritized - 1) {       //break condition
+//                     int a;
+//                     alreadyPrioritized++;
+                    
+//                     for( a = j; a > p + 1; a--) {
+
+//                         newQuery->priorities[a] = newQuery->priorities[a - 1];
+//                     }
+//                     newQuery->priorities[a] = k;
+//                 } else {
+//                     newQuery->priorities[j] = k;
+//                 }
+                
+//             }
+//         }
+//     }
+//     return;
+// }
+
 void SetPriorities(char * sequence, query * newQuery){
 
     myint_t i = 0;
@@ -373,25 +432,44 @@ void SetPriorities(char * sequence, query * newQuery){
 
         for(int j = i; j < newQuery->numOfJoins; j++) {
 
-            for(myint_t k = 0; k < newQuery->numOfJoins; k++) {
-                if(existsInComb(sequence, k)) {
+            for(myint_t k = 0; k < newQuery->numOfJoins; k++) {     //iterate through joins in order to set priority to those who
+                if(existsInComb(sequence, k)) {                     //are done between rels that have already participate to previous joins
                     continue;
                 }
 
-                int p;
-                for(p = 0; p < alreadyPrioritized - 1; p++) {
-                    
+                myint_t p, flag;
+                flag = 0;
+                for(p = 0; p < alreadyPrioritized; p++) {
+                    //fprintf(stderr, "already:%ld k:%ld p:%ld\n", alreadyPrioritized, k, p);
                     myint_t partA1 = newQuery->joins[newQuery->priorities[p]].participant1.rel;
-                    myint_t partB1 = newQuery->joins[p].participant1.rel;
+                    myint_t partA1col = newQuery->joins[newQuery->priorities[p]].participant1.numCol;
+                    myint_t partB1 = newQuery->joins[k].participant1.rel;
+                    myint_t partB1col = newQuery->joins[k].participant1.numCol;
                     myint_t partA2 = newQuery->joins[newQuery->priorities[p]].participant2.rel;
-                    myint_t partB2 = newQuery->joins[p].participant2.rel;
+                    myint_t partA2col = newQuery->joins[newQuery->priorities[p]].participant2.numCol;
+                    myint_t partB2 = newQuery->joins[k].participant2.rel;
+                    myint_t partB2col = newQuery->joins[k].participant2.numCol;
+
+                    //fprintf(stderr, "partA1:%ld, partA1col:%ld, partA2:%ld, partA2col:%ld, partB1:%ld, partB1col: %ld,  partB2:%ld, partB2col:%ld\n", partA1,partA1col, partA2, partA2col, partB1, partB1col, partB2, partB2col);
                     if( partA1 == partB1 && partA2 == partB2 ) {
+                        if(partA1col == partB1col && partA2col == partB2col) { //if join is identical with another one, skip it
+                            flag = 1;
+                            
+                        }
                         break;
                     }else if( partA1 == partB2 && partA2 == partB1) {
+                        if(partA1col == partB2col && partA2col == partB1col) {  //if join is identical with another one, skip it
+                            flag = 1;
+                            
+                        }
                         break;
                     }
                 }
-                if(p != alreadyPrioritized - 1) {       //break condition
+                if(flag == 1) {
+                    continue;
+                }
+                if(p != alreadyPrioritized) {       //break condition
+                    //fprintf(stderr, "I'm broken...\n");
                     int a;
                     alreadyPrioritized++;
                     
@@ -400,7 +478,8 @@ void SetPriorities(char * sequence, query * newQuery){
                         newQuery->priorities[a] = newQuery->priorities[a - 1];
                     }
                     newQuery->priorities[a] = k;
-                } else {
+                }
+                else {
                     newQuery->priorities[j] = k;
                 }
                 

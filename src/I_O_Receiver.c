@@ -188,8 +188,11 @@ int main(void) {
                     // }
 
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
-
-                        workerJ(&(newQuery->joins[newQuery->priorities[whichJoin]]), headInt);
+                        if(newQuery->priorities[whichJoin] != -1) {
+                            
+                            workerJ(&(newQuery->joins[newQuery->priorities[whichJoin]]), headInt);
+                        }
+                        
                     }
 
 
