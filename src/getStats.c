@@ -118,16 +118,26 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
 
                     } else if (k2 == newQuery->queryStats[indexRel][numCol].minI) {
 
-                        newQuery->queryStats[indexRel][numCol].maxU = k2;
-                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) ((double)(newQuery->queryStats[indexRel][numCol].numElements) / (double)(newQuery->queryStats[indexRel][numCol].distinctVals));
-                        newQuery->queryStats[indexRel][numCol].distinctVals = 1;
+                        if(  newQuery->queryStats[indexRel][numCol].distinctVals == 0) {
+
+                            newQuery->queryStats[indexRel][numCol].maxU = 0;
+                            newQuery->queryStats[indexRel][numCol].numElements = 0;
+                            newQuery->queryStats[indexRel][numCol].minI = 0;
+                        } else {
+
+                            newQuery->queryStats[indexRel][numCol].maxU = k2;
+                            newQuery->queryStats[indexRel][numCol].numElements = (myint_t) ceil(((double)(newQuery->queryStats[indexRel][numCol].numElements) / (double)(newQuery->queryStats[indexRel][numCol].distinctVals)));
+                            newQuery->queryStats[indexRel][numCol].distinctVals = 1;
+                        }
+                        
                     } else {
 
                         myint_t prevMax = newQuery->queryStats[indexRel][numCol].maxU;
-                        newQuery->queryStats[indexRel][numCol].maxU = k2;
                         myint_t min = newQuery->queryStats[indexRel][numCol].minI;
-                        newQuery->queryStats[indexRel][numCol].distinctVals = (myint_t) (((double)(k2-min)/(double)(prevMax-min)) *  newQuery->queryStats[indexRel][numCol].distinctVals);
-                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) (((double)(k2-min)/(double)(prevMax-min)) *  newQuery->queryStats[indexRel][numCol].numElements);
+                        
+                        newQuery->queryStats[indexRel][numCol].maxU = k2;
+                        newQuery->queryStats[indexRel][numCol].distinctVals = (myint_t) ceil((((double)(k2-min)/(double)(prevMax-min)) *  newQuery->queryStats[indexRel][numCol].distinctVals));
+                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) ceil((((double)(k2-min)/(double)(prevMax-min)) *  newQuery->queryStats[indexRel][numCol].numElements));
                         
                     }
                 }
@@ -146,9 +156,16 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
 
                     }else if( k1 == newQuery->queryStats[indexRel][numCol].maxU){
                         
-                        newQuery->queryStats[indexRel][numCol].minI = k1;
-                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) ((double)(newQuery->queryStats[indexRel][numCol].numElements) / (double)(newQuery->queryStats[indexRel][numCol].distinctVals));
-                        newQuery->queryStats[indexRel][numCol].distinctVals = 1;
+                        if(  newQuery->queryStats[indexRel][numCol].distinctVals == 0) {
+
+                            newQuery->queryStats[indexRel][numCol].maxU = 0;
+                            newQuery->queryStats[indexRel][numCol].numElements = 0;
+                            newQuery->queryStats[indexRel][numCol].minI = 0;
+                        } else {
+                            newQuery->queryStats[indexRel][numCol].minI = k1;
+                            newQuery->queryStats[indexRel][numCol].numElements = (myint_t) ceil(((double)(newQuery->queryStats[indexRel][numCol].numElements) / (double)(newQuery->queryStats[indexRel][numCol].distinctVals)));
+                            newQuery->queryStats[indexRel][numCol].distinctVals = 1;
+                        }
                         
 
                     } else {
@@ -156,8 +173,8 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
                         myint_t prevMin = newQuery->queryStats[indexRel][numCol].minI;
                         newQuery->queryStats[indexRel][numCol].minI = k1;
                         myint_t max = newQuery->queryStats[indexRel][numCol].maxU;
-                        newQuery->queryStats[indexRel][numCol].distinctVals = (myint_t) (((double)(max-k1)/(double)(max-prevMin)) *  newQuery->queryStats[indexRel][numCol].distinctVals);
-                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) (((double)(max-k1)/(double)(max-prevMin)) *  newQuery->queryStats[indexRel][numCol].numElements);
+                        newQuery->queryStats[indexRel][numCol].distinctVals = (myint_t) ceil((((double)(max-k1)/(double)(max-prevMin)) *  newQuery->queryStats[indexRel][numCol].distinctVals));
+                        newQuery->queryStats[indexRel][numCol].numElements = (myint_t) ceil((((double)(max-k1)/(double)(max-prevMin)) *  newQuery->queryStats[indexRel][numCol].numElements));
                         
                     }                   
 
@@ -173,8 +190,15 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
                 //check if value exists in distinct values bit vector
                 if( TestBit(newQuery->queryStats[indexRel][numCol].distinctArray, newQuery->queryStats[indexRel][numCol].maxU - newQuery->filters[i].value ) == 1) {
 
-                    newQuery->queryStats[indexRel][numCol].numElements = newQuery->queryStats[indexRel][numCol].numElements / newQuery->queryStats[indexRel][numCol].distinctVals;
-                    newQuery->queryStats[indexRel][numCol].distinctVals = 1;
+                    if(newQuery->queryStats[indexRel][numCol].distinctVals == 0) {
+
+                        newQuery->queryStats[indexRel][numCol].numElements = 0;
+                    } else {
+                        
+                        newQuery->queryStats[indexRel][numCol].numElements = ceil(newQuery->queryStats[indexRel][numCol].numElements / newQuery->queryStats[indexRel][numCol].distinctVals);
+                        newQuery->queryStats[indexRel][numCol].distinctVals = 1;
+                    }
+                    
                     
                 } else {
 
@@ -187,18 +211,30 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
             for( int c = 0; c < cols; c++) {
 
                     if (c != numCol) {
-
+                        
                         myint_t fANew = newQuery->queryStats[indexRel][numCol].numElements;
                         myint_t fC = newQuery->queryStats[indexRel][c].numElements;
                         myint_t dC = newQuery->queryStats[indexRel][c].distinctVals;
-                        newQuery->queryStats[indexRel][c].numElements = newQuery->queryStats[indexRel][numCol].numElements;
+                        if( fA == 0 || dC == 0 ) {
+
+                            newQuery->queryStats[indexRel][c].numElements = 0;
+                            newQuery->queryStats[indexRel][c].minI = 0;
+                            newQuery->queryStats[indexRel][c].distinctVals =  0;
+                            newQuery->queryStats[indexRel][c].maxU = 0;
+
+                        } else {
+
+                            newQuery->queryStats[indexRel][c].numElements = newQuery->queryStats[indexRel][numCol].numElements;
                         
-                        newQuery->queryStats[indexRel][c].distinctVals =  1 + (dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC )));
+                            newQuery->queryStats[indexRel][c].distinctVals =  (myint_t) ceil((dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC ))));
+                        }
+                        
                     }
             }
 
         }
-    }if (newQuery->numOfJoins != 0  ) {
+    }
+    if (newQuery->numOfJoins != 0  ) {
 
         myint_t p = 0;      //index for updating priorities table
 
@@ -239,13 +275,26 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
                 myint_t uANew = newQuery->queryStats[rel1][col1].maxU;
                 myint_t n = uANew - lANew + 1;
                 myint_t fA = newQuery->queryStats[rel1][col1].numElements;
-                newQuery->queryStats[rel1][col1].numElements = (myint_t) ((double)fA/(double)n);
+                newQuery->queryStats[rel1][col1].numElements = (myint_t) ceil(((double)fA/(double)n));
                 newQuery->queryStats[rel2][col2].numElements = newQuery->queryStats[rel1][col1].numElements;
 
                 myint_t fANew = newQuery->queryStats[rel1][col1].numElements;
                 myint_t dA = newQuery->queryStats[rel1][col1].distinctVals;
-                newQuery->queryStats[rel1][col1].distinctVals = (myint_t) (dA * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fA/ (double)dA )));
 
+                if( fA == 0 || dA == 0) {
+
+                    newQuery->queryStats[rel1][col1].distinctVals = 0;
+                    newQuery->queryStats[rel1][col1].numElements  = 0;
+                    newQuery->queryStats[rel1][col1].maxU = 0;
+                    newQuery->queryStats[rel1][col1].minI = 0;
+
+
+                } else {
+
+                    newQuery->queryStats[rel1][col1].distinctVals = (myint_t) ceil((dA * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fA/ (double)dA ))));
+
+                }
+                
 
                 for( int c = 0; c < cols; c++) {
 
@@ -254,8 +303,18 @@ void executeFilterPredicates(query * newQuery, relationsheepArray relArray ) {
                         myint_t fANew = newQuery->queryStats[rel1][col1].numElements;
                         myint_t fC = newQuery->queryStats[rel1][c].numElements;
                         myint_t dC = newQuery->queryStats[rel1][c].distinctVals;
-                        newQuery->queryStats[rel1][c].numElements = fANew;
-                        newQuery->queryStats[rel1][c].distinctVals = (myint_t) (dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC )));
+                        if( fA == 0 || dC == 0 ) {
+
+                            newQuery->queryStats[rel1][c].distinctVals = 0;
+                            newQuery->queryStats[rel1][c].numElements  = 0;
+                            newQuery->queryStats[rel1][c].maxU = 0;
+                            newQuery->queryStats[rel1][c].minI = 0;
+                        } else {
+
+                            newQuery->queryStats[rel1][c].numElements = fANew;
+                            newQuery->queryStats[rel1][c].distinctVals = (myint_t) ceil((dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC ))));
+                        }
+                        
                     }
                 }   
 

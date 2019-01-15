@@ -43,10 +43,33 @@ void Filter(HTStats * statistics, myint_t k1, myint_t k2, myint_t filterCol) {
     myint_t fA = statistics->relStats[filterCol].numElements;
     myint_t dA = statistics->relStats[filterCol].distinctVals;
 
+    if((k2 < k1)) {
+        
+        statistics->relStats[filterCol].minI = 0;
+        statistics->relStats[filterCol].maxU = 0;
+        statistics->relStats[filterCol].distinctVals = 0;
+        statistics->relStats[filterCol].numElements = 0;
+
+        for( int c = 0; c < statistics->cols; c++) {
+        
+            if(c == filterCol) {
+                continue;
+            }
+
+            statistics->relStats[c].minI = 0;
+            statistics->relStats[c].maxU = 0;
+            statistics->relStats[c].distinctVals = 0;
+            statistics->relStats[c].numElements = 0;
+        }
+
+        return;
+
+    }
     statistics->relStats[filterCol].minI = k1;
     statistics->relStats[filterCol].maxU = k2;
-    statistics->relStats[filterCol].distinctVals = ((double)(k2 - k1) / (double) (uA - lA)) * dA;
-    statistics->relStats[filterCol].numElements = ((double)(k2 - k1) / (double) (uA - lA)) * fA;
+    
+    statistics->relStats[filterCol].distinctVals = ceil(((double)(k2 - k1) / (double) (uA - lA)) * dA);
+    statistics->relStats[filterCol].numElements = ceil(((double)(k2 - k1) / (double) (uA - lA)) * fA);
     
     myint_t fANew = statistics->relStats[filterCol].numElements;
 
@@ -58,7 +81,7 @@ void Filter(HTStats * statistics, myint_t k1, myint_t k2, myint_t filterCol) {
         myint_t fC = statistics->relStats[c].numElements;
         myint_t dC = statistics->relStats[c].distinctVals;
 
-        statistics->relStats[c].distinctVals = 1 + (dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC )));
+        statistics->relStats[c].distinctVals = ceil((dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC ))));
         statistics->relStats[c].numElements = fANew;
    }
    return;
@@ -77,9 +100,9 @@ void Join( HTStats * statA, HTStats * statB, myint_t colA, myint_t colB) {
     myint_t dA = statA->relStats[colA].distinctVals;
     myint_t dB = statB->relStats[colB].distinctVals;
 
-    statA->relStats[colA].numElements = (double)(fA * fB) / (double) n;
+    statA->relStats[colA].numElements = ceil((double)(fA * fB) / (double) n);
     statB->relStats[colB].numElements = statA->relStats[colA].numElements;
-    statA->relStats[colA].distinctVals = (double)(dA * dB) / (double) n;
+    statA->relStats[colA].distinctVals = ceil((double)(dA * dB) / (double) n);
     statB->relStats[colB].distinctVals = statA->relStats[colA].distinctVals;
 
     myint_t fANew = statA->relStats[colA].numElements;
@@ -94,9 +117,18 @@ void Join( HTStats * statA, HTStats * statB, myint_t colA, myint_t colB) {
         
         myint_t dC = statA->relStats[c].distinctVals;
         myint_t fC = statA->relStats[c].numElements;
+        if( dA == 0  || dC == 0) {
 
-        statA->relStats[c].distinctVals = 1 + (dC * (1 - pow((double) (1 - ((double) dANew/(double) dA)), (double)fC/ (double)dC )));
-        statA->relStats[c].numElements = fANew;
+            statA->relStats[c].distinctVals = 0;
+            statA->relStats[c].numElements = 0;
+            statA->relStats[c].minI = 0;
+            statA->relStats[c].maxU = 0;
+        } else {
+
+            statA->relStats[c].distinctVals = ceil((dC * (1 - pow((double) (1 - ((double) dANew/(double) dA)), (double)fC/ (double)dC ))));
+            statA->relStats[c].numElements = fANew;
+        }
+        
     }
 
     for(int c = 0; c < statB->cols; c++) {
@@ -108,8 +140,17 @@ void Join( HTStats * statA, HTStats * statB, myint_t colA, myint_t colB) {
         myint_t dC = statB->relStats[c].distinctVals;
         myint_t fC = statB->relStats[c].numElements;
 
-        statB->relStats[c].distinctVals = 1 + (dC * (1 - pow((double) (1 - ((double) dBNew/(double) dB)), (double)fC/ (double)dC )));
-        statB->relStats[c].numElements = fANew;
+        if( dB == 0 || dC == 0) {
+            statB->relStats[c].distinctVals = 0;
+            statB->relStats[c].numElements = 0;
+            statB->relStats[c].minI = 0;
+            statB->relStats[c].maxU = 0;
+        } else {
+
+            statB->relStats[c].distinctVals = (ceil(dC * (1 - pow((double) (1 - ((double) dBNew/(double) dB)), (double)fC/ (double)dC ))));
+            statB->relStats[c].numElements = fANew;
+        }
+        
     }
 
     return;
@@ -221,8 +262,19 @@ HTNode * CreateJoinTree(HTNode * HT1, HTNode * HT2 ,char * newComb, myint_t conn
             myint_t fC = newHTNode->htstats[r].relStats[c].numElements;
             myint_t dC = newHTNode->htstats[r].relStats[c].distinctVals;
 
-            newHTNode->htstats[r].relStats[c].distinctVals = 1 + (dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC )));
-            newHTNode->htstats[r].relStats[c].numElements = fANew;
+            if( fA == 0 || dC == 0) {
+
+                newHTNode->htstats[r].relStats[c].distinctVals = 0;
+                newHTNode->htstats[r].relStats[c].numElements = 0;
+                newHTNode->htstats[r].relStats[c].maxU = 0;
+                newHTNode->htstats[r].relStats[c].minI = 0;
+
+            }else {
+
+                newHTNode->htstats[r].relStats[c].distinctVals = ceil((dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC ))));
+                newHTNode->htstats[r].relStats[c].numElements = fANew;
+            }
+            
 
         }
 
@@ -248,8 +300,18 @@ HTNode * CreateJoinTree(HTNode * HT1, HTNode * HT2 ,char * newComb, myint_t conn
             myint_t fC = newHTNode->htstats[r].relStats[c].numElements;
             myint_t dC = newHTNode->htstats[r].relStats[c].distinctVals;
 
-            newHTNode->htstats[r].relStats[c].distinctVals = 1 + (dC * (1 - pow((double) (1 - ((double) dANew/(double) dA)), (double)fC/ (double)dC )));
-            newHTNode->htstats[r].relStats[c].numElements = fANew;
+            if( dA == 0 || dC == 0) {
+
+                newHTNode->htstats[r].relStats[c].distinctVals = 0;
+                newHTNode->htstats[r].relStats[c].numElements = 0;
+                newHTNode->htstats[r].relStats[c].maxU = 0;
+                newHTNode->htstats[r].relStats[c].minI = 0;
+            }else {
+
+                newHTNode->htstats[r].relStats[c].distinctVals = ceil((dC * (1 - pow((double) (1 - ((double) dANew/(double) dA)), (double)fC/ (double)dC ))));
+                newHTNode->htstats[r].relStats[c].numElements = fANew;
+            }
+            
 
         }
 
@@ -373,25 +435,44 @@ void SetPriorities(char * sequence, query * newQuery){
 
         for(int j = i; j < newQuery->numOfJoins; j++) {
 
-            for(myint_t k = 0; k < newQuery->numOfJoins; k++) {
-                if(existsInComb(sequence, k)) {
+            for(myint_t k = 0; k < newQuery->numOfJoins; k++) {     //iterate through joins in order to set priority to those who
+                if(existsInComb(sequence, k)) {                     //are done between rels that have already participate to previous joins
                     continue;
                 }
 
-                int p;
-                for(p = 0; p < alreadyPrioritized - 1; p++) {
-                    
+                myint_t p, flag;
+                flag = 0;
+                for(p = 0; p < alreadyPrioritized; p++) {
+                    //fprintf(stderr, "already:%ld k:%ld p:%ld\n", alreadyPrioritized, k, p);
                     myint_t partA1 = newQuery->joins[newQuery->priorities[p]].participant1.rel;
-                    myint_t partB1 = newQuery->joins[p].participant1.rel;
+                    myint_t partA1col = newQuery->joins[newQuery->priorities[p]].participant1.numCol;
+                    myint_t partB1 = newQuery->joins[k].participant1.rel;
+                    myint_t partB1col = newQuery->joins[k].participant1.numCol;
                     myint_t partA2 = newQuery->joins[newQuery->priorities[p]].participant2.rel;
-                    myint_t partB2 = newQuery->joins[p].participant2.rel;
+                    myint_t partA2col = newQuery->joins[newQuery->priorities[p]].participant2.numCol;
+                    myint_t partB2 = newQuery->joins[k].participant2.rel;
+                    myint_t partB2col = newQuery->joins[k].participant2.numCol;
+
+                    //fprintf(stderr, "partA1:%ld, partA1col:%ld, partA2:%ld, partA2col:%ld, partB1:%ld, partB1col: %ld,  partB2:%ld, partB2col:%ld\n", partA1,partA1col, partA2, partA2col, partB1, partB1col, partB2, partB2col);
                     if( partA1 == partB1 && partA2 == partB2 ) {
+                        if(partA1col == partB1col && partA2col == partB2col) { //if join is identical with another one, skip it
+                            flag = 1;
+                            
+                        }
                         break;
                     }else if( partA1 == partB2 && partA2 == partB1) {
+                        if(partA1col == partB2col && partA2col == partB1col) {  //if join is identical with another one, skip it
+                            flag = 1;
+                            
+                        }
                         break;
                     }
                 }
-                if(p != alreadyPrioritized - 1) {       //break condition
+                if(flag == 1) {
+                    continue;
+                }
+                if(p != alreadyPrioritized) {       //break condition
+                    //fprintf(stderr, "I'm broken...\n");
                     int a;
                     alreadyPrioritized++;
                     
@@ -400,7 +481,8 @@ void SetPriorities(char * sequence, query * newQuery){
                         newQuery->priorities[a] = newQuery->priorities[a - 1];
                     }
                     newQuery->priorities[a] = k;
-                } else {
+                }
+                else {
                     newQuery->priorities[j] = k;
                 }
                 

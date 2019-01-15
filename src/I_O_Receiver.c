@@ -182,14 +182,17 @@ int main(void) {
                         fflush(stdout);
                     }
 
-                    // //Perform joins
+                    //Perform joins
                     // for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
                     //     workerJ(&(newQuery->joins[whichJoin]), headInt);
                     // }
 
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
+                        if(newQuery->priorities[whichJoin] != -1) {
 
-                        workerJ(&(newQuery->joins[newQuery->priorities[whichJoin]]), headInt);
+                            workerJ(&(newQuery->joins[newQuery->priorities[whichJoin]]), headInt);
+                        }
+                        
                     }
 
 
