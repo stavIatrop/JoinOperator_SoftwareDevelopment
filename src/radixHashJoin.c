@@ -17,7 +17,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         char freedomFlag;
         indexArray * indArr = NULL;
 
-        fprintf(stderr,"NNN\n");
+        //fprintf(stderr,"NNN\n");
 
         //fprintf(stderr,"rel1 is %lu, rel2 is %lu, switched is %d\n",rRel->realRel,sRel->realRel,*switched);
         if (*switched==0)
@@ -29,6 +29,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                         indArr = FetchFromIndexWarehouse(sRel->realRel, sRel->realCol, &h1);
                         if (indArr) *switched=1;
                 }
+                //fprintf(stderr,"indArr is %lu\n\n",indArr);
                 if (indArr)
                 {
                         if (*switched==0)
@@ -105,14 +106,14 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                         
                 if (rRel->size <= sRel->size)
                 {
-                        fprintf(stderr,"CCC\n");
+                        //fprintf(stderr,"CCC\n");
                         RoR = reorderRelation(rRel, &h1);
                         RoS = reorderRelation(sRel, &h1);
                         *switched = 0;
                 }
                 else
                 {
-                        fprintf(stderr,"DDD\n");
+                        //fprintf(stderr,"DDD\n");
                         RoR = reorderRelation(sRel, &h1);
                         RoS = reorderRelation(rRel, &h1);
                         *switched = 1;
@@ -124,7 +125,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         //Indexing
         if (indArr==NULL)
         {
-                fprintf(stderr,"BBB\n");
+                //fprintf(stderr,"BBB\n");
                 indArr = indexing(RoR, h1);
                 if (freedomFlag==1) AddToIndexWarehouse(sRel->realRel, sRel->realCol, h1, indArr);
                 else if (freedomFlag==0)
@@ -133,16 +134,16 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                         else AddToIndexWarehouse(sRel->realRel, sRel->realCol, h1, indArr);
                 }
         }
-        fprintf(stderr,"AAA\n");
+        //fprintf(stderr,"AAA\n");
         results = searchThreadVer(indArr, RoS);
-        fprintf(stderr,"EEE\n");
+        //fprintf(stderr,"EEE\n");
 
         free(rRel->tuples);
         free(sRel->tuples);
         free(rRel);
         free(sRel);
 
-        fprintf(stderr,"HHH\n");
+        //fprintf(stderr,"HHH\n");
 
         //Searching
         
@@ -154,7 +155,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                 free(RoS);
         }
 
-        fprintf(stderr,"GGG\n");
+        //fprintf(stderr,"GGG\n");
         
         if (freedomFlag==2)
         {
@@ -165,7 +166,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                 freeIndexArray(indArr);
         }
         
-        fprintf(stderr,"FFF\n");
+        //fprintf(stderr,"FFF\n");
 
         return results;
 }

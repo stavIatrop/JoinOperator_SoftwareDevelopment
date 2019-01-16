@@ -151,7 +151,7 @@ int main(void) {
 
                     
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
-                    printJoins(newQuery);
+                    //printJoins(newQuery);
 
 
                     headInter * headInt = initialiseHead();
@@ -164,7 +164,7 @@ int main(void) {
 
                     //Perform joins
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
-                        fprintf(stderr,"LLL\n");
+                        //fprintf(stderr,"LLL\n");
                         workerJ(&(newQuery->joins[whichJoin]), headInt);
                     }
 

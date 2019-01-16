@@ -180,7 +180,7 @@ headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
         for(myint_t whichList = 0; whichList < s->pSumArr.psumSize; whichList++) {
                 connectResultList(finalResultList, jobLists[whichList]);
         }
-        fprintf(stderr, "There were %lu lists\n", s->pSumArr.psumSize);
+        //fprintf(stderr, "There were %lu lists\n", s->pSumArr.psumSize);
 
         //Free the job result lists
         for(myint_t whichList = 0; whichList < s->pSumArr.psumSize; whichList++) {

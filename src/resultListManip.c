@@ -133,7 +133,7 @@ void cleanListHead(headResult * head) {
 }
 
 void freeResultList(headResult * head) {
-        fprintf(stderr,"OOO\n");
+        //fprintf(stderr,"OOO\n");
         if(head->numbOfNodes != 0) {
                 freeResultNode(head->firstNode);
         }
