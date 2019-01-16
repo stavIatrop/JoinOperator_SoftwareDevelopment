@@ -32,6 +32,7 @@ typedef struct ReorderedWares {
         myint_t *col;
         myint_t *hash1;
         reorderedR **arrays;
+        reorderedR ***bestHashValues;
         myint_t size;
 } reWares;
 
