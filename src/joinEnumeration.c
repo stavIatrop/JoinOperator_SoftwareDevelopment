@@ -64,6 +64,42 @@ void Filter(HTStats * statistics, myint_t k1, myint_t k2, myint_t filterCol) {
 
         return;
 
+    } else if(k1 == k2) {       //used as equal predicate filter
+
+        statistics->relStats[filterCol].minI = k1;
+        statistics->relStats[filterCol].maxU = k1;
+        statistics->relStats[filterCol].numElements = (myint_t) ceil((double)fA/(double)dA);
+        statistics->relStats[filterCol].distinctVals = 1;
+        
+        myint_t fANew = statistics->relStats[filterCol].numElements;
+
+        for( int c = 0; c < statistics->cols; c++) {
+        
+            if(c == filterCol) {
+                continue;
+            }
+
+            myint_t fC = statistics->relStats[c].numElements;
+            myint_t dC = statistics->relStats[c].distinctVals;
+
+
+            if( fA == 0 || dC == 0) {
+
+                statistics->relStats[c].distinctVals = 0;
+                statistics->relStats[c].numElements = 0;
+                statistics->relStats[c].maxU = 0;
+                statistics->relStats[c].minI = 0;
+            
+            } else {
+
+                statistics->relStats[c].distinctVals = ceil((dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC ))));
+                statistics->relStats[c].numElements = fANew;
+            }
+            
+        }
+        return;      
+
+
     }
     statistics->relStats[filterCol].minI = k1;
     statistics->relStats[filterCol].maxU = k2;
@@ -81,8 +117,19 @@ void Filter(HTStats * statistics, myint_t k1, myint_t k2, myint_t filterCol) {
         myint_t fC = statistics->relStats[c].numElements;
         myint_t dC = statistics->relStats[c].distinctVals;
 
-        statistics->relStats[c].distinctVals = ceil((dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC ))));
-        statistics->relStats[c].numElements = fANew;
+        if( fA == 0 || dC == 0) {
+
+            statistics->relStats[c].distinctVals = 0;
+            statistics->relStats[c].numElements = 0;
+            statistics->relStats[c].maxU = 0;
+            statistics->relStats[c].minI = 0;
+            
+        } else {
+
+            statistics->relStats[c].distinctVals = ceil((dC * (1 - pow((double) (1 - ((double) fANew/(double) fA)), (double)fC/ (double)dC ))));
+            statistics->relStats[c].numElements = fANew;
+        }
+        
    }
    return;
 }
