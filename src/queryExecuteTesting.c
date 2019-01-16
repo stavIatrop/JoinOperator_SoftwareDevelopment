@@ -858,7 +858,7 @@ void schedulerAdditionTest() {
 
 //test FillStats
 
-int initialiseStatistics() {
+/*int initialiseStatistics() {
 
     col = (myint_t *)malloc( ROWS * sizeof(myint_t));
 
@@ -958,7 +958,7 @@ void testExistsInComb() {
     retVal = existsInComb("01234", 4);
     CU_ASSERT(retVal == 1);
     return; 
-}
+}*/
 
 int main(void) {
 
@@ -1087,7 +1087,7 @@ int main(void) {
     }
 
     /* add the tests to the suite */
-    if ((NULL == CU_add_test(pSuite9, "Test fillStats", fillStatsTest)) ||
+    /*if ((NULL == CU_add_test(pSuite9, "Test fillStats", fillStatsTest)) ||
        (NULL == CU_add_test(pSuite9, "Test CombToIndex", testCombToIndexFunc)) ||
        (NULL == CU_add_test(pSuite9, "Test existsInComb", testExistsInComb)) )
     {
