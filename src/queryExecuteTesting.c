@@ -1086,8 +1086,7 @@ int main(void) {
         return CU_get_error();
     }
 
-    /* add the tests to the suite */
-    /*if ((NULL == CU_add_test(pSuite9, "Test fillStats", fillStatsTest)) ||
+    if ((NULL == CU_add_test(pSuite9, "Test fillStats", fillStatsTest)) ||
        (NULL == CU_add_test(pSuite9, "Test CombToIndex", testCombToIndexFunc)) ||
        (NULL == CU_add_test(pSuite9, "Test existsInComb", testExistsInComb)) )
     {

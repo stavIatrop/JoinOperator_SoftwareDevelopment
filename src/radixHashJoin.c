@@ -12,7 +12,6 @@
 double totalRadixTime = 0;
 int radixes = 0;
 
-
 headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 
         myint_t h1 = FIRST_REORDERED;
@@ -42,7 +41,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                                 if (RoS==NULL)
                                 {
                                         RoS = reorderRelation(sRel, &h1);
-                                        AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoS);
+                                        AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoS, 0);
                                 }
                         }
                         else
@@ -51,7 +50,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                                 if (RoS==NULL)
                                 {
                                         RoS = reorderRelation(rRel, &h1);
-                                        AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoS);
+                                        AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoS, 0);
                                 }
                         }
                 }       
@@ -66,33 +65,33 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                                        if ((rRel->size) < (sRel->size))
                                         {
                                                 RoR = reorderRelation(rRel, &h1);
-                                                AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoR);
+                                                AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoR, 1);
                                                 RoS = reorderRelation(sRel, &h1);
-                                                AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoS);
+                                                AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoS, 0);
                                                 *switched = 0;
                                         }
                                         else
                                         {
                                                 RoR = reorderRelation(sRel, &h1);
-                                                AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoR);
+                                                AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoR, 1);
                                                 RoS = reorderRelation(rRel, &h1);
-                                                AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoS);
+                                                AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoS, 0);
                                                 *switched = 1;
                                         } 
                                 }
                                 else
                                 {
                                         RoS = reorderRelation(rRel, &h1);
-                                        AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoS);
+                                        AddToReWarehouse(rRel->realRel, rRel->realCol, h1, RoS, 0);
                                 }
                         }
                         else
                         {
                                 RoS = FetchFromReWarehouse(sRel->realRel, sRel->realCol, &h1);
-                                if (RoR==NULL)
+                                if (RoS==NULL)
                                 {
                                         RoS = reorderRelation(sRel, &h1);
-                                        AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoS);
+                                        AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoS, 0);
                                 }
                         }
                 } 
@@ -101,7 +100,15 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         {
                 freedomFlag=1;
                 indArr = FetchFromIndexWarehouse(sRel->realRel, sRel->realCol, &h1);
-                if (indArr==NULL) RoR = reorderRelation(sRel, &h1);
+                if (indArr==NULL)
+                {
+                        RoR = FetchFromReWarehouse(sRel->realRel, sRel->realCol, &h1);
+                        if (RoR==NULL)
+                        {
+                                RoR = reorderRelation(sRel, &h1);
+                                AddToReWarehouse(sRel->realRel, sRel->realCol, h1, RoR, 1);
+                        }
+                }
                 RoS = reorderRelation(rRel, &h1);
         }
         else
@@ -174,5 +181,6 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         clock_t end = clock();
         totalRadixTime += (double)(end - begin) / CLOCKS_PER_SEC;
         radixes += 1;
+        
         return results;
 }

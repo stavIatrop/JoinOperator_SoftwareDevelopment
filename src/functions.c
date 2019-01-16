@@ -17,20 +17,67 @@ int histsCompleted = 0;
 
 myint_t curmem=0;
 
+void initialiseWarehouses(relationsheepArray *relArr)
+{
+	indexWarehouse = malloc(sizeof(wares));
+	indexWarehouse ->size = 0;
+	indexWarehouse->rel = malloc(1000*sizeof(myint_t));
+	indexWarehouse->col = malloc(1000*sizeof(myint_t));
+	indexWarehouse->hash1 = malloc(1000*sizeof(myint_t));
+	indexWarehouse->indexes = malloc(1000*sizeof(indexArray *));
+
+	reWarehouse = malloc(sizeof(reWares));
+	reWarehouse ->size = 0;
+	reWarehouse->rel = malloc(5000*sizeof(myint_t)); 
+	reWarehouse->col = malloc(5000*sizeof(myint_t));
+	reWarehouse->hash1 = malloc(5000*sizeof(myint_t));
+	reWarehouse->arrays = malloc(5000*sizeof(reorderedR*));
+
+	reWarehouse->bestHashValues = malloc(relArr->numOfRels * sizeof(reorderedR**));
+	myint_t j;
+	for (myint_t i=0; i<relArr->numOfRels; i++)
+	{
+		reWarehouse->bestHashValues[i] = malloc(relArr->rels[i].cols *sizeof(reorderedR*));
+		for (j=0; j<relArr->rels[i].cols; j++)
+		{
+			reWarehouse->bestHashValues[i][j] = NULL;
+		}
+	}
+}
+
+void emptyWarehouses(relationsheepArray *relArr)
+{
+    free(indexWarehouse->rel);
+    free(indexWarehouse->col);
+    free(indexWarehouse->hash1);
+    free(indexWarehouse->indexes);
+    free(indexWarehouse);
+
+    for (myint_t i=0; i<reWarehouse->size; i++)
+    {
+        free(reWarehouse->arrays[i]->rel->tuples);
+        free(reWarehouse->arrays[i]->rel);
+        free(reWarehouse->arrays[i]->pSumArr.psum);
+        free(reWarehouse->arrays[i]);
+    }
+
+    for (myint_t i=0; i<relArr->numOfRels; i++)
+    {
+    	//for (myint_t j=0; j<relArr->rels[i].cols; j++)
+    	//	if (reWarehouse->bestHashValues[i][j]) fprintf(stderr, "%lu, %lu\n", i, j);
+    	free(reWarehouse->bestHashValues[i]);
+    }
+    free(reWarehouse->bestHashValues);
+    free(reWarehouse->rel);
+    free(reWarehouse->col);
+    free(reWarehouse->hash1);
+    free(reWarehouse->arrays);
+    free(reWarehouse);
+}
+
 indexArray *FetchFromIndexWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 {
 	//fprintf(stderr,"Fetching %lu, %lu\n\n",rel,col);
-
-	if (indexWarehouse == NULL)
-	{
-		indexWarehouse = malloc(sizeof(wares));
-		indexWarehouse ->size = 0;
-		indexWarehouse->rel = malloc(500*sizeof(myint_t));
-		indexWarehouse->col = malloc(500*sizeof(myint_t));
-		indexWarehouse->hash1 = malloc(500*sizeof(myint_t));
-		indexWarehouse->indexes = malloc(500*sizeof(indexArray *));
-		return NULL;
-	}
 
 	for (myint_t i=0; i<indexWarehouse->size; i++)
 	{
@@ -46,30 +93,12 @@ indexArray *FetchFromIndexWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 
 reorderedR *FetchFromReWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 {
-	//fprintf(stderr,"Fetching ror %lu, %lu\n\n",rel,col);
-
-	if (reWarehouse == NULL)
-	{
-		reWarehouse = malloc(sizeof(reWares));
-		reWarehouse ->size = 0;
-		reWarehouse->rel = malloc(500*sizeof(myint_t));
-		reWarehouse->col = malloc(500*sizeof(myint_t));
-		reWarehouse->hash1 = malloc(500*sizeof(myint_t));
-		reWarehouse->arrays = malloc(500*sizeof(reorderedR *));
-		return NULL;
-	}
+	//fprintf(stderr,"Fetching ror %lu, %lu, %lu\n\n",rel,col, *hash1);
 
 	if (*hash1==FIRST_REORDERED)
 	{
-		for (myint_t i=0; i<reWarehouse->size; i++)
-		{
-			if (reWarehouse->rel[i]==rel && reWarehouse->col[i]==col)
-			{
-				*hash1 = reWarehouse->hash1[i];
-				//fprintf(stderr,"FETCHED ror! %lu, %lu\n\n",rel,col);
-				return reWarehouse->arrays[i];
-			}
-		}
+		//if (reWarehouse->bestHashValues[rel][col]) fprintf(stderr,"FETCHED BEST ror! %lu, %lu, %lu\n\n",rel,col, *hash1);
+		return reWarehouse->bestHashValues[rel][col];
 	}
 	else
 	{
@@ -77,7 +106,7 @@ reorderedR *FetchFromReWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 		{
 			if (reWarehouse->rel[i]==rel && reWarehouse->col[i]==col && reWarehouse->hash1[i]==*hash1)
 			{
-				//fprintf(stderr,"FETCHED ror! %lu, %lu\n\n",rel,col);
+				//fprintf(stderr,"FETCHED ror! %lu, %lu, %lu\n\n",rel,col, *hash1);
 				return reWarehouse->arrays[i];
 			}
 		}
@@ -87,17 +116,6 @@ reorderedR *FetchFromReWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 
 void AddToIndexWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *indexes)
 {
-	if (indexWarehouse == NULL)
-	{
-		indexWarehouse = malloc(sizeof(wares));
-		indexWarehouse ->size = 0;
-		indexWarehouse->rel = malloc(500*sizeof(myint_t));
-		indexWarehouse->col = malloc(500*sizeof(myint_t));
-		indexWarehouse->hash1 = malloc(500*sizeof(myint_t));
-		indexWarehouse->indexes = malloc(500*sizeof(reorderedR*));
-		return;
-	}
-
 	//fprintf(stderr,"Adding %lu, %lu\n\n", rel,col);
 
 	indexWarehouse->rel[indexWarehouse->size] = rel;
@@ -118,20 +136,15 @@ void AddToIndexWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *in
 	return;
 }
 
-void AddToReWarehouse(myint_t rel, myint_t col, myint_t hash1, reorderedR *array)
+void AddToReWarehouse(myint_t rel, myint_t col, myint_t hash1, reorderedR *array, char best)
 {
-	if (reWarehouse == NULL)
-	{
-		reWarehouse = malloc(sizeof(wares));
-		reWarehouse ->size = 0;
-		reWarehouse->rel = malloc(5000*sizeof(myint_t)); 
-		reWarehouse->col = malloc(5000*sizeof(myint_t));
-		reWarehouse->hash1 = malloc(5000*sizeof(myint_t));
-		reWarehouse->arrays = malloc(5000*sizeof(reorderedR*));
-		return;
-	}
 
-	//fprintf(stderr,"Adding ror %lu, %lu\n\n", rel,col);
+	//fprintf(stderr,"Adding ror %lu, %lu, %lu\n\n",rel,col, hash1);
+	if (best)
+	{
+		//fprintf(stderr,"Adding BEST ror %lu, %lu, %lu\n\n",rel,col, hash1);
+		reWarehouse->bestHashValues[rel][col] = array;
+	}
 
 	reWarehouse->rel[reWarehouse->size] = rel;
 	reWarehouse->col[reWarehouse->size] = col;
@@ -386,19 +399,20 @@ myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
 	//double identicality = IdenticalityTest(r);
 	*hash1 = FindNextPower(floor(ERROR_MARGIN * (dvalues * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
 	//fprintf(stderr, "hash1 = %lu\n", *hash1);
-	myint_t size = r->size, *hist, prevBad, max, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
+	myint_t *hist, max; //size = r->size, prevBad, beginning, maxBucketSize = floor(AVAILABLE_CACHE_SIZE / sizeof(tuple)), nextPower;
 	hist = malloc(*hash1 * sizeof(myint_t));
 	if (hist ==NULL)
     {
             perror("Wrong arguments");
             exit(1);
     }
-
-	myint_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
+    DoTheHash(r,*hash1,hist,hash_values,&max,1); 
+	/*myint_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0); //to uncomment this,
+																//comment the previous line
 	beginning = *hash1;
 	prevBad = bad;
 
-	/*while (bad > 0)
+	while (bad > 0)
     {
 		nextPower = (myint_t)log2(FindNextPower(max/maxBucketSize)+1);
 		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * dvalues)

@@ -19,6 +19,7 @@
 #include "getStats.h"
 #include "joinEnumeration.h"
 #include "basicStructs.h"
+#include "viceFunctions.h"
 
 void printJoins(query * newQuery) {
     fprintf(stderr, "    Printing Joins of Query\n");
@@ -85,6 +86,7 @@ int main(void) {
     // fflush(stdoutFile);
 
     initialiseScheduler();
+    initialiseWarehouses(&relArray);
     while(1) {
 
 
@@ -242,21 +244,15 @@ int main(void) {
         perror("Failed to close file");
         return -1;
     }
+    for (myint_t i=0; i<indexWarehouse->size;i++) freeIndexArray(indexWarehouse->indexes[i]);
+    emptyWarehouses(&relArray);
+
     FreeRelArray(relArray);
-    if (indexWarehouse)
-    {
-        for (myint_t i=0; i<indexWarehouse->size;i++) freeIndexArray(indexWarehouse->indexes[i]);
-        free(indexWarehouse->rel);
-        free(indexWarehouse->col);
-        free(indexWarehouse->hash1);
-        free(indexWarehouse->indexes);
-        free(indexWarehouse);
-    }
 	
     shutdownAndFreeScheduler();
 
     fprintf(stderr, "Radixes: %d | Avg radix time: %f\n", radixes, totalRadixTime / (double) radixes);
-
+    
 	return 0;
 
 }

@@ -4,6 +4,7 @@
 #include <pthread.h>
 
 #include "basicStructs.h"
+#include "queryStructs.h"
 
 typedef struct Content {
 	myint_t to;
@@ -30,13 +31,17 @@ extern pthread_mutex_t histMutex;
 extern pthread_cond_t histCond;
 extern int histsCompleted;
 
+void initialiseWarehouses(relationsheepArray *relArr);
+
+void emptyWarehouses(relationsheepArray *relArr);
+
 indexArray *FetchFromIndexWarehouse(myint_t rel, myint_t col, myint_t *hash1);
 
 void AddToIndexWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *indexes);
 
 reorderedR *FetchFromReWarehouse(myint_t rel, myint_t col, myint_t *hash1);
 
-void AddToReWarehouse(myint_t rel, myint_t col, myint_t hash1, reorderedR *);
+void AddToReWarehouse(myint_t rel, myint_t col, myint_t hash1, reorderedR *, char);
 
 myint_t distValues(relation *);
 
