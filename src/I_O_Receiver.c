@@ -13,6 +13,7 @@
 #include "jointPerformer.h"
 #include "interListInterface.h"
 #include "jobScheduler.h"
+#include "basicStructs.h"
 
 void printJoins(query * newQuery) {
     fprintf(stderr, "    Printing Joins of Query\n");
@@ -216,6 +217,9 @@ int main(void) {
     }
 	
     shutdownAndFreeScheduler();
+
+    fprintf(stderr, "Radixes: %d | Avg radix time: %f\n", radixes, totalRadixTime / (double) radixes);
+    
 	return 0;
 
 }

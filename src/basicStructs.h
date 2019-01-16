@@ -96,4 +96,7 @@ indexArray * indexing(reorderedR * ror, myint_t hash1);
 headResult * search(indexArray * indArr, reorderedR * s);
 headResult * searchThreadVer(indexArray * indArr, reorderedR * s);
 
+extern double totalRadixTime;
+extern int radixes;
+
 #endif
