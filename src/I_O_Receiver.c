@@ -68,12 +68,12 @@ int main(void) {
     FillRelArray(&relArray, input);
     FreeInput(input);
     
-    fprintf(stdoutFile, "Writing Ready...\n");
-    fflush(stdoutFile);
-    write(STDOUT_FILENO, "Ready\n\0", strlen("Ready\n\0")); //Send signal to harness in order to start sending queries 
+    // fprintf(stdoutFile, "Writing Ready...\n");
+    // fflush(stdoutFile);
+    // write(STDOUT_FILENO, "Ready\n\0", strlen("Ready\n\0")); //Send signal to harness in order to start sending queries 
     
-    fprintf(stdoutFile, "Ready\n");
-    fflush(stdoutFile);
+    // fprintf(stdoutFile, "Ready\n");
+    // fflush(stdoutFile);
 
     initialiseScheduler();
     while(1) {
