@@ -5,16 +5,17 @@
 #include "basicStructs.h"
 #include "pipeI_O.h"
 
-int indexComb;
+//Auxiliary functions altered and incorporated in order to find all possible combinations of size r from n numbers
+//https://www.geeksforgeeks.org/print-all-possible-combinations-of-r-elements-in-a-given-array-of-size-n/
+
+int indexComb;      //index for combs array, which is used for combination storage
 
 void combinationUtil(int * arr , int data[], int start, int end, int index, int r, char ** combs) 
 { 
-    // Current combination is ready to be printed, print it 
+
     if (index == r) 
     { 
 
-        //combs[indexComb] = (char *)malloc((2 * r + 1) * sizeof(char));
-        //memset(combs[indexComb], '\0', 2 * r + 1 );
         combs[indexComb] = (char *)malloc((r + 1) * sizeof(char));
         memset(combs[indexComb], '\0', r + 1 );
 
@@ -49,30 +50,26 @@ void combinationUtil(int * arr , int data[], int start, int end, int index, int 
 
 void getCombination( int n, int r, char ** combs) 
 { 
-    // A temporary array to store all combination one by one 
-    int data[r]; 
+
+    int data[r];  //an array that will store all combinations of size r from n numbers
     int * arr;
     arr = (int *) malloc(n * sizeof(int));
-    for( int i = 0; i < n; i++)
+    
+    for( int i = 0; i < n; i++) {
         arr[i] = i;
-    indexComb = 0;
-    // Print all combination using temprary array 'data[]' 
+    }
+        
+    indexComb = 0; 
+    
     combinationUtil(arr, data, 0, n-1, 0, r, combs); 
     free(arr);
 } 
   
-/* arr[]  ---> Input Array 
-   data[] ---> Temporary array to store current combination 
-   start & end ---> Staring and Ending indexes in arr[] 
-   index  ---> Current index in data[] 
-   r ---> Size of a combination to be printed */
-
-
 
 myint_t Factorial(myint_t n)
 {
     if (n >= 1)
-        return n*Factorial(n-1);
+        return n * Factorial(n-1);
     else
         return 1;
 }

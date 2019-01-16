@@ -157,14 +157,20 @@ int main(void) {
                     
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
                     
+                    //Execute filter predicates first
                     executeFilterPredicates(newQuery, relArray); 
-                      
+                    
+                    //Graph construction
                     graph * joinGraph = InitialiseGraph(newQuery->numOfRels);
                     ConstructGraph(joinGraph, newQuery);
 
+                    //HashTree initialisation with singletons
                     HTNode ** hashTree = InitialiseHashTree(pow(2, newQuery->numOfRels), newQuery, relArray);
+
+                    //Perform Join Enumeration Algorithm
                     joinEnumeration(hashTree, newQuery, relArray, joinGraph );
 
+                    //Decide priorities of joins and filter joins
                     SetPriorities(hashTree[(int)pow(2, newQuery->numOfRels) - 1]->joinSeq , newQuery);
 
                     // for(int i = 0; i < newQuery->numOfJoins; i++) {
@@ -188,6 +194,7 @@ int main(void) {
                     // }
 
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
+                        
                         if(newQuery->priorities[whichJoin] != -1) {
 
                             workerJ(&(newQuery->joins[newQuery->priorities[whichJoin]]), headInt);
