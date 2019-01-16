@@ -22,3 +22,4 @@ queryExecuteUnitTest
 src/test1
 valgrindOut
 /public
+massif.out

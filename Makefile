@@ -148,6 +148,12 @@ runHarnessPublic:
 runValgrindHarness:
 	valgrind $(VALGRIND_FLAGS) --log-file="valgrindOut" ./harness small/small.init small/small.work small/small.result ./ioreceiver
 
+runPeakMemory:
+	valgrind --tool=massif --pages-as-heap=yes --massif-out-file=massif.out ./harness small/small.init small/small.work small/small.result ./ioreceiver
+
+highestPeak:
+	grep mem_heap_B massif.out | sed -e 's/mem_heap_B=\(.*\)/\1/' | sort -g | tail -n 1
+
 cacheMisses:
 	perf stat -B -e cache-references,cache-misses,cycles,instructions,branches,faults,migrations ./$(NAME_OF_MAIN) -R testTables/rSame3_1000000 -S testTables/rSame3_1000000 -r 1 -s 2 -t binary -o testTables/outFile
 
