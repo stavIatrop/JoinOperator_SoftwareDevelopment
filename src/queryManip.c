@@ -59,6 +59,7 @@ void fillJoinInfo(query * newQuery, char * tempStr, myint_t counterJoins, relati
             myint_t indexRel = newQuery->joins[counterJoins].participant1.rel;
             newQuery->joins[counterJoins].participant1.realCol = atoi(part);
             newQuery->joins[counterJoins].participant1.col = relArray.rels[ newQuery->rels[indexRel] ].pointToCols[atoi(part)];
+			newQuery->joins[counterJoins].participant1.numCol = atoi(part);
             free(part);
 
 		}
@@ -76,6 +77,7 @@ void fillJoinInfo(query * newQuery, char * tempStr, myint_t counterJoins, relati
     myint_t indexRel = newQuery->joins[counterJoins].participant2.rel;
     newQuery->joins[counterJoins].participant2.realCol = atoi(part);
     newQuery->joins[counterJoins].participant2.col = relArray.rels[ newQuery->rels[indexRel] ].pointToCols[atoi(part)];
+	newQuery->joins[counterJoins].participant2.numCol = atoi(part);
     free(part);
 
 }
@@ -115,6 +117,7 @@ void fillFilterInfo(query * newQuery, char * tempStr, myint_t counterFilters, re
             strcat(part, "\0");
             myint_t indexRel = newQuery->filters[counterFilters].participant.rel;
             newQuery->filters[counterFilters].participant.col = relArray.rels[ newQuery->rels[indexRel] ].pointToCols[atoi(part)];
+			newQuery->filters[counterFilters].participant.numCol = atoi(part);
             free(part);
 
             if( tempStr[i] == '=' )
@@ -153,6 +156,8 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 	newQuery->filters = (filter *) malloc(filters * sizeof(filter));
 	newQuery->joins = (join *) malloc(joins * sizeof(join));
 	newQuery->sums = (colRel *) malloc(sums * sizeof(colRel));
+
+	
 
 	myint_t i = 0, slice = 0, start = 0, end = 0;
 	myint_t counterRels = 0, counterSums = 0, counterFilters = 0, counterJoins = 0;
@@ -243,7 +248,7 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 	            } 
 			}
 	 	}
-	 	else if (slice == 2){
+	 	else if (slice == 2){			//checksums
 
 			if( queryStr[i] == ' ') {			//col participant
 				
@@ -257,7 +262,8 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 	            myint_t indexRel = newQuery->sums[counterSums].rel;
           
             	newQuery->sums[counterSums].col = relArray.rels[ newQuery->rels[indexRel] ].pointToCols[atoi(tempStr)];
-          
+				newQuery->sums[counterSums].numCol = atoi(tempStr);    //maybe not needed
+
 	            newQuery->sums[counterSums].rows = relArray.rels[ newQuery->rels[indexRel] ].rows;
 	
 	            free(tempStr);
@@ -286,7 +292,7 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 	 	i++;
 	}
 
-	// //last col participant
+	//last col participant
 	start = end;
 	end = i + 1;
 	char * tempStr = (char *) malloc((i - start + 1) * sizeof(char));
@@ -296,21 +302,49 @@ query * ConstructQuery( char * queryStr, myint_t rels, myint_t joins, myint_t su
 
     myint_t indexRel = newQuery->sums[counterSums].rel;
 	newQuery->sums[counterSums].col = relArray.rels[ newQuery->rels[indexRel] ].pointToCols[atoi(tempStr)];
+	newQuery->sums[counterSums].numCol = atoi(tempStr);  				//maybe not needed
+
  	newQuery->sums[counterSums].rows = relArray.rels[ newQuery->rels[indexRel] ].rows;
     
     free(tempStr);
 	counterSums++;
 
+	newQuery->queryStats = (stats **) malloc(newQuery->numOfRels * sizeof(stats *));
+	for(i = 0; i < newQuery->numOfRels; i++) {
+
+		newQuery->queryStats[i] = (stats *) malloc(relArray.rels[ newQuery->rels[i] ].cols * sizeof(stats));		//initialisation of queryStats array
+
+		for(int c = 0; c < relArray.rels[ newQuery->rels[i] ].cols; c++) {
+
+			newQuery->queryStats[i][c].minI = relArray.rels[ newQuery->rels[i] ].statsArray[c].minI;
+			newQuery->queryStats[i][c].maxU = relArray.rels[ newQuery->rels[i] ].statsArray[c].maxU;
+			newQuery->queryStats[i][c].numElements = relArray.rels[ newQuery->rels[i] ].statsArray[c].numElements;
+			newQuery->queryStats[i][c].distinctVals = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctVals;
+			newQuery->queryStats[i][c].distinctArray = relArray.rels[ newQuery->rels[i] ].statsArray[c].distinctArray;
+		}
+	}
+	newQuery->priorities = (myint_t *) malloc(newQuery->numOfJoins * sizeof(myint_t));
+	for(i = 0; i < newQuery->numOfJoins; i++) {
+		newQuery->priorities[i] = -1;
+	}
+
 	return newQuery;
 }
 
 
-void FreeQuery(query * newQuery) {
 
-	 free(newQuery->rels);
-   	 free(newQuery->filters);
-   	 free(newQuery->joins);
-     free(newQuery->sums);
-     free(newQuery);
-     return;
+void FreeQuery(query * newQuery, relationsheepArray relArray) {
+
+	for(myint_t i = 0; i < newQuery->numOfRels; i++) {
+
+		free(newQuery->queryStats[i]);
+	}
+	free(newQuery->priorities);
+	free(newQuery->queryStats);	
+	free(newQuery->rels);
+	free(newQuery->filters);
+	free(newQuery->joins);
+	free(newQuery->sums);
+	free(newQuery);
+	return;
 }

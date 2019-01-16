@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     char buffer[4096];
-    //cout << "Reading from init_file..." << endl;
+    
     ssize_t bytes = read(init_file, buffer, sizeof(buffer));
     if (bytes < 0) {
       if (errno == EINTR) continue;
@@ -159,10 +159,7 @@ int main(int argc, char *argv[]) {
       exit(EXIT_FAILURE);
     }
     if (bytes == 0) break;
-    // for (int i = 0;  i < bytes; i++)
-    // 	cout << buffer[i];
-    // cout << endl;
-    // cout << "Writing to feed child process..." << endl;
+    
     ssize_t written = write_bytes(stdin_pipe[1], buffer, bytes);
     if (written < 0) {
       perror("write");
@@ -181,14 +178,14 @@ int main(int argc, char *argv[]) {
   }
 
 
-#if 0
+#if 1
   // Wait for 1 second
   this_thread::sleep_for(1s);
 
-#else
+#else 
   // Wait for the ready signal
   char status_buffer[6];
-  cout << "Wait for the ready signal" << endl;
+  
   status_bytes = read_bytes(stdout_pipe[0], status_buffer, sizeof(status_buffer));
   if (status_bytes < 0) {
     perror("read");
@@ -200,9 +197,10 @@ int main(int argc, char *argv[]) {
     cerr << "Test program did not return ready status" << endl;
     exit(EXIT_FAILURE);
   }
-  cout << status_buffer;
+  
 #endif
   
+  cout << "1sec has passed..." << endl;
   // Use select with non-blocking files to read and write from the child process, avoiding deadlocks
   if (set_nonblocking(stdout_pipe[0]) == -1) {
     perror("fcntl");
@@ -293,10 +291,10 @@ int main(int argc, char *argv[]) {
                   << ", actual: " << val << endl;
         ++failure_cnt;
       }
-      if (matched)
-      {
-          cout << endl << val << endl <<  endl << result_batches[batch][i] << endl;
-      }
+      // if (matched)
+      // {
+      //     cout << endl << val << endl <<  endl << result_batches[batch][i] << endl;
+      // }
       ++query_no;
     }
   }

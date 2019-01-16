@@ -19,8 +19,12 @@
 #include "I_O_structs.h"
 #include "queryManip.h"
 #include "jobScheduler.h"
+#include "getStats.h"
+#include "hashTreeManip.h"
+#include "joinEnumeration.h"
 
 #define TUPLE_NUMB 1000000
+#define ROWS 64
 
 /*headInter * head = NULL;
 headResult * headRes = NULL;
@@ -36,6 +40,10 @@ query * newQuery = NULL;
 pthread_mutex_t testMutex;
 uint32_t testSchedulerValue = 0;
 uint64_t calculationIntensive = 0;
+
+myint_t * col = NULL;
+stats * statsStruct = NULL;
+
 
 //Test intermediate list accessing, adding, deleting
 int initList() {
@@ -772,7 +780,7 @@ void testConstructQuery() {
         CU_ASSERT(newQuery->joins[1].participant1.rows == 23038);
         CU_ASSERT(newQuery->joins[1].participant2.rows == 3754);
 
-        FreeQuery(newQuery);
+        FreeQuery(newQuery, relArray);
         free(queryStr);
 
         queryStr = (char *) malloc( (strlen("5 0|0.2=1.0&0.3=9881|1.1 0.2 1.0") + 1) * sizeof(char));
@@ -786,9 +794,9 @@ void testConstructQuery() {
         CU_ASSERT(newQuery->filters[0].participant.col[4781] == 9064);
         CU_ASSERT(newQuery->sums[0].col[535] == 10005);
 
-        FreeQuery(newQuery);
+        FreeQuery(newQuery, relArray);
         free(queryStr);
-
+        
         return;
 
 }
@@ -847,6 +855,111 @@ void schedulerAdditionTest() {
     CU_ASSERT(calculationIntensive != 0);
 }*/
 
+
+//test FillStats
+
+int initialiseStatistics() {
+
+    col = (myint_t *)malloc( ROWS * sizeof(myint_t));
+
+    statsStruct = (stats *) malloc(sizeof(stats));
+
+    return 0;
+}
+
+int freeStatistics() {
+
+    free(col);
+    
+    free(statsStruct);
+
+    return 0;
+}
+
+void fillStatsTest() {
+
+    for(int i = 0; i < ROWS; i++) {
+        col[i] = 1;
+    }
+    FillStatsArray(col, statsStruct, ROWS);
+
+    CU_ASSERT(statsStruct->distinctVals == 1);
+
+    free(statsStruct->distinctArray);
+
+    for(int i = 0; i < ROWS; i++) {
+        col[i] = i;
+    }
+
+    FillStatsArray(col, statsStruct, ROWS);
+    
+    CU_ASSERT(statsStruct->distinctVals == ROWS);
+
+    free(statsStruct->distinctArray);
+
+
+    for(int i = 0; i < ROWS; i++) {
+
+        col[i] = i % 2;
+        
+    }
+
+    FillStatsArray(col, statsStruct, ROWS);
+
+    CU_ASSERT(statsStruct->distinctVals == 2);
+
+    free(statsStruct->distinctArray);
+
+     for(int i = 0; i < ROWS; i++) {
+
+        col[i] = i % 4;
+        
+    }
+
+    FillStatsArray(col, statsStruct, ROWS);
+
+    CU_ASSERT(statsStruct->distinctVals == 4);
+
+    free(statsStruct->distinctArray);
+
+
+    return;
+
+}
+
+void testCombToIndexFunc() {
+
+    myint_t index = combToIndex("102");
+
+    CU_ASSERT(index == 7);
+
+    index = combToIndex("032");
+
+    CU_ASSERT(index == 13);
+
+    index = combToIndex("03");
+
+    CU_ASSERT(index == 9);
+
+    return;
+}
+
+void testExistsInComb() {
+
+    myint_t retVal = existsInComb("1234", 3);
+    CU_ASSERT(retVal == 1);
+
+    retVal = existsInComb("1", 3);
+    CU_ASSERT(retVal == 0);
+
+    retVal = existsInComb("2", 2);
+    CU_ASSERT(retVal == 1);
+
+    retVal = existsInComb("01234", 4);
+    CU_ASSERT(retVal == 1);
+    return; 
+}
+
 int main(void) {
 
 	/*CU_pSuite pSuite1 = NULL;
@@ -857,6 +970,7 @@ int main(void) {
 	CU_pSuite pSuite6 = NULL;
 	CU_pSuite pSuite7 = NULL;
 	CU_pSuite pSuite8 = NULL;
+    CU_pSuite pSuite9 = NULL;
 
 	//Initialize the CUnit test registry
    if (CUE_SUCCESS != CU_initialize_registry())
@@ -961,6 +1075,21 @@ int main(void) {
     }
 
     if ((NULL == CU_add_test(pSuite8, "Test addition job", schedulerAdditionTest)))
+    {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    pSuite9 = CU_add_suite("Test Statistics", initialiseStatistics, freeStatistics);
+    if (NULL == pSuite9) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    /* add the tests to the suite */
+    if ((NULL == CU_add_test(pSuite9, "Test fillStats", fillStatsTest)) ||
+       (NULL == CU_add_test(pSuite9, "Test CombToIndex", testCombToIndexFunc)) ||
+       (NULL == CU_add_test(pSuite9, "Test existsInComb", testExistsInComb)) )
     {
         CU_cleanup_registry();
         return CU_get_error();
