@@ -8,6 +8,9 @@
 #include "indexManip.h"
 #include "viceFunctions.h"
 
+double totalRadixTime = 0;
+int radixes = 0;
+
 headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 
         myint_t h1 = FIRST_REORDERED;

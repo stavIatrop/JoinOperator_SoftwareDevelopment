@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <math.h>
 
 #include "I_O_structs.h"
 #include "queryStructs.h"
@@ -12,6 +13,11 @@
 #include "jointPerformer.h"
 #include "interListInterface.h"
 #include "jobScheduler.h"
+#include "graph.h"
+#include "hashTreeManip.h"
+#include "getStats.h"
+#include "joinEnumeration.h"
+#include "basicStructs.h"
 
 void printJoins(query * newQuery) {
     fprintf(stderr, "    Printing Joins of Query\n");
@@ -67,13 +73,15 @@ int main(void) {
     relationsheepArray relArray =  InitializeRelSheepArray(input->numNodes);
     FillRelArray(&relArray, input);
     FreeInput(input);
+
+    fprintf(stderr, "Ready!!\n");
     
-    fprintf(stdoutFile, "Writing Ready...\n");
-    fflush(stdoutFile);
-    write(STDOUT_FILENO, "Ready\n\0", strlen("Ready\n\0")); //Send signal to harness in order to start sending queries 
+    // fprintf(stdoutFile, "Writing Ready...\n");
+    // fflush(stdoutFile);
+    // write(STDOUT_FILENO, "Ready\n\0", strlen("Ready\n\0")); //Send signal to harness in order to start sending queries 
     
-    fprintf(stdoutFile, "Ready\n");
-    fflush(stdoutFile);
+    // fprintf(stdoutFile, "Ready\n");
+    // fflush(stdoutFile);
 
     initialiseScheduler();
     while(1) {
@@ -150,9 +158,30 @@ int main(void) {
 
                     
                     query * newQuery = ConstructQuery(queryStr, rels, joins, sums, filters, relArray);
-                    // printJoins(newQuery);
+                    
+                    //Execute filter predicates first
+                    executeFilterPredicates(newQuery, relArray); 
+                    
+                    //Graph construction
+                    graph * joinGraph = InitialiseGraph(newQuery->numOfRels);
+                    ConstructGraph(joinGraph, newQuery);
 
+                    //HashTree initialisation with singletons
+                    HTNode ** hashTree = InitialiseHashTree(pow(2, newQuery->numOfRels), newQuery, relArray);
 
+                    //Perform Join Enumeration Algorithm
+                    joinEnumeration(hashTree, newQuery, relArray, joinGraph );
+
+                    //Decide priorities of joins and filter joins
+                    SetPriorities(hashTree[(int)pow(2, newQuery->numOfRels) - 1]->joinSeq , newQuery);
+
+                    // for(int i = 0; i < newQuery->numOfJoins; i++) {
+                    //     fprintf(stderr, "%ld", newQuery->priorities[i]);
+                    // }
+                    // fprintf(stderr,"\n");
+
+                    FreeHashTree(hashTree, newQuery->numOfRels);
+                    FreeGraph(joinGraph);
                     headInter * headInt = initialiseHead();
 
                     //Perform filters
@@ -162,9 +191,19 @@ int main(void) {
                     }
 
                     //Perform joins
+                    // for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
+                    //     workerJ(&(newQuery->joins[whichJoin]), headInt);
+                    // }
+
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
-                        workerJ(&(newQuery->joins[whichJoin]), headInt);
+                        
+                        if(newQuery->priorities[whichJoin] != -1) {
+
+                            workerJ(&(newQuery->joins[newQuery->priorities[whichJoin]]), headInt);
+                        }
+                        
                     }
+
 
 
                     //Perform checksums
@@ -174,13 +213,13 @@ int main(void) {
 
                     //Write checksums
                     writePipe(cs);
-
+                    
                     free(cs->checksums);
                     free(cs);
 
                     
 
-                    FreeQuery(newQuery);
+                    FreeQuery(newQuery, relArray);
                     
                     free(queryStr);
                     

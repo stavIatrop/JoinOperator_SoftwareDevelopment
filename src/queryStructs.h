@@ -8,11 +8,23 @@
 #define GREATER 2
 #define EQUAL 3
 
+typedef struct StatisticsStruct {
+
+        myint_t minI;
+        myint_t maxU;
+        myint_t numElements;
+        myint_t distinctVals;
+        myint_t * distinctArray;
+
+} stats;
 
 typedef struct Relationsheep {
+
         myint_t rows;
         myint_t cols;
         myint_t **pointToCols;
+        stats * statsArray;             //permanent struct for query statistics for each column
+                
 } relationsheep;
 
 typedef struct RelationsheepArray {
@@ -40,6 +52,7 @@ typedef struct HeadInter {
 
 typedef struct ColRel {
         myint_t rel;
+        myint_t numCol;
         myint_t* col;
         myint_t rows;
 } colRel;
@@ -53,10 +66,12 @@ typedef struct Filter {
 typedef struct Join {
         colRel participant1;
         colRel participant2;
+        myint_t distinctVals;
 } join;
 
 typedef struct Query {
         myint_t *rels;
+        stats ** queryStats;             //temporary struct for query statistics for each column for each query
         myint_t numOfFilters;
         myint_t numOfJoins;
         myint_t numOfSums;
@@ -64,6 +79,7 @@ typedef struct Query {
         filter *filters;
         join *joins;
         colRel *sums;
+        myint_t * priorities;
 } query;
 
 #endif

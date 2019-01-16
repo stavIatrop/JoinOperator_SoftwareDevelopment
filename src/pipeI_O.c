@@ -74,14 +74,17 @@ char * readFromPipe(const char * stopWord) {
 
 myint_t numDigits(myint_t n) {
 
-  myint_t counter = 0;
-  
-  while(n != 0) {
+    if( n == 0)
+        return 1;
+    myint_t counter = 0;
+    
+    while(n != 0) {
 
-    n = n / 10;
-    counter++;
-  }
-  return counter;
+        n = n / 10;
+        counter++;
+    }
+
+    return counter;
 }
 
 void writePipe(checksum * cs) {
