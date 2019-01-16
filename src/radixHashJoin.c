@@ -9,6 +9,10 @@
 #include "viceFunctions.h"
 #include "queryStructs.h"
 
+double totalRadixTime = 0;
+int radixes = 0;
+
+
 headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 
         myint_t h1 = FIRST_REORDERED;
@@ -16,7 +20,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         reorderedR * RoS = NULL;
         char freedomFlag;
         indexArray * indArr = NULL;
-
+        clock_t begin = clock();
         //fprintf(stderr,"NNN\n");
 
         //fprintf(stderr,"rel1 is %lu, rel2 is %lu, switched is %d\n",rRel->realRel,sRel->realRel,*switched);
@@ -167,6 +171,8 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         }
         
         //fprintf(stderr,"FFF\n");
-
+        clock_t end = clock();
+        totalRadixTime += (double)(end - begin) / CLOCKS_PER_SEC;
+        radixes += 1;
         return results;
 }
