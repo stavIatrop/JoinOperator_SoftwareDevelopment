@@ -92,4 +92,9 @@ indexArray * indexing(reorderedR * ror, myint_t hash1);
 //Mixalhs
 headResult * search(indexArray * indArr, reorderedR * s);
 
+
+//Profiling
+extern double totalRadixTime;
+extern int radixes;
+
 #endif

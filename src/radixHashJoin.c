@@ -8,6 +8,9 @@
 #include "indexManip.h"
 #include "viceFunctions.h"
 
+double totalRadixTime = 0;
+int radixes = 0;
+
 headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 
         //TO BE REMOVED
@@ -38,8 +41,6 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                 //s->tuples[i].key = i;
                 //s->tuples[i].payload = i;
         }*/
-
-        double radixTotalTime = 0;
 
         myint_t h1 = FIRST_REORDERED;
         //printf(">>> Starting Reordering...");
@@ -82,26 +83,20 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
 
 	}
 
-        clock_t end = clock();
-        radixTotalTime += (double)(end - begin) / CLOCKS_PER_SEC;
         //printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
         //Indexing
         //printf(">>> Starting Indexing...  ");
-        begin = clock();
         indexArray * indArr = indexing(RoR, h1);
-        end = clock();
-        radixTotalTime += (double)(end - begin) / CLOCKS_PER_SEC;
         //printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
         //Searching
         //printf(">>> Starting Searching... ");
-        begin = clock();
         headResult * results = search(indArr, RoS);
-        end = clock();
-        radixTotalTime += (double)(end - begin) / CLOCKS_PER_SEC;
+        clock_t end = clock();
+        totalRadixTime += (double)(end - begin) / CLOCKS_PER_SEC;
         //printf("Completed in  %f seconds.\n", (double)(end - begin) / CLOCKS_PER_SEC);
-
+        radixes += 1;
         //printf(">>> Radix Hash Join completed in %f seconds.\n", radixTotalTime);
 
         free(rRel->tuples);

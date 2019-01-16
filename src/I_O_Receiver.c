@@ -16,6 +16,7 @@
 #include "hashTreeManip.h"
 #include "getStats.h"
 #include "joinEnumeration.h"
+#include "basicStructs.h"
 
 void printJoins(query * newQuery) {
     fprintf(stderr, "    Printing Joins of Query\n");
@@ -241,6 +242,7 @@ int main(void) {
     }
     FreeRelArray(relArray);
 	
+    fprintf(stderr, "Radixes: %d | Avg radix time: %f\n", radixes, totalRadixTime / (double) radixes);
 	return 0;
 
 }
