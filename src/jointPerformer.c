@@ -96,34 +96,34 @@ void workerJ(join *pred, headInter * hq)
 		else
 		{
 			headResult *res;
-			myint_t newRel, skipped = 0;
+			myint_t newRel;
 			char switched;
 
 			if (used==0)
 			{
 				switched = 0;
-				res = performRHJ(hq,r1,r2,&newRel, &skipped, &switched);
+				res = performRHJ(hq,r1,r2,&newRel, &switched);
 				createInterFromRes(hq,res,rel1,rel2, switched);
 			}
 			else if (used==1)
 			{
 				//fprintf(stderr, "AA%ld\n", skipped);
-				res = performRHJ(hq,r1,r2,&newRel, &skipped, &switched);
+				res = performRHJ(hq,r1,r2,&newRel, &switched);
 				if (rel1==newRel) {
 					//fprintf(stderr, "REL1 NEW\n");
-					updateInterFromRes(n2,res,newRel,rel2,skipped,switched);
+					updateInterFromRes(n2,res,newRel,switched);
 				}
 				else{
 					//fprintf(stderr, "REL2 NEW %ld | new rel: %ld | newRelRows: %ld\n", n1->data->numbOfRows, newRel, r2->rows);
-					updateInterFromRes(n1,res,newRel,rel1,skipped,switched);
+					updateInterFromRes(n1,res,newRel,switched);
 				}
 			}
 			else
 			{
 				switched = 2;
-				res = performRHJ(hq,r1,r2,&newRel, &skipped, &switched);
+				res = performRHJ(hq,r1,r2,&newRel, &switched);
 				//fprintf(stderr, "III\n");
-				updateInterAndDelete(hq,n1,n2,res,rel1,rel2,skipped,switched);
+				updateInterAndDelete(hq,n1,n2,res,switched);
 				//fprintf(stderr,"JJJ\n");
 			}
 			//fprintf(stderr, "NODES: %lu | SIZE: %lu\n", res->numbOfNodes, res->totalSize);
@@ -147,7 +147,7 @@ myint_t findNextRowId(myint_t *rowIds, myint_t i, myint_t rows)
 	return i;
 }
 
-relation *forgeRelationsheep(headInter *hi, colRel *r, myint_t *skipped)
+relation *forgeRelationsheep(headInter *hi, colRel *r)
 {
 	nodeInter *node = findNode(hi,r->rel);
 	relation *rel = malloc(sizeof(relation));
@@ -171,35 +171,28 @@ relation *forgeRelationsheep(headInter *hi, colRel *r, myint_t *skipped)
 	}
 
 	inter *data = node->data;
-	myint_t j, cur=0, rows = data->numbOfRows, cols = data->numOfCols, next;
+	myint_t rows = data->numbOfRows, cols = data->numOfCols;
 	t = malloc(rows*sizeof(tuple));
 	for (i=0;i< cols; i++) if (data->joinedRels[i]==r->rel) break;
 	myint_t *rowIds = data->rowIds[i];
-	i=0;
-        while(i < rows)
-        {
-				j = rowIds[i];
-		        t[cur].key = col[j];
-		        t[cur++].payload = i;
-
-		        next = findNextRowId(rowIds,i,rows);
-		        (*skipped) += next - i - 1;
-		        //if (next - i - 1 > 0) fprintf(stderr, "%ld, %ld\n", i, next-i-1);
-		        i = next;
-        }
+	for (i=0 ; i<rows ; i++)
+	{
+		t[i].key = col[rowIds[i]];
+	    t[i].payload = i;
+	}
 	//fprintf(stderr, "AAA %ld is already in an inter\n", r->rel);
-	rel->size = cur;
+	rel->size = rows;
 	//fprintf(stderr, "size is %ld\n", cur);
-	rel->tuples = realloc((void *) t, cur * sizeof(tuple));
+	rel->tuples = t;
 	return rel;
 }
 
-headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, myint_t *skipped, char *switched)
+headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, char *switched)
 {
-	relation *relation1 = forgeRelationsheep(hi,r1, skipped);
+	relation *relation1 = forgeRelationsheep(hi,r1);
 	//fprintf(stderr, "Rel111111111111111111111\n");
 
-	relation *relation2 = forgeRelationsheep(hi,r2, skipped);
+	relation *relation2 = forgeRelationsheep(hi,r2);
 	//fprintf(stderr, "REL1 ROWS: %ld | REL2 ROWS: %ld\n", relation1->size, relation2->size);
 
 	char new1=0, new2=0;
@@ -227,24 +220,18 @@ myint_t *performSameNodeJoin(nodeInter *node, join *pred, myint_t *survivors)
         myint_t *col1 = r1->col;
         myint_t *col2 = r2->col;
 	inter * data = node->data;
-        myint_t rows = data->numbOfRows, cur=0, i, next1, next2, cols = data->numOfCols;
+        myint_t rows = data->numbOfRows, cur=0, i, cols = data->numOfCols;
         myint_t *temp = malloc(rows*sizeof(myint_t));
         for (i=0; i< cols; i++) if (data->joinedRels[i]==r1->rel) break;
 	myint_t *rowIds1 = data->rowIds[i];
 	for (i=0; i< cols; i++) if (data->joinedRels[i]==r2->rel) break;
         myint_t *rowIds2 = data->rowIds[i];
-        i=0;
-        while(i < rows)
+        for (i=0; i<rows; i++)
         {
-		next1 = findNextRowId(rowIds1,i,rows);
-                next2 = findNextRowId(rowIds2,i,rows);
-                if (next2<next1) next1 = next2;
-
-		if (col1[rowIds1[i]]==col2[rowIds2[i]]) for (; i<next1; i++)
-                {
-                        temp[cur++]=i;
-                }
-		else i = next1;
+			if (col1[rowIds1[i]]==col2[rowIds2[i]])
+            {
+                    temp[cur++]=i;
+            }
         }
 	*survivors = cur;
         temp = realloc((void *) temp, cur * sizeof(myint_t));
