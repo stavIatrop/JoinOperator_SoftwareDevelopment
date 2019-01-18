@@ -26,7 +26,7 @@
 #define TUPLE_NUMB 1000000
 #define ROWS 64
 
-/*headInter * head = NULL;
+headInter * head = NULL;
 headResult * headRes = NULL;
 headInter * headInt = NULL;
 myint_t *arr1D, *col;
@@ -550,9 +550,9 @@ void checksumTest() {
     free(sums);
     free(csum->checksums);
     free(csum);
-}*/
+}
 
-/*int initArray()
+int initArray()
 {
         arr1D = create_1DArray(20,3);
         arr1D[5]=7;
@@ -619,9 +619,8 @@ int smarterFree()
 void testRelationsheepForging()
 {
 	myint_t rows2 = 2000, rows = 1000;
-    myint_t skipped=0;
 
-	rel = forgeRelationsheep(headInt, cr, &skipped);
+	rel = forgeRelationsheep(headInt, cr);
 
 	CU_ASSERT(rel->size==rows2);
 	for (int i=0; i<rows2; i++)
@@ -632,8 +631,7 @@ void testRelationsheepForging()
 	cr -> rel = 1;
 	free(rel->tuples);
 	free(rel);
-    skipped=0;
-	rel = forgeRelationsheep(headInt, cr, &skipped);
+	rel = forgeRelationsheep(headInt, cr);
 
         CU_ASSERT(rel->size==rows);
         for (int i=0; i<rows; i++)
@@ -645,8 +643,7 @@ void testRelationsheepForging()
 	for (int i=0; i<rows; i++) node->data->rowIds[1][i] = node->data->rowIds[1][i] * 2;
 	free(rel->tuples);
         free(rel);
-        skipped=0;
-        rel = forgeRelationsheep(headInt, cr, &skipped);
+        rel = forgeRelationsheep(headInt, cr);
 
         CU_ASSERT(rel->size==rows);
         for (int i=0; i<rows; i++)
@@ -853,12 +850,12 @@ void schedulerAdditionTest() {
 
     CU_ASSERT(testSchedulerValue == 3 * 100000);
     CU_ASSERT(calculationIntensive != 0);
-}*/
+}
 
 
 //test FillStats
 
-/*int initialiseStatistics() {
+int initialiseStatistics() {
 
     col = (myint_t *)malloc( ROWS * sizeof(myint_t));
 
@@ -958,11 +955,11 @@ void testExistsInComb() {
     retVal = existsInComb("01234", 4);
     CU_ASSERT(retVal == 1);
     return; 
-}*/
+}
 
 int main(void) {
 
-	/*CU_pSuite pSuite1 = NULL;
+	CU_pSuite pSuite1 = NULL;
 	CU_pSuite pSuite2 = NULL;
 	CU_pSuite pSuite3 = NULL;
 	CU_pSuite pSuite4 = NULL;
@@ -1103,5 +1100,5 @@ int main(void) {
 
    CU_cleanup_registry();
 
-   return returnValue;*/
+   return returnValue;
 }
