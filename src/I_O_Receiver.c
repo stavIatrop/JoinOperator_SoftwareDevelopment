@@ -250,8 +250,6 @@ int main(void) {
     FreeRelArray(relArray);
 	
     shutdownAndFreeScheduler();
-
-    fprintf(stderr, "Radixes: %d | Avg radix time: %f\n", radixes, totalRadixTime / (double) radixes);
     
 	return 0;
 
