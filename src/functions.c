@@ -240,7 +240,7 @@ double IdenticalityTest(relation *r) //described in viceFunctions.h
 		else value = newValue;
 	}
 	if (sames==0) return 0.0;
-	return 200/((double)limit/sames);
+	return sqrt((double)sames/limit);
 }
 
 
