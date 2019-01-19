@@ -490,7 +490,6 @@ void SetPriorities(char * sequence, query * newQuery){
                 myint_t p, flag;
                 flag = 0;
                 for(p = 0; p < alreadyPrioritized; p++) {
-                    //fprintf(stderr, "already:%ld k:%ld p:%ld\n", alreadyPrioritized, k, p);
                     myint_t partA1 = newQuery->joins[newQuery->priorities[p]].participant1.rel;
                     myint_t partA1col = newQuery->joins[newQuery->priorities[p]].participant1.numCol;
                     myint_t partB1 = newQuery->joins[k].participant1.rel;
@@ -500,7 +499,6 @@ void SetPriorities(char * sequence, query * newQuery){
                     myint_t partB2 = newQuery->joins[k].participant2.rel;
                     myint_t partB2col = newQuery->joins[k].participant2.numCol;
 
-                    //fprintf(stderr, "partA1:%ld, partA1col:%ld, partA2:%ld, partA2col:%ld, partB1:%ld, partB1col: %ld,  partB2:%ld, partB2col:%ld\n", partA1,partA1col, partA2, partA2col, partB1, partB1col, partB2, partB2col);
                     if( partA1 == partB1 && partA2 == partB2 ) {
                         if(partA1col == partB1col && partA2col == partB2col) { //if join is identical with another one, skip it
                             flag = 1;
@@ -519,7 +517,6 @@ void SetPriorities(char * sequence, query * newQuery){
                     continue;
                 }
                 if(p != alreadyPrioritized) {       //break condition
-                    //fprintf(stderr, "I'm broken...\n");
                     int a;
                     alreadyPrioritized++;
                     

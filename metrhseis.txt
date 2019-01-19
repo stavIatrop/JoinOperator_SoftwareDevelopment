@@ -18,6 +18,41 @@ No scheduler:
 1 Process, public : 156519ms (i5 7th gen)
 
 With scheduler: 
+	-No packages2
+		1 thread small: 1507
+		1 thread public: 130874
+		
+		2 thread small: 1257
+		2 thread public: 94412
+
+		3 thread small: 1212
+		3 thread public: 86911
+
+		4 thread small: 1220
+		4 thread public: 81730
+
+		7 thread small: 1194
+		7 thread public: 81983
+
+		8 thread small: 1199
+		8 thread public: 82477
+
+		11 thread small: 1200
+		11 thread public: 82075
+
+		12 thread small: 1207
+		12 thread public: 81702
+
+		16 thread small: 1202
+		16 thread public: 81523
+
+		20 thread small: 1192
+		20 thread public: 82034
+
+		32 thread small: 1244
+		32 thread public: 82051
+
+With scheduler: 
 	-threading result list creation
 		1 thread small: 1744
 		1 thread public: 153190

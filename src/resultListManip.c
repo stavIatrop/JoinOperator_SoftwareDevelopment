@@ -133,29 +133,21 @@ void cleanListHead(headResult * head) {
 }
 
 void freeResultList(headResult * head) {
-        //fprintf(stderr,"OOO\n");
         if(head->numbOfNodes != 0) {
                 freeResultNode(head->firstNode);
         }
-       // fprintf(stderr,"PPP\n");
         if(head->buffTuple != NULL) {
                 free(head->buffTuple);
         }
-        //fprintf(stderr,"QQQ\n");
         free(head);
-        //fprintf(stderr,"RRR\n");
 }
 
 void freeResultNode(resultNode * node) {
-        // fprintf(stderr,"SSS\n");
         if(node->nextNode != NULL) {
                 freeResultNode(node->nextNode);
         }
-        //fprintf(stderr,"TTT\n");
         free(node->tuples);
-        //fprintf(stderr,"UUU\n");
         free(node);
-        //fprintf(stderr,"VVV\n");
 }
 
 //It expects that rowIdS matches rowIdR (for debugging purposes)

@@ -40,7 +40,6 @@ void workerF(filter *pred, headInter *hq)
 							temp[cur++]=i;
 						}
                 }
-		//fprintf(stderr, "Inter after filter =  %ld\n", cur);
 		temp = realloc((void *) temp, cur * sizeof(myint_t));
 		createInterSelfJoin(hq,r->rel,temp,cur);
 		free(temp);
@@ -58,7 +57,6 @@ void workerJ(join *pred, headInter * hq)
 {
 	char self = 0;
 	colRel *r1 = &(pred->participant1), *r2 = &(pred->participant2);
-	//fprintf(stderr, "%lu - %lu, %lu - %lu\n\n", r1->realRel, r1->realCol, r2->realRel, r2->realCol);
 	myint_t rel1 = r1->rel, rel2=r2->rel;
 	if (rel1 == rel2) self = 1;
 	nodeInter *n1 = findNode(hq,rel1);
@@ -67,7 +65,6 @@ void workerJ(join *pred, headInter * hq)
 	if (n1 && n2) used=2;
 	else if (n1==NULL && n2==NULL) used=0;
 	else used = 1;
-	//fprintf(stderr,"MMM\n");
 	if (self==1)
 	{
 		myint_t *res, survivors;
@@ -96,42 +93,37 @@ void workerJ(join *pred, headInter * hq)
 		else
 		{
 			headResult *res;
-			myint_t newRel;
+			myint_t newRel, skipped=0;
 			char switched;
 
 			if (used==0)
 			{
 				switched = 0;
-				res = performRHJ(hq,r1,r2,&newRel, &switched);
+				res = performRHJ(hq,r1,r2,&newRel, &switched, &skipped);
 				createInterFromRes(hq,res,rel1,rel2, switched);
 			}
 			else if (used==1)
 			{
-				//fprintf(stderr, "AA%ld\n", skipped);
-				res = performRHJ(hq,r1,r2,&newRel, &switched);
+				res = performRHJ(hq,r1,r2,&newRel, &switched, &skipped);
 				if (rel1==newRel) {
-					//fprintf(stderr, "REL1 NEW\n");
-					updateInterFromRes(n2,res,newRel,switched);
+					if (skipped==0) updateInterFromRes(n2,res,newRel,switched);
+					else updateInterFromRes2(n2,res,newRel,rel2,skipped,switched);
 				}
 				else{
-					//fprintf(stderr, "REL2 NEW %ld | new rel: %ld | newRelRows: %ld\n", n1->data->numbOfRows, newRel, r2->rows);
-					updateInterFromRes(n1,res,newRel,switched);
+					if (skipped==0) updateInterFromRes(n1,res,newRel,switched);
+					else updateInterFromRes2(n1,res,newRel,rel1,skipped,switched);
 				}
 			}
 			else
 			{
 				switched = 2;
-				res = performRHJ(hq,r1,r2,&newRel, &switched);
-				//fprintf(stderr, "III\n");
-				updateInterAndDelete(hq,n1,n2,res,switched);
-				//fprintf(stderr,"JJJ\n");
+				res = performRHJ(hq,r1,r2,&newRel, &switched, &skipped);
+				if (skipped==0) updateInterAndDelete(hq,n1,n2,res,switched);
+				else updateInterAndDelete2(hq,n1,n2,res,rel1,rel2,skipped,switched);
 			}
-			//fprintf(stderr, "NODES: %lu | SIZE: %lu\n", res->numbOfNodes, res->totalSize);
 			freeResultList(res);
 		}
 	}
-	//fprintf(stderr,"KKK\n");
-	fflush(stderr);
 	return;
 }
 
@@ -147,7 +139,7 @@ myint_t findNextRowId(myint_t *rowIds, myint_t i, myint_t rows)
 	return i;
 }
 
-relation *forgeRelationsheep(headInter *hi, colRel *r)
+relation *forgeRelationsheep(headInter *hi, colRel *r, myint_t *skipped)
 {
 	nodeInter *node = findNode(hi,r->rel);
 	relation *rel = malloc(sizeof(relation));
@@ -166,34 +158,40 @@ relation *forgeRelationsheep(headInter *hi, colRel *r)
         	        t[i].payload = i;
         	}
 		rel->tuples = t;
-		//fprintf(stderr, "size2 is %ld\n", rows);
 		return rel;
 	}
 
 	inter *data = node->data;
-	myint_t rows = data->numbOfRows, cols = data->numOfCols;
+	myint_t rows = data->numbOfRows, cols = data->numOfCols, cur=0;
 	t = malloc(rows*sizeof(tuple));
 	for (i=0;i< cols; i++) if (data->joinedRels[i]==r->rel) break;
-	myint_t *rowIds = data->rowIds[i];
+	myint_t *rowIds = data->rowIds[i]; //, value;
+	//if (rowIds[0]==0) value = rowIds[0] +1;
+	//else value = rowIds[0] -1;
 	for (i=0 ; i<rows ; i++)
 	{
-		t[i].key = col[rowIds[i]];
-	    t[i].payload = i;
+		/*if (rowIds[i]==value)  uncomment all these to activate packages
+		{
+			(*skipped)++;
+			continue;
+		}
+		value = rowIds[i];*/
+		t[cur].key = col[rowIds[i]];
+	    	t[cur].payload = i;
+		cur++;
 	}
-	//fprintf(stderr, "AAA %ld is already in an inter\n", r->rel);
-	rel->size = rows;
-	//fprintf(stderr, "size is %ld\n", cur);
-	rel->tuples = t;
+	rel->size = cur;
+	rel->tuples = realloc((void *) t, cur * sizeof(tuple));
 	return rel;
 }
 
-headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, char *switched)
+headResult *performRHJ(headInter *hi, colRel *r1, colRel *r2, myint_t *newRel, char *switched, myint_t *skipped)
 {
-	relation *relation1 = forgeRelationsheep(hi,r1);
-	//fprintf(stderr, "Rel111111111111111111111\n");
+	relation *relation1 = forgeRelationsheep(hi,r1,skipped);
 
-	relation *relation2 = forgeRelationsheep(hi,r2);
-	//fprintf(stderr, "REL1 ROWS: %ld | REL2 ROWS: %ld\n", relation1->size, relation2->size);
+	relation *relation2 = forgeRelationsheep(hi,r2,skipped);
+
+	//fprintf(stderr,"skipped is %lu\n", *skipped);
 
 	char new1=0, new2=0;
 	if (findNode(hi,r1->rel)==NULL) new1=1;

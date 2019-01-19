@@ -32,7 +32,6 @@ struct JobScheduler {
     pthread_t * threads;
     pthread_mutex_t queueMutex;
     pthread_mutex_t barrierMutex;
-    //pthread_mutex_t jobMutex;
 
     //We will only allow one reader or one writer (since we are using a queue)
     pthread_cond_t cond_write;

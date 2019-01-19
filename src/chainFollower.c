@@ -82,7 +82,6 @@ headResult * search(indexArray * indArr, reorderedR * s) {
                 searchKeyRec(&(indArr->indexes[key1]), resultList, startTup, size, (myint_t) log2(indArr->size));
         }
 
-        //fprintf(stderr, "PUSHES: %ld\n", counter);
         cleanListHead(resultList);
         return resultList;
 }
@@ -111,10 +110,6 @@ void joinBucket(void * args) {
         cleanListHead(resultList);
 
         funcArgs->resultLists[funcArgs->whichResult] = resultList;
-
-        //connectResultList(funcArgs->finalResult, resultList);
-
-        //free(resultList);
         
 
         pthread_mutex_lock(&finished_search_mutex);
@@ -127,7 +122,6 @@ void joinBucket(void * args) {
 }
 
 headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
-        // pthread_mutex_init(&finalResultListLock, NULL);
         pthread_mutex_init(&finished_search_mutex, 0);
         pthread_cond_init(&cond_finished_search, 0);
         connectedLists = 0;
@@ -151,7 +145,6 @@ headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
                 
                 //Initialise arguments of job
                 searchArgument * sArgs = (searchArgument *) malloc(sizeof(searchArgument));
-                //sArgs->finalResult = finalResultList;
                 sArgs->resultLists = jobLists;
                 sArgs->whichResult = whichKey;
                 sArgs->indArr = indArr;
@@ -160,7 +153,6 @@ headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
                 sArgs->startTup = startTup;
                 sArgs->sBuckets = s->pSumArr.psumSize;
 
-                //searchKeyRec(&(indArr->indexes[key1]), resultList, startTup, size, (myint_t) log2(indArr->size));
                 //Initialise job
                 struct Job * job = (struct Job *) malloc(sizeof(struct Job));
                 job->function = &joinBucket;
@@ -180,7 +172,6 @@ headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
         for(myint_t whichList = 0; whichList < s->pSumArr.psumSize; whichList++) {
                 connectResultList(finalResultList, jobLists[whichList]);
         }
-        //fprintf(stderr, "There were %lu lists\n", s->pSumArr.psumSize);
 
         //Free the job result lists
         for(myint_t whichList = 0; whichList < s->pSumArr.psumSize; whichList++) {
@@ -191,10 +182,6 @@ headResult * searchThreadVer(indexArray * indArr, reorderedR * s) {
         }
         free(jobLists);
 
-        // fprintf(stderr, "AAAAAAAAAAAAA\n");
-        //fprintf(stderr, "PUSHES: %ld\n", counter);
-        //cleanListHead(resultList);
-        // pthread_mutex_destroy(&finalResultListLock);
         pthread_cond_destroy(&cond_finished_search);
         pthread_mutex_destroy(&finished_search_mutex);
 

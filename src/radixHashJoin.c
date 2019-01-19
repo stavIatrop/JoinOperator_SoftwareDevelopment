@@ -16,9 +16,7 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
         reorderedR * RoS = NULL;
         char freedomFlag;
         indexArray * indArr = NULL;
-        //fprintf(stderr,"NNN\n");
 
-        //fprintf(stderr,"rel1 is %lu, rel2 is %lu, switched is %d\n",rRel->realRel,sRel->realRel,*switched);
         if (*switched==0)
         {
                 freedomFlag=0;
@@ -28,7 +26,6 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                         indArr = FetchFromIndexWarehouse(sRel->realRel, sRel->realCol, &h1);
                         if (indArr) *switched=1;
                 }
-                //fprintf(stderr,"indArr is %lu\n\n",indArr);
                 if (indArr)
                 {
                         if (*switched==0)
@@ -113,14 +110,12 @@ headResult * radixHashJoin(relation * rRel, relation * sRel, char * switched) {
                         
                 if (rRel->size <= sRel->size)
                 {
-                        //fprintf(stderr,"CCC\n");
                         RoR = reorderRelation(rRel, &h1);
                         RoS = reorderRelation(sRel, &h1);
                         *switched = 0;
                 }
                 else
                 {
-                        //fprintf(stderr,"DDD\n");
                         RoR = reorderRelation(sRel, &h1);
                         RoS = reorderRelation(rRel, &h1);
                         *switched = 1;

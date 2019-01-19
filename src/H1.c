@@ -43,8 +43,6 @@ void constructionJob(void *Blues)
 		}
 	}
 
-	//fprintf(stderr,"HHH\n");
-
 	pthread_mutex_lock(&constructionMutex);
     constructionsCompleted += 1;
     if(constructionsCompleted == NUMB_OF_THREADS) {
@@ -177,22 +175,10 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
 	}
 	for (;j<*hash1;j++) helpPSum[j]=size;
 
-	/*for (i=0;i<*hash1;i++) fprintf(stderr, "%lu, ", helpPSum[i]);
-	fprintf(stderr, "\n\n");
-	for (i=0;i<buckets;i++) fprintf(stderr, "%lu - %lu, ", psum->psum[i].h1Res, psum->psum[i].offset);
-	fprintf(stderr, "\n\n");
-	for (i=0;i<*hash1;i++) fprintf(stderr, "%lu, ", hist[i]);
-	fprintf(stderr, "\n");*/
-
-
-	//fprintf(stderr,"DDD\n");
-
 	blueprints *blues = malloc(NUMB_OF_THREADS*sizeof(blueprints));
 	pthread_mutex_init(&constructionMutex, 0);
 	pthread_cond_init(&constructionCond, 0);
 	constructionsCompleted = 0;
-
-	//fprintf(stderr,"CCC\n");
 
 	for (i=0; i<NUMB_OF_THREADS; i++)
 	{
@@ -206,71 +192,24 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
 		blues[i].hist = hist;
 		blues[i].newR = R->rel->tuples;
 
-		//fprintf(stderr,"GGG, %lu, %lu, %lu\n", blues[i].from, blues[i].to, size);
-
 		struct Job *job = malloc(sizeof(struct Job));
 		job->function = &constructionJob;
 		job->argument = (void *) &(blues[i]);
 		writeOnQueue(job);
 	}
 
-	//fprintf(stderr,"BBB\n");
 	pthread_mutex_lock(&constructionMutex);
     while(constructionsCompleted != NUMB_OF_THREADS) {
             pthread_cond_wait(&constructionCond, &constructionMutex);
     }
-    //fprintf(stderr,"AAA\n");
     pthread_mutex_unlock(&constructionMutex);
 
     free(blues);
-    //fprintf(stderr, "KKK\n");
 
 	pthread_mutex_destroy(&constructionMutex);
 	pthread_cond_destroy(&constructionCond);
 
 	
-							//members counts how many elements have been sorted so far for each hash value
-	/*myint_t current_bucket = psum->psum[0].h1Res, current = 0, *members = malloc(*hash1 * sizeof(myint_t));
-	if (members ==NULL)
-        {
-                perror("Wrong arguments");
-                exit(1);
-        }
-
-
-	for (i=0; i<*hash1; i++)
-	{
-		members[i] = 0;
-	}
-
-	char flag = 1;
-
-	for (i = 0; i < size; i++)	//This sorting is done in O(n) time
-	{
-		while (members[current_bucket] == hist[current_bucket])
-                {
-                        current_bucket = psum->psum[++current].h1Res;
-                        i+=members[current_bucket];
-			if (i>=size)
-			{
-				flag = 0;
-				break;
-			}
-                }
-		if (flag==0) break;
-		while (hash_values[i] != current_bucket)
-		{
-			while (hash_values[helpPSum[hash_values[i]] + members[hash_values[i]]] == hash_values[i])
-			{
-				members[hash_values[i]] = members[hash_values[i]] + 1;
-			}
-			members[hash_values[i]] = members[hash_values[i]] + 1;
-			rSwap(r->tuples,hash_values,i,helpPSum[hash_values[i]] + members[hash_values[i]] - 1);
-		}
-		members[current_bucket] = members[current_bucket] + 1;
-	}*/
-
-	//fprintf(stderr, "JJJ\n");
 
 	for (i=0; i<*hash1; i++) pthread_mutex_destroy(&(workMutex[i]));
 	free(workMutex);
@@ -284,9 +223,7 @@ reorderedR * reorderRelation(relation * r, myint_t *hash1)
 	*hash1 = a-1;
 	free(hist);
 	free(helpPSum);
-	//free(members);
 	free(hash_values);
 
-	//fprintf(stderr, "III\n");
 	return R;
 }

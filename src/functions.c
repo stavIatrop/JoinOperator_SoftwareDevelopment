@@ -9,7 +9,7 @@
 #include "getStats.h"
 #include "queryStructs.h"
 
-#define BETTERER 100
+#define BETTERER 200
 
 pthread_mutex_t histMutex;
 pthread_cond_t histCond;
@@ -63,8 +63,6 @@ void emptyWarehouses(relationsheepArray *relArr)
 
     for (myint_t i=0; i<relArr->numOfRels; i++)
     {
-    	//for (myint_t j=0; j<relArr->rels[i].cols; j++)
-    	//	if (reWarehouse->bestHashValues[i][j]) fprintf(stderr, "%lu, %lu\n", i, j);
     	free(reWarehouse->bestHashValues[i]);
     }
     free(reWarehouse->bestHashValues);
@@ -84,7 +82,6 @@ indexArray *FetchFromIndexWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 		if (indexWarehouse->rel[i]==rel && indexWarehouse->col[i]==col)
 		{
 			*hash1 = indexWarehouse->hash1[i];
-			//fprintf(stderr,"FETCHED! %lu, %lu\n\n",rel,col);
 			return indexWarehouse->indexes[i];
 		}
 	}
@@ -93,11 +90,9 @@ indexArray *FetchFromIndexWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 
 reorderedR *FetchFromReWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 {
-	//fprintf(stderr,"Fetching ror %lu, %lu, %lu\n\n",rel,col, *hash1);
 
 	if (*hash1==FIRST_REORDERED)
 	{
-		//if (reWarehouse->bestHashValues[rel][col]) fprintf(stderr,"FETCHED BEST ror! %lu, %lu, %lu\n\n",rel,col, *hash1);
 		return reWarehouse->bestHashValues[rel][col];
 	}
 	else
@@ -106,7 +101,6 @@ reorderedR *FetchFromReWarehouse(myint_t rel, myint_t col, myint_t *hash1)
 		{
 			if (reWarehouse->rel[i]==rel && reWarehouse->col[i]==col && reWarehouse->hash1[i]==*hash1)
 			{
-				//fprintf(stderr,"FETCHED ror! %lu, %lu, %lu\n\n",rel,col, *hash1);
 				return reWarehouse->arrays[i];
 			}
 		}
@@ -124,25 +118,14 @@ void AddToIndexWarehouse(myint_t rel, myint_t col, myint_t hash1, indexArray *in
 	indexWarehouse->indexes[indexWarehouse->size] = indexes;
 	(indexWarehouse->size)++;
 
-	/*relationIndex *a= indexes->indexes;
-	while (a)
-	{
-		curmem+=a->rel->size;
-		a = a->next;
-
-	}
-	fprintf(stderr,"Current memory usage for the indexWarehouse is %lu\n\n", (myint_t) (curmem * sizeof(tuple) *1.5));
-*/	
 	return;
 }
 
 void AddToReWarehouse(myint_t rel, myint_t col, myint_t hash1, reorderedR *array, char best)
 {
 
-	//fprintf(stderr,"Adding ror %lu, %lu, %lu\n\n",rel,col, hash1);
 	if (best)
 	{
-		//fprintf(stderr,"Adding BEST ror %lu, %lu, %lu\n\n",rel,col, hash1);
 		reWarehouse->bestHashValues[rel][col] = array;
 	}
 
@@ -243,7 +226,7 @@ myint_t FindNextPower(myint_t number)
 double IdenticalityTest(relation *r) //described in viceFunctions.h
 {
 	
-	myint_t size = r->size, limit = size/100, sames=0;
+	myint_t size = r->size, limit = size/200, sames=0;
 	if (size==0) return 0.0;
                 fflush(stderr);
 	myint_t value = r->tuples[0].key, newValue;
@@ -256,7 +239,8 @@ double IdenticalityTest(relation *r) //described in viceFunctions.h
 		if (newValue == value) sames++;
 		else value = newValue;
 	}
-	return 1/((double)sames*100);
+	if (sames==0) return 0.0;
+	return 200/((double)limit/sames);
 }
 
 
@@ -395,7 +379,9 @@ myint_t DoTheHash(relation *r, myint_t hash1, myint_t *hist, myint_t *hash_value
 
 myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
 {
-	myint_t dvalues=distValues(r);
+	//myint_t dvalues=distValues(r);
+	myint_t dvalues = r->size;// * (1-IdenticalityTest(r));
+	//fprintf(stderr,"It is %lu, %f\n", dvalues, IdenticalityTest(r));
 	//double identicality = IdenticalityTest(r);
 	*hash1 = FindNextPower(floor(ERROR_MARGIN * (dvalues * sizeof(tuple) / AVAILABLE_CACHE_SIZE)) + 1); //ERROR_MARGIN ==1.05 to fit
 	//fprintf(stderr, "hash1 = %lu\n", *hash1);
@@ -407,40 +393,6 @@ myint_t *Hash1(relation *r,myint_t *hash1, myint_t *hash_values)
             exit(1);
     }
     DoTheHash(r,*hash1,hist,hash_values,&max,1); 
-	/*myint_t bad = DoTheHash(r,*hash1,hist,hash_values,&max,0); //to uncomment this,
-																//comment the previous line
-	beginning = *hash1;
-	prevBad = bad;
-
-	while (bad > 0)
-    {
-		nextPower = (myint_t)log2(FindNextPower(max/maxBucketSize)+1);
-		if (log2(*hash1) + nextPower > floor(log2(size)) || log2(*hash1) + nextPower > floor(log2(BUCKET_MEMORY_LIMIT)) || max <= 1.1 * dvalues)
-		{		
-			//the last check in the f is because identical keys cannot be separated.
-			if (*hash1==beginning) return hist;
-			*hash1 = beginning;
-        	hist = realloc(hist,*hash1 * sizeof(myint_t));
-			if (hist ==NULL)
-   			{
-    		        perror("Wrong arguments");
-	                exit(1);
-	        }
-
-	        DoTheHash(r,*hash1,hist,hash_values,&max,1);
-			return hist;
-		}
-		*hash1 = (*hash1) << nextPower;
-        if (bad != prevBad) beginning = *hash1;
-		prevBad = bad;
-        hist = realloc(hist,*hash1 * sizeof(myint_t));
-		if (hist ==NULL)
-    	{
-                perror("Wrong arguments");
-                exit(1);
-        }
-        bad = DoTheHash(r,*hash1,hist,hash_values,&max,0);
-    }*/
 
 	return hist;
 }

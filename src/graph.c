@@ -62,7 +62,6 @@ void ConstructGraph(graph * joinGraph, query * newQuery) {
         }
 
         InsertGraph(&(joinGraph->graphArray[rel1]), col1, rel2, col2, i );     //undirected graph
-        //InsertGraph(&(joinGraph->graphArray[rel2]), col2, rel1, col1, i );
     }
     return;
 

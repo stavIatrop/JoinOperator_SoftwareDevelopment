@@ -193,11 +193,7 @@ int main(void) {
                         fflush(stdout);
                     }
 
-                    //Perform joins
-                    // for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
-                    //     workerJ(&(newQuery->joins[whichJoin]), headInt);
-                    // }
-
+                    //Perform joins in priority order
                     for(myint_t whichJoin = 0; whichJoin < newQuery->numOfJoins; whichJoin++) {
                         
                         if(newQuery->priorities[whichJoin] != -1) {
@@ -206,8 +202,6 @@ int main(void) {
                         }
                         
                     }
-
-
 
                     //Perform checksums
                     checksum * cs = performChecksums(newQuery->sums, newQuery->numOfSums, headInt);

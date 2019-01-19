@@ -6,6 +6,7 @@
 #include "basicStructs.h"
 #include "queryStructs.h"
 #include "resultListInterface.h"
+#include "jointPerformer.h"
 
 inter * initialiseInter(myint_t cols, myint_t rows, myint_t * joinedRels, myint_t ** rowIds) {
     inter * retInter = (inter *) malloc(sizeof(inter));
@@ -168,11 +169,9 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
     for(myint_t i = 0; i < intNode->data->numOfCols + 1; i++) {
         retArr[i] = (myint_t *) malloc(results * sizeof(myint_t));
     }
-    // fprintf(stderr, "RESULTS: %ld\n", headRes->numbOfNodes);
 
     //Copy the rows of the inter that where joined and add them the row of the new relationship
     resultNode * currentNode = headRes->firstNode;
-    //fprintf(stderr, "Results = %ld\n", headRes->tail->tuples[headRes->tail->size - 1].rowR);
     myint_t base = 0;
     if(switched == 0) {
         for(myint_t whichNode = 0; whichNode < headRes->numbOfNodes; whichNode++) {
@@ -216,7 +215,6 @@ myint_t ** updateRowIds(nodeInter * intNode, headResult * headRes, myint_t resul
 void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t addedRel, char switched) {
     //New rows
     myint_t numbOfResults = headRes->totalSize;
-    //fprintf(stderr, "AAAAAAAAAAAA: %ld\n", numbOfResults);
 
     //Add new rel in joinedRels
     myint_t * joinedRels = (myint_t *) malloc((intNode->data->numOfCols + 1) * sizeof(myint_t));
@@ -230,9 +228,6 @@ void updateInterFromRes(nodeInter * intNode, headResult * headRes, myint_t added
 
 
     updateInter(intNode, intNode->data->numOfCols + 1, numbOfResults, joinedRels, newRowIds);
-
-    //fprintf(stderr, "    Join inter rows = %ld | cols = %ld\n", intNode->data->numbOfRows, intNode->data->numOfCols);
-
 
 }
 
@@ -285,7 +280,7 @@ myint_t ** joinRowIds(nodeInter * node1, nodeInter * node2, headResult * headRes
 }
 
 //CASE: Both relationships belong to an intermediate (Inter1 will be updated, Inter2 will be deleted)
-void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * node2, headResult * headRes, char switched) {
+void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * node2, headResult * headRes, char switched, char packaged) {
     //New rows
     myint_t numbOfResults = headRes->totalSize;
 
@@ -315,11 +310,7 @@ void updateInterAndDelete(headInter * headInt, nodeInter * node1, nodeInter * no
 //CASE: Self join on rel that exists in an Intermediate
 void updateInterSelfJoin(nodeInter * node, myint_t * joinRows, myint_t numbOfRows) {
     myint_t ** newRowIds;
-    //TO BE FIXED
-    //if(numbOfRows == -1) {
-     //   newRowIds = NULL;
-    //}
-   // else {
+
     newRowIds = (myint_t **) malloc(node->data->numOfCols * sizeof(myint_t *));
     for(myint_t i = 0; i < node->data->numOfCols; i++) {
         newRowIds[i] = (myint_t *) malloc(numbOfRows * sizeof(myint_t));
@@ -330,7 +321,6 @@ void updateInterSelfJoin(nodeInter * node, myint_t * joinRows, myint_t numbOfRow
             newRowIds[whichCol][whichRow] = node->data->rowIds[whichCol][joinRows[whichRow]];
         }
     }
-   //}
 
     myint_t * joinedRels = (myint_t *) malloc(node->data->numOfCols * sizeof(myint_t));
     for(myint_t whichRel = 0; whichRel < node->data->numOfCols; whichRel++) {
@@ -349,8 +339,6 @@ void createInterSelfJoin(headInter * head, myint_t rel, myint_t * rows, myint_t 
 
     for(myint_t whichRow = 0; whichRow < numbOfRows; whichRow++) {
         newRowIds[0][whichRow] = rows[whichRow];
-        //if(newRowIds[0][whichRow] > 1000000) fprintf(stderr, "FILTER ERROR\n");
-
     }
 
     myint_t * joinedRels = (myint_t *) malloc(sizeof(myint_t));
@@ -358,4 +346,235 @@ void createInterSelfJoin(headInter * head, myint_t rel, myint_t * rows, myint_t 
 
     pushInter(head, 1, numbOfRows, joinedRels, newRowIds);
 
+}
+
+myint_t ** updateRowIds2(nodeInter * intNode, headResult * headRes, myint_t *results, myint_t existingRel, char switched) {
+
+    //Memory Allocations
+    myint_t cursize = *results;
+    myint_t ** retArr = (myint_t **) malloc((intNode->data->numOfCols + 1) * sizeof(myint_t *));
+    for(myint_t i = 0; i < intNode->data->numOfCols + 1; i++) {
+        retArr[i] = (myint_t *) malloc(cursize * sizeof(myint_t));
+    }
+    // fprintf(stderr, "RESULTS: %ld\n", headRes->numbOfNodes);
+
+    myint_t existingRelPlace;
+    for(myint_t whichRel = 0; whichRel < intNode->data->numOfCols; whichRel++) {
+        if (intNode->data->joinedRels[whichRel] == existingRel) {
+            existingRelPlace = whichRel;
+            break;
+        }
+    }
+
+    //fprintf(stderr, "AAAAAAAA");
+
+    //Copy the rows of the inter that were joined and add them the row of the new relationship
+    resultNode * currentNode = headRes->firstNode;    
+    myint_t counter = 0;
+    myint_t next;
+    for(myint_t whichNode = 0; whichNode < headRes->numbOfNodes; whichNode++) {
+        if(switched == 0) {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
+
+                next = findNextRowId(intNode->data->rowIds[existingRelPlace], currentNode->tuples[whichRes].rowR, intNode->data->numbOfRows);
+                for (myint_t p = currentNode->tuples[whichRes].rowR; p < next; p++) {
+
+                    for(myint_t whichCol = 0; whichCol < intNode->data->numOfCols; whichCol++) {
+                            retArr[whichCol][counter] = intNode->data->rowIds[whichCol][p];
+                    }
+                    retArr[intNode->data->numOfCols][counter] = currentNode->tuples[whichRes].rowS;
+                    counter += 1;
+                    if (counter==cursize) {
+                        cursize += *results;
+                        for(myint_t i = 0; i < intNode->data->numOfCols + 1; i++) {
+                            retArr[i] = (myint_t *) realloc(retArr[i],cursize * sizeof(myint_t));
+                        }
+                    }
+
+                }
+            }
+        }
+        else {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
+
+                next = findNextRowId(intNode->data->rowIds[existingRelPlace], currentNode->tuples[whichRes].rowS, intNode->data->numbOfRows);
+                for (myint_t p = currentNode->tuples[whichRes].rowS; p < next; p++) {
+
+                    for(myint_t whichCol = 0; whichCol < intNode->data->numOfCols; whichCol++) {
+                            retArr[whichCol][counter] = intNode->data->rowIds[whichCol][p];
+                    }
+                    retArr[intNode->data->numOfCols][counter] = currentNode->tuples[whichRes].rowR;
+                    counter += 1;
+                    if (counter==cursize) {
+                        cursize += *results;
+                        for(myint_t i = 0; i < intNode->data->numOfCols + 1; i++) {
+                            retArr[i] = (myint_t *) realloc(retArr[i],cursize * sizeof(myint_t));
+                        }
+                    }
+                        
+                }
+
+            }
+        }
+        currentNode = currentNode->nextNode;
+    }
+
+    for(myint_t i = 0; i < intNode->data->numOfCols + 1; i++) {
+        retArr[i] = (myint_t *) realloc(retArr[i],counter * sizeof(myint_t));
+    }
+    *results = counter;
+
+    return retArr;
+}
+
+//CASE: One relationship belongs to an intermediate (care the R relationship must be the Intermediate)
+void updateInterFromRes2(nodeInter * intNode, headResult * headRes, myint_t addedRel, myint_t existingRel, myint_t skipped, char switched) {
+    //New rows
+    myint_t numbOfResults = headRes->totalSize + skipped;
+    //fprintf(stderr, "AAAAAAAAAAAA: %ld\n", numbOfResults);
+
+    //Add new rel in joinedRels
+    myint_t * joinedRels = (myint_t *) malloc((intNode->data->numOfCols + 1) * sizeof(myint_t));
+    for(myint_t whichRel = 0; whichRel < intNode->data->numOfCols; whichRel++) {
+        joinedRels[whichRel] = intNode->data->joinedRels[whichRel];
+    }
+    joinedRels[intNode->data->numOfCols] = addedRel;
+
+    //Create new rowIds
+    myint_t ** newRowIds = updateRowIds2(intNode, headRes, &numbOfResults, existingRel, switched);
+
+
+    updateInter(intNode, intNode->data->numOfCols + 1, numbOfResults, joinedRels, newRowIds);
+
+    //fprintf(stderr, "    Join inter rows = %ld | cols = %ld\n", intNode->data->numbOfRows, intNode->data->numOfCols);
+
+
+}
+
+myint_t ** joinRowIds2(nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t *results, myint_t existingRel1, myint_t existingRel2, char switched) {
+
+    //Memory Allocations
+    myint_t cursize = *results;
+    myint_t ** retArr = (myint_t **) malloc((node1->data->numOfCols + node2->data->numOfCols) * sizeof(myint_t *));
+    for(myint_t i = 0; i < node1->data->numOfCols + node2->data->numOfCols; i++) {
+        retArr[i] = (myint_t *) malloc(cursize * sizeof(myint_t));
+        if (retArr[i]==NULL) fprintf(stderr,"Not enough memory, %ld\n", *results);
+    }
+
+    myint_t existingRelPlace1, existingRelPlace2;
+
+    for(myint_t whichRel = 0; whichRel < node1->data->numOfCols; whichRel++) {
+        if (node1->data->joinedRels[whichRel] == existingRel1) {
+            existingRelPlace1 = whichRel;
+            break;
+        }
+    }
+
+    for(myint_t whichRel = 0; whichRel < node2->data->numOfCols; whichRel++) {
+        if (node2->data->joinedRels[whichRel] == existingRel2) {
+            existingRelPlace2 = whichRel;
+            break;
+        }
+    }
+
+    resultNode * currentNode = headRes->firstNode;    
+    myint_t counter = 0, next1, next2;
+    for(myint_t whichNode = 0; whichNode < headRes->numbOfNodes; whichNode++) {
+        if(switched == 0) {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
+
+                next1 = findNextRowId(node1->data->rowIds[existingRelPlace1],currentNode->tuples[whichRes].rowR,node1->data->numbOfRows);
+                next2 = findNextRowId(node2->data->rowIds[existingRelPlace2],currentNode->tuples[whichRes].rowS,node2->data->numbOfRows);
+                for (myint_t p1 = currentNode->tuples[whichRes].rowR; p1 < next1; p1++) {
+                    for (myint_t p2 = currentNode->tuples[whichRes].rowS; p2 < next2; p2++) {
+
+                        for(myint_t whichCol = 0; whichCol < node1->data->numOfCols; whichCol++) {
+                            retArr[whichCol][counter] = node1->data->rowIds[whichCol][p1];
+                        }
+
+                        //Add the rowIds of the second Intermediate
+                        for(myint_t whichCol = node1->data->numOfCols; whichCol < node1->data->numOfCols + node2->data->numOfCols; whichCol++) {
+                            retArr[whichCol][counter] = node2->data->rowIds[whichCol - node1->data->numOfCols][p2];
+                        }
+
+                        counter += 1;
+                        if (counter==cursize) {
+                            cursize += *results;
+                            for(myint_t i = 0; i < node1->data->numOfCols + node2->data->numOfCols; i++) {
+                                retArr[i] = (myint_t *) realloc(retArr[i],cursize * sizeof(myint_t));
+                            }
+                        }
+
+                    }
+                }
+                //fprintf(stderr, "%ld\n", counter);
+
+            }
+
+        }
+        else {
+            for(myint_t whichRes = 0; whichRes < currentNode->size; whichRes++) {
+                
+                next1 = findNextRowId(node1->data->rowIds[existingRelPlace1],currentNode->tuples[whichRes].rowS,node1->data->numbOfRows);
+                next2 = findNextRowId(node2->data->rowIds[existingRelPlace2],currentNode->tuples[whichRes].rowR,node2->data->numbOfRows);
+                for (myint_t p1 = currentNode->tuples[whichRes].rowS; p1 < next1; p1++) {
+                    for (myint_t p2 = currentNode->tuples[whichRes].rowR; p2 < next2; p2++) {
+
+                        for(myint_t whichCol = 0; whichCol < node1->data->numOfCols; whichCol++) {
+                            retArr[whichCol][counter] = node1->data->rowIds[whichCol][p1];
+                        }
+
+                        //Add the rowIds of the second Intermediate
+                        for(myint_t whichCol = node1->data->numOfCols; whichCol < node1->data->numOfCols + node2->data->numOfCols; whichCol++) {
+                            retArr[whichCol][counter] = node2->data->rowIds[whichCol - node1->data->numOfCols][p2];
+                        }
+
+                        counter += 1;
+                        if (counter==cursize) {
+                            cursize += *results;
+                            for(myint_t i = 0; i < node1->data->numOfCols + node2->data->numOfCols; i++) {
+                                retArr[i] = (myint_t *) realloc(retArr[i],cursize * sizeof(myint_t));
+                            }
+                        }
+
+                    }
+                }                //fprintf(stderr, "AA %ld\n", counter);
+
+           }
+        }
+        
+        currentNode = currentNode->nextNode;
+    }
+
+    for(myint_t i = 0; i < node1->data->numOfCols + node2->data->numOfCols; i++) {
+        retArr[i] = (myint_t *) realloc(retArr[i],counter * sizeof(myint_t));
+    }
+    *results = counter;
+    return retArr;
+}
+
+//CASE: Both relationships belong to an intermediate (Inter1 will be updated, Inter2 will be deleted)
+void updateInterAndDelete2(headInter * headInt, nodeInter * node1, nodeInter * node2, headResult * headRes, myint_t existingRel1, myint_t existingRel2, myint_t skipped, char switched) {
+    //New rows
+    myint_t numbOfResults = headRes->totalSize + skipped;
+
+    myint_t * joinedRels = (myint_t *) malloc((node1->data->numOfCols + node2->data->numOfCols) * sizeof(myint_t));
+
+    //Add joinedRels of node1 in new joinedRels
+    for(myint_t whichRel = 0; whichRel < node1->data->numOfCols; whichRel++) {
+        joinedRels[whichRel] = node1->data->joinedRels[whichRel];
+    }
+
+    //Add joinedRels of node2 in new joinedRels
+    for(myint_t whichRel = node1->data->numOfCols; whichRel < node1->data->numOfCols + node2->data->numOfCols; whichRel++) {
+        joinedRels[whichRel] = node2->data->joinedRels[whichRel - node1->data->numOfCols];
+    }
+
+    myint_t ** newRowIds = joinRowIds2(node1, node2, headRes, &numbOfResults, existingRel1, existingRel2, switched);
+
+    //Update Inter1
+    updateInter(node1, node1->data->numOfCols + node2->data->numOfCols, numbOfResults, joinedRels, newRowIds);
+
+    //Delete Inter2
+    deleteInterNode(headInt, node2);
 }

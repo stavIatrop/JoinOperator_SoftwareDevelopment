@@ -619,8 +619,9 @@ int smarterFree()
 void testRelationsheepForging()
 {
 	myint_t rows2 = 2000, rows = 1000;
+    myint_t skipped;
 
-	rel = forgeRelationsheep(headInt, cr);
+	rel = forgeRelationsheep(headInt, cr, &skipped);
 
 	CU_ASSERT(rel->size==rows2);
 	for (int i=0; i<rows2; i++)
@@ -631,7 +632,7 @@ void testRelationsheepForging()
 	cr -> rel = 1;
 	free(rel->tuples);
 	free(rel);
-	rel = forgeRelationsheep(headInt, cr);
+	rel = forgeRelationsheep(headInt, cr, &skipped);
 
         CU_ASSERT(rel->size==rows);
         for (int i=0; i<rows; i++)
@@ -643,7 +644,7 @@ void testRelationsheepForging()
 	for (int i=0; i<rows; i++) node->data->rowIds[1][i] = node->data->rowIds[1][i] * 2;
 	free(rel->tuples);
         free(rel);
-        rel = forgeRelationsheep(headInt, cr);
+        rel = forgeRelationsheep(headInt, cr, &skipped);
 
         CU_ASSERT(rel->size==rows);
         for (int i=0; i<rows; i++)
@@ -658,7 +659,7 @@ void testRelationsheepForging()
 	}
         free(rel->tuples);
         free(rel);
-        rel = forgeRelationsheep(headInt, cr);
+        rel = forgeRelationsheep(headInt, cr, &skipped);
 
         CU_ASSERT(rel->size==rows);
         for (int i=0; i<rows; i++)

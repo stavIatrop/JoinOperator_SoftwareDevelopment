@@ -16,10 +16,8 @@ void initialiseScheduler() {
     
     //Initialise synch mechanics
     pthread_mutex_init(&(jobScheduler.queueMutex), 0);
-    //pthread_mutex_init(&(jobScheduler.barrierMutex), 0);
     pthread_cond_init(&(jobScheduler.cond_read), 0);
     pthread_cond_init(&(jobScheduler.cond_write), 0);
-    //pthread_cond_init(&(jobScheduler.cond_barrier), 0);
     jobScheduler.writing = 0;
     jobScheduler.reading = 0;
     jobScheduler.working = 0;
@@ -89,19 +87,7 @@ void Barrier() {
 void * jobExecutor() {
     while(jobScheduler.shutdown == 0) {
         struct Job * job = readFromQueue();
-        // fprintf(stderr, "aaaa\n");
         (*(job->function))(job->argument);
-        // fprintf(stderr, "1JOB_START\n");
-        // pthread_mutex_lock(&(jobScheduler.queueMutex));
-        // // fprintf(stderr, "2JOB_START\n");
-        // jobScheduler.working--;
-        // if (jobScheduler.working==0 && jobScheduler.jobQueue->size==0)
-        // {
-        //     pthread_cond_broadcast(&(jobScheduler.cond_barrier));
-        // }
-        // pthread_mutex_unlock(&(jobScheduler.queueMutex));
-        // // fprintf(stderr, "2JOB\n");
-
         free(job);
     }
     pthread_exit(0);
@@ -111,8 +97,6 @@ void * jobExecutor() {
 void writeOnQueue(struct Job * job)
 {
     enterWrite();
-    // fprintf(stderr,"asdasd\n");
-    //debugInt += 1;
     insertInQueue(job);
     exitWrite();
 }
@@ -201,13 +185,10 @@ void insertInQueue(struct Job * job) {
     if(jobScheduler.jobQueue->size == 0) {
         jobScheduler.jobQueue->firstNode = createNode(job);
         jobScheduler.jobQueue->lastNode = jobScheduler.jobQueue->firstNode;
-        // fprintf(stderr, "ccc\n");
     }
     else {
-        // fprintf(stderr, "aaa\n");
         jobScheduler.jobQueue->lastNode->next = createNode(job);
         jobScheduler.jobQueue->lastNode = jobScheduler.jobQueue->lastNode->next;
-        // fprintf(stderr, "bbb\n");
     }
     jobScheduler.jobQueue->size += 1;
 }
@@ -229,9 +210,6 @@ struct Job * popFromQueue() {
     }
 
     jobScheduler.jobQueue->size -= 1;
-    //pthread_mutex_lock(&(jobScheduler.barrierMutex));
-    //jobScheduler.working++;
-    //pthread_mutex_unlock(&(jobScheduler.barrierMutex));
 
     struct Job * retJob = retNode->job;
 
@@ -255,7 +233,6 @@ void deleteQueueNode(jobNode * node)
         return;
     if(node->next != NULL)
         deleteQueueNode(node->next);
-    //free(node->job);
     free(node);
 }
 

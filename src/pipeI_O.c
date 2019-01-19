@@ -36,10 +36,6 @@ char * readFromPipe(const char * stopWord) {
                 end = i + 1;
 
                 if(strncmp(stopWord, buffer + start, i - start) == 0) {
-
-                    
-                    // fprintf(stdoutFile, "%s\n", stopWord);
-                    // fflush(stdoutFile);
                     buffer[i - strlen(stopWord)] = '\0';
                     break;
                 }
