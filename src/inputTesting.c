@@ -187,8 +187,10 @@ int freeOutput() {
 void checkSize() {
         char * firstLine = NULL;
         size_t len = 0;
-        getline(&firstLine, &len, outputFile);
-
+        int test = getline(&firstLine, &len, outputFile);
+        if(test == -1) {
+                perror("Failed to getline");
+        }
         int size = atoi(strtok(firstLine, "\n"));
         CU_ASSERT(size == OUTPUT_SIZE);
         free(firstLine);

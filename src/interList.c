@@ -358,7 +358,7 @@ myint_t ** updateRowIds2(nodeInter * intNode, headResult * headRes, myint_t *res
     }
     // fprintf(stderr, "RESULTS: %ld\n", headRes->numbOfNodes);
 
-    myint_t existingRelPlace;
+    myint_t existingRelPlace = 0;
     for(myint_t whichRel = 0; whichRel < intNode->data->numOfCols; whichRel++) {
         if (intNode->data->joinedRels[whichRel] == existingRel) {
             existingRelPlace = whichRel;
@@ -461,7 +461,7 @@ myint_t ** joinRowIds2(nodeInter * node1, nodeInter * node2, headResult * headRe
         if (retArr[i]==NULL) fprintf(stderr,"Not enough memory, %ld\n", *results);
     }
 
-    myint_t existingRelPlace1, existingRelPlace2;
+    myint_t existingRelPlace1 = 0, existingRelPlace2 = 0;
 
     for(myint_t whichRel = 0; whichRel < node1->data->numOfCols; whichRel++) {
         if (node1->data->joinedRels[whichRel] == existingRel1) {

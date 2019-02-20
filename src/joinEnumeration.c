@@ -237,7 +237,7 @@ HTNode * CreateJoinTree(HTNode * HT1, HTNode * HT2 ,char * newComb, myint_t conn
         free(str);
 
     }
-    myint_t partA;
+    myint_t partA = 0;
     
     for(int i = 0; i < newHTNode->numRels - 1; i++) {           //copy statistics of previous combination to new hashTree node
         
