@@ -10,10 +10,6 @@ before_script:
   - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/lib:$LD_LIBRARY_PATH
   - cd ..
   - make
-
-InputTest:
-  script:
-    - make runInputUt
   
 SearchListTest:
   script:

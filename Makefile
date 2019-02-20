@@ -1,7 +1,6 @@
 CC = gcc
 
 SOURCE_SEARCH_LIST_UT = src/searchListTesting.c src/resultListManip.c src/chainFollower.c src/hashing.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/jobScheduler.c src/bitVector.c
-SOURCE_INPUT_UT = src/inputTesting.c src/inputManip.c src/resultListManip.c
 SOURCE_REORDERING_UT = src/viceTests.c src/functions.c src/jobScheduler.c src/bitVector.c
 SOURCE_INDEXING_UT = src/indexTesting.c src/indexManip.c src/hashing.c src/sideFunctions.c
 SOURCE_QUERY_EXECUTE_UT = src/queryExecuteTesting.c src/jointPerformer.c src/radixHashJoin.c src/interList.c src/resultListManip.c src/checksum.c src/indexing.c src/indexManip.c src/sideFunctions.c src/H1.c src/functions.c src/inputManip.c src/hashing.c src/chainFollower.c src/I_O_structManip.c src/queryManip.c src/jobScheduler.c src/getStats.c src/bitVector.c src/hashTreeManip.c src/pipeI_O.c src/graph.c src/joinEnumeration.c src/combinations.c
@@ -9,14 +8,12 @@ SOURCE_I_O_RECEIVER = src/I_O_Receiver.c src/I_O_structManip.c src/pipeI_O.c src
 
 
 NAME_OF_SEARCH_LIST_UT = searchListUnitTest
-NAME_OF_INPUT_UT = inputUt
 NAME_OF_REORDERING_UT = reorderingTest
 NAME_OF_INDEXING_UT = indexingUnitTest
 NAME_OF_QUERY_EXECUTE_UT = queryExecuteUnitTest
 NAME_OF_I_O_RECEIVER = ioreceiver
 
 OBJECT_SEARCH_LIST_UT = $(SOURCE_SEARCH_LIST_UT:.c=.o)
-OBJECT_INPUT_UT = $(SOURCE_INPUT_UT:.c=.o)
 OBJECT_REORDERING_UT = $(SOURCE_REORDERING_UT:.c=.o)
 OBJECT_INDEXING_UT = $(SOURCE_INDEXING_UT:.c=.o)
 OBJECT_QUERY_EXECUTE_UT = $(SOURCE_QUERY_EXECUTE_UT:.c=.o)
@@ -24,18 +21,13 @@ OBJECT_I_O_RECEIVER = $(SOURCE_I_O_RECEIVER:.c=.o)
 
 VALGRIND_FLAGS = --leak-check=yes --error-exitcode=1 --leak-check=full --show-leak-kinds=all --track-origins=yes --trace-children=yes -v
 
-all: queryExecuteUtTarget inputUtTarget searchListUt reorderingUtTarget indexingUnitTest ioreceiverTarget
+all: queryExecuteUtTarget searchListUt reorderingUtTarget indexingUnitTest ioreceiverTarget
 	@echo  
 	@echo Compile finished
 
 searchListUt: $(SOURCE_SEARCH_LIST_UT) $(NAME_OF_SEARCH_LIST_UT)
 	$(CC) -g -O3 -Wall -o  $(NAME_OF_SEARCH_LIST_UT) $(SOURCE_SEARCH_LIST_UT) -lm -lcunit -pthread
 	@echo Compiled Search and List Unit tests
-	@echo 
-
-inputUtTarget: $(SOURCE_INPUT_UT) $(NAME_OF_INPUT_UT)
-	$(CC) -g -O3 -Wall -o  $(NAME_OF_INPUT_UT) $(SOURCE_INPUT_UT) -lm -lcunit -pthread
-	@echo Compiled Input Unit Test
 	@echo 
 
 reorderingUtTarget: $(SOURCE_REORDERING_UT) $(NAME_OF_REORDERING_UT)
@@ -66,9 +58,6 @@ ioreceiverTarget: $(SOURCE_I_O_RECEIVER) $(NAME_OF_I_O_RECEIVER)
 $(NAME_OF_SEARCH_LIST_UT): $(OBJECT_SEARCH_LIST_UT)
 	$(CC) -g  -O3 $(OBJECT_SEARCH_LIST_UT) -o $@ -lm -lcunit -pthread
 
-$(NAME_OF_INPUT_UT): $(OBJECT_INPUT_UT)
-	$(CC) -g  -O3 $(OBJECT_INPUT_UT) -o $@ -lm -lcunit -pthread
-
 $(NAME_OF_REORDERING_UT): $(OBJECT_REORDERING_UT)
 	$(CC) -g  -O3 $(OBJECT_REORDERING_UT) -o $@ -lm -lcunit -pthread
 
@@ -91,9 +80,6 @@ runQueryExecuteUt:
 
 runSearchListUt: searchListUt
 	./$(NAME_OF_SEARCH_LIST_UT)
-
-runInputUt:
-	./$(NAME_OF_INPUT_UT)
 
 runReorderingUt:
 	./$(NAME_OF_REORDERING_UT)
@@ -124,7 +110,6 @@ cacheMisses:
 
 clean:
 	rm -f $(NAME_OF_SEARCH_LIST_UT)
-	rm -f $(NAME_OF_INPUT_UT)
 	rm -f $(NAME_OF_REORDERING_UT)
 	rm -f $(NAME_OF_INDEXING_UT)
 	rm -f $(NAME_OF_QUERY_EXECUTE_UT)
