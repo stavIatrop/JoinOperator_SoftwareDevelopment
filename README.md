@@ -34,7 +34,7 @@ Run:
 
 ## General Optimizations
 
-Most of the optimizations and algorithms followed are explained time measured in the report `ProjectReport.pdf`(currently only in Greek).   
+Most of the optimizations and algorithms followed are explained and time measured in the report `ProjectReport.pdf`(currently only in Greek).   
 A quick list of the optimizations is:
 * Create a jobScheduler and apply multithreading on several points of the joiner
 * Use of statistics and the join enumeration algorithm to define the most efficient order of executing the joins and filters of the query
