@@ -1,35 +1,48 @@
-
- # Ανάπτυξη Λογισμικού Για Πληροφοριακά Συστήματα (Μέρος 1ο)
+﻿
+ # Join Query Executor (SIGMOD 2018)
    
- ## Μέλη Ομάδας:
- * Ιατροπούλου Σταυρούλα, 1115201500048
- * Ξύδας Μιχαήλ, 1115201500116
- * Στάης Βαλέριος, 1115201500148
-                 
+ ## Collaborators
+ * Stavroula Iatropoulou, https://gitlab.com/stavIatrop
+ * Valerios Stais, https://gitlab.com/valerios1910
  
- ## Best Time
-  
-On the small dataset best time achieved: 1788ms
-  
+ Our approach of dealing with the task follows in many cases the algorithms and general approach of the 3rd placed team Dataurus http://sigmod18contest.db.in.tum.de/leaders.shtml                
+ 
+ ## Task
+ http://sigmod18contest.db.in.tum.de/task.shtml
+ 
+On the small dataset best time achieved: 750ms
+On the public dataset best time achieved: 50800ms  
+
+Specs  
+* CPU: Intel Core i5 7200U 2.5GHz 4 cores
+* RAM: 8GB DDR4
+* OS: Ubuntu gnome 18.04
+
+Aim of the task was to create an as fast as possible **query executor** accepting only the sql keyword `and`.
+For example a query could be:
+`SELECT A.1`  
+`FROM A, B, C`
+`WHERE A.2=B.3 AND A.3=C.2 AND A.2=A.1 AND C.3 >1000`
+
+
  ## Compile and Run
 Compile: `make` will compile all the executables (unit tests and main executable)  
 
 Run:
- * `make runHarness` runs the contest provided harness with the small dataset
- * `make runInputUt` runs the Input unit test
- * `make runReorderingUt`runs the Hash1 and Reordering tests
- * `make runIndexingUt` runs the Indexing unit tests
- * `make runSearchListUt` runs the Search and List unit test functions
+ * `make runHarness` runs the contest provided harness with the **small dataset**
+ * `make runHarnessPublic` runs the contest provided harness with the **public dataset**. The public dataset since it is big (~350mb) must be manually downloaded from here  http://sigmod18contest.db.in.tum.de/public.tar.gz and be placed and configured like the small dataset which is included in this repo
 
+## General Optimizations
 
-!! In order for input test to be able to pass, `smallTestTables/file3_10, smallTestTables/file3_10ascii` must not be changed` !!  
-
- ## General optimizations
- * Apply filters before joins
- * Simple utilization of cache locality (like using arrays of pointers to columns instead of pointers to rows)
+Most of the optimizations and algorithms followed are explained time measured in the report `ProjectReport.pdf`(currently only in Greek).   
+A quick list of the optimizations is:
+* Create a jobScheduler and apply multithreading on several points of the joiner
+* Use of statistics and the join enumeration algorithm to define the most efficient order of executing the joins and filters of the query
+* Take into consideration cache sizes and cache utilization
+* Use of a "warehouse" of indexes in order to avoid creating them each time if possible
  
  ## Radix Hash Join 
- The alogorithm which we were given to implement for performing the joins of the queries (which is of curse the main bottleneck).
+ The alogorithm which we were given to implement for performing the joins of the queries (which is of course the main bottleneck).
  * ### Reordering 
 	  In the first phase, the h1, we calculate the best n to use, where n is the number of least important bits used as the hash       function. We do this for one of the relations and then use the same n for the other relation.
 
@@ -42,3 +55,9 @@ Run:
 
  * ### Searching
     Searching since it is the most time consuming function aims for the lowest complexity possible. The function finds the start of the chain in O(1) and then it follows it so as every search costs O(chainSize) which is fairly small. Then the result tuples (rowIdR, rowIdS) are saved in 1MB list nodes.  
+
+
+## TODOs
+
+* Update the report with the updated faster times (about 40% faster)
+* Translate the report in English
