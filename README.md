@@ -2,7 +2,7 @@
  # Join Query Executor (SIGMOD 2018)
    
  ## Collaborators
- * Stavroula Iatropoulou, https://gitlab.com/stavIatrop
+ * Mike Xydas, https://github.com/MikeXydas
  * Valerios Stais, https://gitlab.com/valerios1910
  
  Our approach of dealing with the task follows in many cases the algorithms and general approach of the 3rd placed team Dataurus http://sigmod18contest.db.in.tum.de/leaders.shtml                
